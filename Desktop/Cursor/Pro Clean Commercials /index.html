@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pro Clean Commercials — Commercial, Domestic &amp; Specialist Cleaning</title>
+<meta name="description" content="Pro Clean Commercials — trusted commercial, domestic and specialist cleaning. Office, end of tenancy, builders clean, biohazard and mould removal. Free no-obligation quote.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --petrol:#111111;
+    --petrol-deep:#000000;
+    --petrol-mid:#2a2a2a;
+    --mist:#f4f4f2;
+    --paper:#ffffff;
+    --ink:#111111;
+    --slate:#5c5c5c;
+    --amber:#d4b029;
+    --amber-deep:#a8881a;
+    --line:rgba(0,0,0,.14);
+    --line-soft:rgba(0,0,0,.08);
+    --white:#ffffff;
+    --radius:14px;
+    --radius-sm:10px;
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'DM Sans',system-ui,sans-serif;
+    color:var(--ink);
+    background:var(--paper);
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{font-family:'DM Sans',system-ui,sans-serif;font-weight:600;line-height:1.15;letter-spacing:-.02em}
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px}
+  .eyebrow{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--amber-deep)}
+
+  /* ---- top bar ---- */
+  .topbar{background:var(--petrol-deep);color:var(--mist);font-size:13px}
+  .topbar .wrap{display:flex;justify-content:space-between;align-items:center;height:40px;gap:16px}
+  .topbar a{color:var(--mist);opacity:.85}
+  .topbar a:hover{opacity:1}
+  .topbar .tb-right{display:flex;gap:22px}
+  .topbar i{color:var(--amber);margin-right:6px}
+
+  /* ---- header ---- */
+  header{position:sticky;top:0;z-index:50;background:rgba(246,244,238,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line-soft)}
+  header .wrap{display:flex;align-items:center;justify-content:space-between;height:74px;gap:24px}
+  .logo{display:flex;align-items:center;gap:11px;font-family:'DM Sans',sans-serif;font-size:22px;font-weight:600;color:var(--petrol);letter-spacing:-.02em}
+  .logo .mark{width:38px;height:38px;border-radius:10px;background:var(--petrol);color:var(--paper);display:grid;place-items:center;font-size:19px}
+  .logo .mark i{transform:translateY(1px)}
+  .logo b{color:var(--amber-deep);font-weight:600}
+  nav.main{display:flex;align-items:center;gap:30px}
+  nav.main a{font-size:14.5px;font-weight:500;color:var(--ink);position:relative;padding:4px 0}
+  nav.main a:hover{color:var(--petrol)}
+  nav.main a::after{content:"";position:absolute;left:0;bottom:-2px;width:0;height:2px;background:var(--amber);transition:width .25s}
+  nav.main a:hover::after{width:100%}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:14.5px;border-radius:999px;padding:11px 22px;transition:.2s;cursor:pointer;border:none;font-family:'DM Sans',sans-serif}
+  .btn-amber{background:var(--amber);color:#1a1500}
+  .btn-amber:hover{background:var(--amber-deep);color:#fff}
+  .btn-ghost{background:transparent;border:1.5px solid rgba(255,255,255,.4);color:#fff}
+  .btn-ghost:hover{background:rgba(255,255,255,.12)}
+  .btn-petrol{background:var(--petrol);color:var(--mist)}
+  .btn-petrol:hover{background:var(--petrol-mid)}
+  .hamburger{display:none;background:none;border:none;font-size:26px;color:var(--petrol);cursor:pointer}
+
+  /* ---- hero ---- */
+  .hero{position:relative;background:var(--petrol);color:#e6e6e3;overflow:hidden}
+  .hero::before{content:"";position:absolute;inset:0;background:
+    radial-gradient(900px 500px at 78% -10%,rgba(212,176,41,.20),transparent 60%),
+    radial-gradient(700px 600px at 0% 110%,rgba(42,42,42,.8),transparent 55%);}
+  .hero .wrap{position:relative;display:grid;grid-template-columns:1.15fr .85fr;gap:50px;align-items:center;padding:84px 28px 92px}
+  .hero h1{font-size:clamp(38px,5.2vw,62px);color:#fff;margin-bottom:22px}
+  .hero h1 em{font-style:italic;color:var(--amber)}
+  .hero p.lead{font-size:18px;color:#cfcfcc;max-width:520px;margin-bottom:30px}
+  .hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:34px}
+  .hero-trust{display:flex;gap:26px;flex-wrap:wrap;font-size:13.5px;color:#bdbdba}
+  .hero-trust span{display:flex;align-items:center;gap:7px}
+  .hero-trust i{color:var(--amber)}
+  .hero-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:30px;backdrop-filter:blur(4px)}
+  .hero-card h3{color:#fff;font-size:21px;margin-bottom:6px}
+  .hero-card .sub{font-size:13.5px;color:#bdbdba;margin-bottom:20px}
+  .hero-field{margin-bottom:13px}
+  .hero-field label{display:block;font-size:12px;font-weight:600;color:#cfcfcc;margin-bottom:5px;letter-spacing:.02em}
+  .hero-field input,.hero-field select{width:100%;padding:11px 13px;border-radius:9px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.95);color:var(--ink);font-size:14px;font-family:inherit}
+  .hero-card .btn{width:100%;justify-content:center;margin-top:4px}
+  .hero-card .fineprint{font-size:11.5px;color:#9a9a97;text-align:center;margin-top:10px}
+
+  /* ---- locations strip ---- */
+  .loc{background:var(--petrol-deep);padding:0}
+  .loc .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+  .loc a{padding:26px 24px;border-right:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;gap:3px;transition:.2s;color:#e0e0dd}
+  .loc a:last-child{border-right:none}
+  .loc a:hover{background:var(--petrol-mid)}
+  .loc .city{font-family:'DM Sans',sans-serif;font-size:19px;color:#fff;display:flex;align-items:center;gap:9px}
+  .loc .city i{color:var(--amber);font-size:18px}
+  .loc .phone{font-size:14px;color:#a3a3a0;letter-spacing:.02em}
+  .loc .more{font-size:12.5px;color:var(--amber);font-weight:600;margin-top:4px}
+
+  /* ---- section base ---- */
+  section.block{padding:84px 0}
+  .sec-head{max-width:660px;margin-bottom:46px}
+  .sec-head.center{margin-left:auto;margin-right:auto;text-align:center}
+  .sec-head h2{font-size:clamp(28px,3.4vw,40px);margin:12px 0 14px;color:var(--petrol-deep)}
+  .sec-head p{font-size:16.5px;color:var(--slate)}
+
+  /* ---- intro / why ---- */
+  .why .wrap{display:grid;grid-template-columns:1fr 1fr;gap:58px;align-items:center}
+  .why .photo{aspect-ratio:5/4;border-radius:var(--radius);background:linear-gradient(135deg,var(--petrol-mid),var(--petrol));position:relative;overflow:hidden;display:grid;place-items:center}
+  .why .photo i{font-size:74px;color:rgba(255,255,255,.22)}
+  .why .photo .tag{position:absolute;left:20px;bottom:20px;background:var(--paper);color:var(--petrol-deep);border-radius:10px;padding:12px 16px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:9px}
+  .why .photo .tag i{font-size:20px;color:var(--amber-deep)}
+  .checks{display:grid;grid-template-columns:1fr 1fr;gap:14px 22px;margin-top:24px}
+  .check{display:flex;align-items:flex-start;gap:11px;font-size:15px}
+  .check i{color:var(--white);background:var(--petrol);width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:14px;flex-shrink:0;margin-top:1px}
+  .why p.body{font-size:16.5px;color:var(--slate);margin-bottom:8px}
+
+  /* ---- services ---- */
+  .services{background:var(--mist)}
+  .svc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  .svc{background:var(--white);border-radius:var(--radius);padding:28px 24px 26px;border:1px solid var(--line-soft);transition:.22s;position:relative;overflow:hidden}
+  .svc:hover{transform:translateY(-4px);border-color:transparent;box-shadow:0 18px 40px -22px rgba(0,0,0,.35)}
+  .svc .ic{width:50px;height:50px;border-radius:12px;background:var(--mist);color:var(--petrol);display:grid;place-items:center;font-size:25px;margin-bottom:18px;transition:.22s}
+  .svc:hover .ic{background:var(--petrol);color:var(--amber)}
+  .svc h3{font-size:19px;color:var(--petrol-deep);margin-bottom:7px}
+  .svc p{font-size:13.8px;color:var(--slate);margin-bottom:14px;line-height:1.55}
+  .svc .lnk{font-size:13.5px;font-weight:600;color:var(--amber-deep);display:flex;align-items:center;gap:6px}
+  .svc:hover .lnk i{transform:translateX(4px)}
+  .svc .lnk i{transition:.2s}
+  .svc.specialist{background:var(--petrol);border-color:transparent}
+  .svc.specialist h3{color:#fff}
+  .svc.specialist p{color:#bdbdba}
+  .svc.specialist .ic{background:rgba(255,255,255,.1);color:var(--amber)}
+  .svc.specialist:hover .ic{background:var(--amber);color:var(--petrol-deep)}
+  .svc.specialist .lnk{color:var(--amber)}
+
+  /* ---- about ---- */
+  .about .wrap{display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:center}
+  .about .photo{aspect-ratio:1/1;border-radius:var(--radius);background:linear-gradient(135deg,#f4f4f2,#e2e2de);display:grid;place-items:center;position:relative}
+  .about .photo i{font-size:70px;color:var(--petrol-mid);opacity:.45}
+  .about .stat{position:absolute;right:-18px;bottom:24px;background:var(--petrol-deep);color:#fff;border-radius:14px;padding:18px 22px;text-align:center;box-shadow:0 16px 36px -18px rgba(0,0,0,.5)}
+  .about .stat .n{font-family:'DM Sans',sans-serif;font-size:34px;color:var(--amber);line-height:1}
+  .about .stat .l{font-size:12px;color:#bdbdba;margin-top:4px;letter-spacing:.04em}
+  .about ul.commit{list-style:none;margin:22px 0 0}
+  .about ul.commit li{display:flex;gap:12px;align-items:flex-start;padding:9px 0;font-size:15.5px;border-bottom:1px solid var(--line-soft)}
+  .about ul.commit li:last-child{border-bottom:none}
+  .about ul.commit i{color:var(--amber-deep);font-size:20px;flex-shrink:0;margin-top:2px}
+
+  /* ---- band cta ---- */
+  .band{background:var(--petrol);color:#fff}
+  .band .wrap{display:flex;align-items:center;justify-content:space-between;gap:30px;padding:52px 28px;flex-wrap:wrap}
+  .band h2{font-size:clamp(24px,3vw,34px);color:#fff;max-width:640px}
+  .band h2 em{font-style:italic;color:var(--amber)}
+  .band .b-actions{display:flex;gap:13px;flex-wrap:wrap}
+
+  /* ---- FAQ ---- */
+  .faq .wrap{max-width:860px}
+  .acc{border:1px solid var(--line);border-radius:12px;background:var(--white);margin-bottom:12px;overflow:hidden}
+  .acc summary{list-style:none;cursor:pointer;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:16px;color:var(--petrol-deep)}
+  .acc summary::-webkit-details-marker{display:none}
+  .acc summary i{color:var(--amber-deep);transition:.25s;font-size:22px}
+  .acc[open] summary i{transform:rotate(45deg)}
+  .acc .ans{padding:0 24px 22px;color:var(--slate);font-size:15px;line-height:1.7}
+
+  /* ---- contact ---- */
+  .contact{background:var(--mist)}
+  .contact .wrap{display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:start}
+  .contact-info h2{font-size:clamp(28px,3.4vw,40px);color:var(--petrol-deep);margin:12px 0 16px}
+  .contact-info p.body{font-size:16.5px;color:var(--slate);margin-bottom:28px}
+  .ci-row{display:flex;gap:15px;align-items:flex-start;padding:16px 0;border-top:1px solid var(--line-soft)}
+  .ci-row .ic{width:44px;height:44px;border-radius:11px;background:var(--petrol);color:var(--amber);display:grid;place-items:center;font-size:21px;flex-shrink:0}
+  .ci-row .lab{font-size:12.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--slate)}
+  .ci-row .val{font-size:16.5px;color:var(--petrol-deep);font-weight:500}
+  .form{background:var(--white);border-radius:var(--radius);padding:32px;border:1px solid var(--line-soft)}
+  .form h3{font-size:21px;color:var(--petrol-deep);margin-bottom:6px}
+  .form .sub{font-size:14px;color:var(--slate);margin-bottom:22px}
+  .frow{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:12.5px;font-weight:600;color:var(--petrol-deep);margin-bottom:6px}
+  .field input,.field select,.field textarea{width:100%;padding:12px 14px;border-radius:9px;border:1px solid var(--line);background:#fff;font-size:14.5px;font-family:inherit;color:var(--ink);transition:.18s}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--amber);box-shadow:0 0 0 3px rgba(212,176,41,.18)}
+  .field textarea{resize:vertical;min-height:96px}
+  .form .btn{width:100%;justify-content:center;margin-top:6px}
+  .form-note{font-size:11.5px;color:var(--slate);text-align:center;margin-top:12px}
+
+  /* ---- clients ---- */
+  .clients{padding:60px 0;text-align:center}
+  .clients .lab{font-size:12.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--slate);margin-bottom:30px}
+  .client-row{display:grid;grid-template-columns:repeat(6,1fr);gap:20px;align-items:center}
+  .client-row .c{height:54px;border-radius:10px;background:var(--mist);display:grid;place-items:center;color:var(--petrol-mid);font-weight:600;font-size:13px;opacity:.85}
+
+  /* ---- footer ---- */
+  footer{background:var(--petrol-deep);color:#bdbdba;padding:64px 0 0}
+  footer .cols{display:grid;grid-template-columns:1.6fr 1fr 1fr 1.2fr;gap:40px}
+  footer h4{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#fff;margin-bottom:18px}
+  footer .logo{color:#fff;margin-bottom:16px}
+  footer .logo .mark{background:var(--amber);color:var(--petrol-deep)}
+  footer .logo b{color:var(--amber)}
+  footer p.blurb{font-size:14px;color:#a3a3a0;max-width:300px;margin-bottom:18px}
+  footer ul{list-style:none}
+  footer ul li{margin-bottom:10px}
+  footer ul a{font-size:14px;color:#bdbdba;transition:.18s}
+  footer ul a:hover{color:var(--amber)}
+  footer .socials{display:flex;gap:12px;margin-top:6px}
+  footer .socials a{width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.07);display:grid;place-items:center;color:#e0e0dd;font-size:18px;transition:.2s}
+  footer .socials a:hover{background:var(--amber);color:var(--petrol-deep)}
+  .badges{display:flex;gap:10px;margin-top:18px}
+  .badges .b{border:1px solid rgba(255,255,255,.18);border-radius:9px;padding:8px 12px;font-size:11px;font-weight:600;color:#e0e0dd;text-align:center;line-height:1.3}
+  .badges .b span{display:block;color:var(--amber);font-size:14px}
+  footer .legal{border-top:1px solid rgba(255,255,255,.1);margin-top:50px;padding:22px 0;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:12.5px;color:#8a8a87}
+  footer .legal .credit{color:#bdbdba;border-bottom:1px solid transparent;transition:.18s}
+  footer .legal .credit:hover{color:var(--amber);border-bottom-color:var(--amber)}
+
+  /* ---- responsive ---- */
+  @media(max-width:980px){
+    .hero .wrap{grid-template-columns:1fr;gap:44px;padding:60px 28px 70px}
+    .why .wrap,.about .wrap,.contact .wrap{grid-template-columns:1fr;gap:40px}
+    .about .photo{max-width:420px}
+    .svc-grid{grid-template-columns:repeat(2,1fr)}
+    .loc .wrap{grid-template-columns:repeat(2,1fr)}
+    .loc a:nth-child(2){border-right:none}
+    .loc a{border-bottom:1px solid rgba(255,255,255,.08)}
+    .client-row{grid-template-columns:repeat(3,1fr)}
+    footer .cols{grid-template-columns:1fr 1fr;gap:32px}
+  }
+  @media(max-width:680px){
+    nav.main,.topbar .tb-left{display:none}
+    .hamburger{display:block}
+    .svc-grid{grid-template-columns:1fr}
+    .frow{grid-template-columns:1fr}
+    .client-row{grid-template-columns:repeat(2,1fr)}
+    footer .cols{grid-template-columns:1fr}
+    .band .wrap{flex-direction:column;align-items:flex-start}
+    .about .stat{right:16px}
+  }
+
+  /* ---- before / after slider ---- */
+  .ba{background:var(--paper)}
+  .ba-wrap{max-width:920px;margin:0 auto}
+  .ba-stage{position:relative;width:100%;aspect-ratio:16/9;border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);cursor:ew-resize;user-select:none;background:var(--mist)}
+  .ba-layer{position:absolute;inset:0;display:grid;place-items:center;overflow:hidden}
+  .ba-layer .ph{width:100%;height:100%;display:grid;place-items:center;text-align:center;color:#fff}
+  .ba-before .ph{background:linear-gradient(135deg,#3a3a38,#1a1a18)}
+  .ba-after .ph{background:linear-gradient(135deg,#e6e6e3,#ffffff);color:var(--ink)}
+  .ba-after{width:50%;border-right:2px solid var(--amber)}
+  .ba-layer .ph i{font-size:46px;opacity:.5;margin-bottom:8px}
+  .ba-layer .ph .lbl{font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;opacity:.8}
+  .ba-after .ph{position:absolute;top:0;left:0;width:920px;max-width:none}
+  .ba-tag{position:absolute;top:16px;z-index:3;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:6px 12px;border-radius:999px;backdrop-filter:blur(4px)}
+  .ba-tag.before{left:16px;background:rgba(0,0,0,.55);color:#fff}
+  .ba-tag.after{right:16px;background:rgba(212,176,41,.92);color:#1a1500}
+  .ba-handle{position:absolute;top:0;bottom:0;left:50%;width:2px;background:var(--amber);z-index:4;transform:translateX(-1px);pointer-events:none}
+  .ba-knob{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:46px;height:46px;border-radius:50%;background:var(--amber);color:#1a1500;display:grid;place-items:center;font-size:22px;box-shadow:0 4px 16px rgba(0,0,0,.3);z-index:5;pointer-events:none}
+  .ba-range{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;z-index:6;margin:0}
+  .ba-hint{text-align:center;font-size:13.5px;color:var(--slate);margin-top:18px;display:flex;align-items:center;justify-content:center;gap:7px}
+  .ba-hint i{color:var(--amber-deep);font-size:18px}
+
+
+  [data-reveal]{opacity:0;transform:translateY(28px);transition:opacity .7s cubic-bezier(.22,.61,.36,1),transform .7s cubic-bezier(.22,.61,.36,1)}
+  [data-reveal="left"]{transform:translateX(-32px)}
+  [data-reveal="right"]{transform:translateX(32px)}
+  [data-reveal="scale"]{transform:scale(.94)}
+  [data-reveal].in{opacity:1;transform:none}
+  /* staggered children */
+  [data-stagger] > *{opacity:0;transform:translateY(24px);transition:opacity .6s cubic-bezier(.22,.61,.36,1),transform .6s cubic-bezier(.22,.61,.36,1)}
+  [data-stagger].in > *{opacity:1;transform:none}
+  [data-stagger].in > *:nth-child(1){transition-delay:.05s}
+  [data-stagger].in > *:nth-child(2){transition-delay:.12s}
+  [data-stagger].in > *:nth-child(3){transition-delay:.19s}
+  [data-stagger].in > *:nth-child(4){transition-delay:.26s}
+  [data-stagger].in > *:nth-child(5){transition-delay:.33s}
+  [data-stagger].in > *:nth-child(6){transition-delay:.40s}
+  [data-stagger].in > *:nth-child(7){transition-delay:.47s}
+  [data-stagger].in > *:nth-child(8){transition-delay:.54s}
+
+  /* hero entrance on load */
+  .hero-copy > *{opacity:0;transform:translateY(26px);animation:heroIn .8s cubic-bezier(.22,.61,.36,1) forwards}
+  .hero-copy > *:nth-child(1){animation-delay:.15s}
+  .hero-copy > *:nth-child(2){animation-delay:.28s}
+  .hero-copy > *:nth-child(3){animation-delay:.41s}
+  .hero-copy > *:nth-child(4){animation-delay:.54s}
+  .hero-copy > *:nth-child(5){animation-delay:.67s}
+  .hero-card{opacity:0;transform:translateY(26px) scale(.97);animation:heroIn .9s cubic-bezier(.22,.61,.36,1) .55s forwards}
+  @keyframes heroIn{to{opacity:1;transform:none}}
+
+  /* ambient float on hero glow + sparkle icons */
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+  .why .photo i,.about .photo i{animation:floaty 5s ease-in-out infinite}
+
+  /* count-up stat sheen */
+  .about .stat{transition:transform .3s}
+  .about .stat:hover{transform:translateY(-4px)}
+
+  /* nav link + button shimmer already handled; add header drop-in */
+  header{transform:translateY(0);animation:slideDown .6s ease both}
+  @keyframes slideDown{from{transform:translateY(-100%)}to{transform:translateY(0)}}
+
+  @media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none!important;transition:none!important}
+    [data-reveal],[data-stagger] > *,.hero-copy > *,.hero-card{opacity:1!important;transform:none!important}
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="wrap">
+    <div class="tb-left"><i class="ti ti-clock-hour-4"></i>Mon–Sat, 7am–7pm · Out-of-hours available</div>
+    <div class="tb-right">
+      <a href="tel:00000000000"><i class="ti ti-phone"></i>0000 000 0000</a>
+      <a href="mailto:hello@procleancommercials.co.uk"><i class="ti ti-mail"></i>hello@procleancommercials.co.uk</a>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="wrap">
+    <a href="#top" class="logo"><span class="mark"><i class="ti ti-droplet"></i></span>Pro Clean<b>&nbsp;Commercials</b></a>
+    <nav class="main">
+      <a href="#why">Why us</a>
+      <a href="#services">Services</a>
+      <a href="#results">Results</a>
+      <a href="#about">About</a>
+      <a href="#faq">FAQ</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <a href="#contact" class="btn btn-amber"><i class="ti ti-calendar-check"></i>Get a quote</a>
+    <button class="hamburger" aria-label="Menu" onclick="document.querySelector('nav.main').style.display = (getComputedStyle(document.querySelector('nav.main')).display==='none'?'flex':'none')"><i class="ti ti-menu-2"></i></button>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="wrap">
+    <div class="hero-copy">
+      <div class="eyebrow" style="color:var(--amber)">Commercial · Domestic · Specialist</div>
+      <h1>Spotless spaces,<br><em>handled properly.</em></h1>
+      <p class="lead">From offices and schools to end-of-tenancy, builders cleans and specialist biohazard and mould removal — one trusted, fully insured team for every clean.</p>
+      <div class="hero-cta">
+        <a href="#contact" class="btn btn-amber"><i class="ti ti-calendar-check"></i>Book a site visit</a>
+        <a href="#services" class="btn btn-ghost">View services</a>
+      </div>
+      <div class="hero-trust">
+        <span><i class="ti ti-shield-check"></i>Fully insured</span>
+        <span><i class="ti ti-id-badge-2"></i>DBS-checked staff</span>
+        <span><i class="ti ti-leaf"></i>Eco-friendly options</span>
+        <span><i class="ti ti-rosette-discount-check"></i>ISO standards</span>
+      </div>
+    </div>
+
+    <div class="hero-card">
+      <h3>Free, no-obligation quote</h3>
+      <p class="sub">Tell us what you need — we'll respond within one working day.</p>
+      <div class="hero-field">
+        <label>Your name</label>
+        <input type="text" placeholder="Full name">
+      </div>
+      <div class="hero-field">
+        <label>Service needed</label>
+        <select>
+          <option>Commercial cleaning</option>
+          <option>Domestic cleaning</option>
+          <option>End of tenancy</option>
+          <option>Builders clean</option>
+          <option>Window cleaning</option>
+          <option>Carpet cleaning</option>
+          <option>Biohazard cleaning</option>
+          <option>Mould cleaning</option>
+        </select>
+      </div>
+      <div class="hero-field">
+        <label>Phone or email</label>
+        <input type="text" placeholder="How we reach you">
+      </div>
+      <a href="#contact" class="btn btn-amber"><i class="ti ti-send"></i>Request my quote</a>
+      <p class="fineprint">No spam. We only use your details to reply.</p>
+    </div>
+  </div>
+</section>
+
+<!-- LOCATIONS -->
+<div class="loc">
+  <div class="wrap" data-stagger>
+    <a href="#contact"><span class="city"><i class="ti ti-map-pin"></i>City One</span><span class="phone">0000 000 0000</span><span class="more">Get a quote →</span></a>
+    <a href="#contact"><span class="city"><i class="ti ti-map-pin"></i>City Two</span><span class="phone">0000 000 0000</span><span class="more">Get a quote →</span></a>
+    <a href="#contact"><span class="city"><i class="ti ti-map-pin"></i>City Three</span><span class="phone">0000 000 0000</span><span class="more">Get a quote →</span></a>
+    <a href="#contact"><span class="city"><i class="ti ti-map-pin"></i>City Four</span><span class="phone">0000 000 0000</span><span class="more">Get a quote →</span></a>
+  </div>
+</div>
+
+<!-- WHY US -->
+<section class="block why" id="why">
+  <div class="wrap">
+    <div class="photo" data-reveal="left">
+      <i class="ti ti-sparkles"></i>
+      <div class="tag"><i class="ti ti-checklist"></i>Audited &amp; reported monthly</div>
+    </div>
+    <div data-reveal="right">
+      <div class="eyebrow">Why Pro Clean Commercials</div>
+      <h2 style="font-size:clamp(28px,3.4vw,38px);color:var(--petrol-deep);margin:12px 0 16px">A cleaning partner you don't have to manage</h2>
+      <p class="body">We take the cleaning off your plate entirely — trained operatives, dependable schedules and proactive reporting, so your premises stay presentable and compliant without you chasing anyone.</p>
+      <div class="checks">
+        <div class="check"><i class="ti ti-check"></i>Dedicated local teams</div>
+        <div class="check"><i class="ti ti-check"></i>Regular monthly audits</div>
+        <div class="check"><i class="ti ti-check"></i>Advanced DBS checks</div>
+        <div class="check"><i class="ti ti-check"></i>Eco-friendly products</div>
+        <div class="check"><i class="ti ti-check"></i>Fully insured &amp; accredited</div>
+        <div class="check"><i class="ti ti-check"></i>Free no-obligation quotes</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="block services" id="services">
+  <div class="wrap">
+    <div class="sec-head center" data-reveal>
+      <div class="eyebrow">What we do</div>
+      <h2>One team, every kind of clean</h2>
+      <p>Commercial contracts, domestic jobs and regulated specialist work — all delivered to the same standard.</p>
+    </div>
+    <div class="svc-grid" data-stagger>
+      <div class="svc">
+        <div class="ic"><i class="ti ti-building-skyscraper"></i></div>
+        <h3>Commercial cleaning</h3>
+        <p>Offices, schools, retail and medical premises kept presentable on a schedule that suits you.</p>
+        <a href="#contact" class="lnk">Learn more <i class="ti ti-arrow-right"></i></a>
+      </div>
+      <div class="svc">
+        <div class="ic"><i class="ti ti-home"></i></div>
+        <h3>Domestic cleaning</h3>
+        <p>Reliable regular or one-off home cleans by vetted, trusted cleaners.</p>
+        <a href="#contact" class="lnk">Learn more <i class="ti ti-arrow-right"></i></a>
+      </div>
+      <div class="svc">
+        <div class="ic"><i class="ti ti-home-move"></i></div>
+        <h3>End of tenancy</h3>
+        <p>Deep, deposit-friendly cleans that meet landlord and agent checklists.</p>
+        <a href="#contact" class="lnk">Learn more <i class="ti ti-arrow-right"></i></a>
+      </div>
+      <div class="svc">
+        <div class="ic"><i class="ti ti-tools"></i></div>
+        <h3>Builders clean</h3>
+        <p>Post-construction dust, debris and sparkle cleans, ready for handover.</p>
+        <a href="#contact" class="lnk">Learn more <i class="ti ti-arrow-right"></i></a>
+      </div>
+      <div class="svc">
+        <div class="ic"><i class="ti ti-windmill"></i></div>
+        <h3>Window cleaning</h3>
+        <p>Streak-free interior and exterior glass for homes and commercial frontages.</p>
+        <a href="#contact" class="lnk">Learn more <i class="ti ti-arrow-right"></i></a>
+      </div>
+      <div class="svc">
+        <div class="ic"><i class="ti ti-stack-2"></i></div>
+        <h3>Carpet cleaning</h3>
+        <p>Deep extraction for carpets and hard floors using the latest equipment.</p>
+        <a href="#contact" class="lnk">Learn more <i class="ti ti-arrow-right"></i></a>
+      </div>
+      <div class="svc specialist">
+        <div class="ic"><i class="ti ti-biohazard"></i></div>
+        <h3>Biohazard cleaning</h3>
+        <p>Safe, discreet decontamination with correct containment and disposal.</p>
+        <a href="#contact" class="lnk">Learn more <i class="ti ti-arrow-right"></i></a>
+      </div>
+      <div class="svc specialist">
+        <div class="ic"><i class="ti ti-droplet"></i></div>
+        <h3>Mould cleaning</h3>
+        <p>Treatment and removal that tackles the cause, not just the surface.</p>
+        <a href="#contact" class="lnk">Learn more <i class="ti ti-arrow-right"></i></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="block about" id="about">
+  <div class="wrap">
+    <div class="photo" data-reveal="left">
+      <i class="ti ti-users-group"></i>
+      <div class="stat"><div class="n">100%</div><div class="l">SATISFACTION FOCUSED</div></div>
+    </div>
+    <div data-reveal="right">
+      <div class="eyebrow">About us</div>
+      <h2 style="font-size:clamp(28px,3.4vw,38px);color:var(--petrol-deep);margin:12px 0 16px">Built on standards, run on trust</h2>
+      <p class="body" style="font-size:16.5px;color:var(--slate);margin-bottom:8px">Pro Clean Commercials was founded to give clients a genuinely dependable alternative — a single provider that handles commercial, domestic and specialist cleaning to a consistently high standard, at a fair price, without cutting corners.</p>
+      <ul class="commit">
+        <li><i class="ti ti-circle-check"></i>Fully managed service from first visit to ongoing delivery</li>
+        <li><i class="ti ti-circle-check"></i>Trained, qualified and vetted cleaning operatives</li>
+        <li><i class="ti ti-circle-check"></i>Regular auditing and clear status reporting</li>
+        <li><i class="ti ti-circle-check"></i>Compliant, accredited and fully insured throughout</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- BEFORE / AFTER -->
+<section class="block ba" id="results">
+  <div class="wrap">
+    <div class="sec-head center" data-reveal>
+      <div class="eyebrow">See the difference</div>
+      <h2>Before &amp; after</h2>
+      <p>Drag the slider to reveal the transformation. Real results from real cleans.</p>
+    </div>
+    <div class="ba-wrap" data-reveal="scale">
+      <div class="ba-stage" id="baStage">
+        <span class="ba-tag before">Before</span>
+        <span class="ba-tag after">After</span>
+        <div class="ba-layer ba-before">
+          <div class="ph"><div><i class="ti ti-mood-empty"></i><div class="lbl">Before photo</div></div></div>
+        </div>
+        <div class="ba-layer ba-after" id="baAfter">
+          <div class="ph"><div><i class="ti ti-sparkles"></i><div class="lbl">After photo</div></div></div>
+        </div>
+        <div class="ba-handle" id="baHandle"></div>
+        <div class="ba-knob" id="baKnob"><i class="ti ti-arrows-horizontal"></i></div>
+        <input type="range" class="ba-range" id="baRange" min="0" max="100" value="50" aria-label="Reveal before and after">
+      </div>
+      <p class="ba-hint"><i class="ti ti-hand-finger"></i>Drag to compare</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BAND -->
+<div class="band">
+  <div class="wrap" data-reveal="scale">
+    <h2>Ready for a clean you don't have to think about? <em>Let's talk.</em></h2>
+    <div class="b-actions">
+      <a href="tel:00000000000" class="btn btn-amber"><i class="ti ti-phone"></i>0000 000 0000</a>
+      <a href="#contact" class="btn btn-ghost"><i class="ti ti-calendar-check"></i>Book a site visit</a>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<section class="block faq" id="faq">
+  <div class="wrap">
+    <div class="sec-head center" data-reveal>
+      <div class="eyebrow">Good to know</div>
+      <h2>Frequently asked questions</h2>
+    </div>
+    <div data-stagger>
+    <details class="acc" open>
+      <summary>What types of cleaning do you offer? <i class="ti ti-plus"></i></summary>
+      <div class="ans">A full range across three areas: commercial (offices, schools, retail, medical), domestic and end-of-tenancy, and specialist work including builders cleans, window and carpet cleaning, biohazard decontamination and mould removal.</div>
+    </details>
+    <details class="acc">
+      <summary>Are you fully insured and accredited? <i class="ti ti-plus"></i></summary>
+      <div class="ans">Yes. We're fully insured for every service we provide and work to recognised industry and ISO standards, with health, safety and compliance built into how we operate.</div>
+    </details>
+    <details class="acc">
+      <summary>Are your staff trained and vetted? <i class="ti ti-plus"></i></summary>
+      <div class="ans">All operatives are trained in-house to consistent standards, with regular audits by our supervisors. Where a contract requires it, we supply staff who have passed advanced DBS checks.</div>
+    </details>
+    <details class="acc">
+      <summary>Do you offer bespoke schedules? <i class="ti ti-plus"></i></summary>
+      <div class="ans">Yes. Early mornings, evenings, weekends or out-of-hours — we build the schedule around your premises to keep disruption to a minimum.</div>
+    </details>
+    <details class="acc">
+      <summary>What areas do you cover? <i class="ti ti-plus"></i></summary>
+      <div class="ans">We cover [your towns and surrounding areas]. Not sure if you're in range? Get in touch and we'll confirm straight away.</div>
+    </details>
+    <details class="acc">
+      <summary>How do we arrange a site visit? <i class="ti ti-plus"></i></summary>
+      <div class="ans">Call, email or use the form below. We'll arrange a convenient time to assess the space and provide a tailored, no-obligation quote.</div>
+    </details>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="block contact" id="contact">
+  <div class="wrap">
+    <div class="contact-info" data-reveal="left">
+      <div class="eyebrow">Get in touch</div>
+      <h2>Request your free quote</h2>
+      <p class="body">Tell us a little about what you need and we'll get back to you within one working day. No obligation, no pressure.</p>
+      <div class="ci-row"><div class="ic"><i class="ti ti-phone"></i></div><div><div class="lab">Call us</div><div class="val">0000 000 0000</div></div></div>
+      <div class="ci-row"><div class="ic"><i class="ti ti-mail"></i></div><div><div class="lab">Email</div><div class="val">hello@procleancommercials.co.uk</div></div></div>
+      <div class="ci-row"><div class="ic"><i class="ti ti-map-pin"></i></div><div><div class="lab">Visit</div><div class="val">Your address line, Postcode</div></div></div>
+      <div class="ci-row"><div class="ic"><i class="ti ti-clock-hour-4"></i></div><div><div class="lab">Hours</div><div class="val">Mon–Sat 7am–7pm · Out-of-hours available</div></div></div>
+    </div>
+
+    <form class="form" data-reveal="right" onsubmit="event.preventDefault();this.querySelector('.form-note').textContent='Thanks — this is a demo form. Connect it to your email or CRM to go live.';this.querySelector('.form-note').style.color='var(--petrol-mid)';">
+      <h3>Send us a message</h3>
+      <p class="sub">Fields marked with * are required.</p>
+      <div class="frow">
+        <div class="field"><label>Full name *</label><input type="text" required placeholder="Jane Smith"></div>
+        <div class="field"><label>Company (optional)</label><input type="text" placeholder="Company name"></div>
+      </div>
+      <div class="frow">
+        <div class="field"><label>Email *</label><input type="email" required placeholder="you@email.com"></div>
+        <div class="field"><label>Phone</label><input type="tel" placeholder="0000 000 0000"></div>
+      </div>
+      <div class="frow">
+        <div class="field"><label>Service *</label>
+          <select required>
+            <option value="">Choose a service…</option>
+            <option>Commercial cleaning</option>
+            <option>Domestic cleaning</option>
+            <option>End of tenancy</option>
+            <option>Builders clean</option>
+            <option>Window cleaning</option>
+            <option>Carpet cleaning</option>
+            <option>Biohazard cleaning</option>
+            <option>Mould cleaning</option>
+          </select>
+        </div>
+        <div class="field"><label>Postcode</label><input type="text" placeholder="AB1 2CD"></div>
+      </div>
+      <div class="field"><label>Tell us about the job</label><textarea placeholder="Premises type, size, how often, anything else we should know…"></textarea></div>
+      <button type="submit" class="btn btn-petrol"><i class="ti ti-send"></i>Send enquiry</button>
+      <p class="form-note">We'll reply within one working day.</p>
+    </form>
+  </div>
+</section>
+
+<!-- CLIENTS -->
+<div class="clients">
+  <div class="wrap" data-reveal>
+    <div class="lab">Trusted by organisations across the region</div>
+    <div class="client-row" data-stagger>
+      <div class="c">Client logo</div>
+      <div class="c">Client logo</div>
+      <div class="c">Client logo</div>
+      <div class="c">Client logo</div>
+      <div class="c">Client logo</div>
+      <div class="c">Client logo</div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="cols" data-stagger>
+      <div>
+        <a href="#top" class="logo"><span class="mark"><i class="ti ti-droplet"></i></span>Pro Clean<b>&nbsp;Commercials</b></a>
+        <p class="blurb">Commercial, domestic and specialist cleaning delivered to a consistently high standard. Trusted, insured and accredited.</p>
+        <div class="socials">
+          <a href="#" aria-label="Facebook"><i class="ti ti-brand-facebook"></i></a>
+          <a href="#" aria-label="Instagram"><i class="ti ti-brand-instagram"></i></a>
+          <a href="#" aria-label="LinkedIn"><i class="ti ti-brand-linkedin"></i></a>
+        </div>
+      </div>
+      <div>
+        <h4>Services</h4>
+        <ul>
+          <li><a href="#services">Commercial cleaning</a></li>
+          <li><a href="#services">Domestic cleaning</a></li>
+          <li><a href="#services">End of tenancy</a></li>
+          <li><a href="#services">Builders clean</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>More services</h4>
+        <ul>
+          <li><a href="#services">Window cleaning</a></li>
+          <li><a href="#services">Carpet cleaning</a></li>
+          <li><a href="#services">Biohazard cleaning</a></li>
+          <li><a href="#services">Mould cleaning</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Accreditations</h4>
+        <div class="badges">
+          <div class="b"><span>ISO</span>9001</div>
+          <div class="b"><span>ISO</span>14001</div>
+          <div class="b"><span><i class="ti ti-shield-check"></i></span>Insured</div>
+        </div>
+        <ul style="margin-top:18px">
+          <li><a href="#about">About us</a></li>
+          <li><a href="#contact">Get a quote</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="legal">
+      <span>© 2026 Pro Clean Commercials. All rights reserved.</span>
+      <span>Website created by <a href="https://www.sitesbyjack.co.uk" target="_blank" rel="noopener" class="credit">Sites by Jack</a></span>
+      <span>Privacy policy · Terms · Cookies</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var targets = document.querySelectorAll('[data-reveal],[data-stagger]');
+    if(reduce || !('IntersectionObserver' in window)){
+      targets.forEach(function(el){el.classList.add('in');});
+      return;
+    }
+    var obs = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          e.target.classList.add('in');
+          obs.unobserve(e.target);
+        }
+      });
+    }, {threshold:0.15, rootMargin:'0px 0px -8% 0px'});
+    targets.forEach(function(el){obs.observe(el);});
+  })();
+
+  (function(){
+    var stage = document.getElementById('baStage');
+    if(!stage) return;
+    var after = document.getElementById('baAfter');
+    var handle = document.getElementById('baHandle');
+    var knob = document.getElementById('baKnob');
+    var range = document.getElementById('baRange');
+    function set(v){
+      v = Math.max(0, Math.min(100, v));
+      after.style.width = v + '%';
+      handle.style.left = v + '%';
+      knob.style.left = v + '%';
+    }
+    range.addEventListener('input', function(){ set(parseFloat(range.value)); });
+    function fromEvent(clientX){
+      var r = stage.getBoundingClientRect();
+      var pct = ((clientX - r.left) / r.width) * 100;
+      range.value = pct;
+      set(pct);
+    }
+    var dragging = false;
+    stage.addEventListener('pointerdown', function(e){ dragging = true; fromEvent(e.clientX); });
+    window.addEventListener('pointermove', function(e){ if(dragging) fromEvent(e.clientX); });
+    window.addEventListener('pointerup', function(){ dragging = false; });
+    set(50);
+  })();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.31.0/tabler-icons.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.31.0/tabler-icons.min.css">
+</body>
+</html>
