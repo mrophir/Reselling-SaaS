@@ -16,7 +16,7 @@ type Stage = "unlisted" | "listed" | "sold";
 
 interface Item {
   id: number; code: string; name: string; cond: CondKey;
-  paid: number; stage: Stage; age?: number;
+  paid: number; stage: Stage; age?: number; createdAt?: number;
   platform?: string; bin?: string; notes?: string;
 }
 
@@ -219,7 +219,7 @@ function AddStockModal({ onClose, onAdd, storageLocations }: {
     if (isNaN(paid) || paid < 0) { setError("Enter a valid price paid."); return; }
     const id = Date.now();
     const code = form.itemCode.trim() || `IT-${String(id).slice(-4)}`;
-    onAdd({ id, code, name: form.name.trim(), cond: form.cond, paid, stage: "unlisted", age: 0, bin: form.bin || undefined, notes: form.notes.trim() || undefined });
+    onAdd({ id, code, name: form.name.trim(), cond: form.cond, paid, stage: "unlisted", age: 0, createdAt: Date.now(), bin: form.bin || undefined, notes: form.notes.trim() || undefined });
     onClose();
   }
 
@@ -543,7 +543,15 @@ function ItemRow({ item, onSell, onToggleListed, onEdit, onRemove }: {
   onEdit?: (item: Item) => void; onRemove?: (id: number) => void;
 }) {
   const c = COND[item.cond];
-  const aging = (item.age ?? 0) >= 60 && item.stage !== "sold";
+  const ageDays = item.createdAt
+    ? Math.floor((Date.now() - item.createdAt) / 86_400_000)
+    : (item.age ?? 0);
+  const showAge = item.stage !== "sold";
+  const ageTier = ageDays <= 15
+    ? { cls: "bg-moss/15 text-moss border-moss/20", label: "Fresh" }
+    : ageDays <= 30
+    ? { cls: "bg-amber/15 text-amber border-amber/20", label: "Ageing" }
+    : { cls: "bg-rust/15 text-rust border-rust/20", label: "Old" };
   const [noteOpen, setNoteOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
@@ -554,10 +562,10 @@ function ItemRow({ item, onSell, onToggleListed, onEdit, onRemove }: {
         <span className="w-2 h-2 rounded-full shrink-0" style={{ background: c.dot }} />
         <span className="text-sm font-medium truncate">{item.name}</span>
         <span className="shrink-0 text-[11px] px-2 py-0.5 rounded-md" style={{ background: c.bg, color: c.fg }}>{c.label}</span>
-        {aging && (
-          <span className="shrink-0 flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-rust/15 text-rust font-mono">
+        {showAge && (
+          <span className={`shrink-0 flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded border font-mono ${ageTier.cls}`}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
-            {item.age}d
+            {ageDays}d
           </span>
         )}
       </div>
