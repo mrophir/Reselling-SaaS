@@ -255,10 +255,11 @@ function Features() {
         <div className="mt-16 grid md:grid-cols-6 gap-5">
           <BigFeature />
           <Feature className="md:col-span-2" icon="◉" title="3-stage pipeline" body="Unlisted → Listed → Sold. Every item has one clear state. The unlisted pile is loud on purpose." />
-          <Feature className="md:col-span-2" icon="⊞" title="Storage map" body="Assign each item to a physical bin. When it sells, tap it and see exactly which box it's in." />
+          <Feature className="md:col-span-2" icon="⊞" title="Storage map" body="Assign each item to a physical location. Tap any bin to see exactly what's inside — name, code, condition, and status. Remove something from a location without losing it from your stock." />
           <Feature className="md:col-span-2" icon="∑" title="Triggered profit engine" body="Mark sold and a modal forces the real numbers: price, postage, fees. Exact net profit, instantly." />
-          <Feature className="md:col-span-3" icon="◷" title="Aging flags" body="Anything unlisted or unsold past 60 or 90 days gets flagged, so dead stock gets relisted or dropped, not forgotten." />
-          <Feature className="md:col-span-3" icon="▤" title="Monthly archives, tax-ready" body="Sales group into clean monthly views with totals and margin. Export when HMRC asks, your books are already done." />
+          <Feature className="md:col-span-2" icon="◷" title="Aging flags" body="Anything unlisted or unsold past 60 or 90 days gets flagged, so dead stock gets relisted or dropped, not forgotten." />
+          <Feature className="md:col-span-3" icon="£" title="Profit calculator" body="Work out your exact take-home before you list. 2026 UK fees built in for Vinted, eBay, Depop, and Facebook — toggle private vs business seller, who pays postage, and see net profit and ROI update live." />
+          <Feature className="md:col-span-3" icon="▤" title="Monthly archives, tax-ready" body="Sales group into clean monthly views with revenue, cost, and margin. Export a single month or download every month in one CSV — one file, handed straight to your accountant." />
         </div>
       </div>
     </section>
@@ -672,7 +673,7 @@ const FEATURE_LABELS: Record<FeatureFlag, string> = {
   pipeline: "3-stage pipeline (Unlisted / Listed / Sold)",
   leak_alert: "Not listed yet leak alert",
   bin_lookup: "Storage map & instant retrieval",
-  basic_profit: "Net profit calculator",
+  basic_profit: "Profit calculator (2026 UK fees — Vinted, eBay, Depop, Facebook)",
   monthly_archives: "Monthly archives",
   aging_flags: "Aging flags on dead stock",
   tax_export: "Tax-ready CSV export",
