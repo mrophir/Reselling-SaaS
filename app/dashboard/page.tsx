@@ -852,11 +852,53 @@ function Archives({ saleRecords }: { saleRecords: SaleRecord[] }) {
     return { m, sold: records.length, revenue, cost, profit, margin, records };
   });
 
+  function exportAll() {
+    const esc = (s: string | number) => `"${String(s).replace(/"/g, '""')}"`;
+    const totalRevenue = saleRecords.reduce((s, r) => s + r.soldFor, 0);
+    const totalCost    = saleRecords.reduce((s, r) => s + r.paid, 0);
+    const totalProfit  = saleRecords.reduce((s, r) => s + r.profit, 0);
+    const totalMargin  = totalRevenue > 0 ? Math.round(totalProfit / totalRevenue * 100) : 0;
+
+    const rows: string[][] = [
+      ["Stockpile — Full Export"],
+      [],
+      ["Month", "Item Name", "Cost Paid (£)", "Sold For (£)", "Profit (£)"],
+      ...saleRecords.map((r) => [r.month, r.itemName, r.paid.toFixed(2), r.soldFor.toFixed(2), r.profit.toFixed(2)]),
+      [],
+      ["Monthly summary"],
+      ["Month", "Items Sold", "Revenue (£)", "Cost (£)", "Net Profit (£)", "Margin"],
+      ...months.map((mo) => [mo.m, String(mo.sold), mo.revenue.toFixed(2), mo.cost.toFixed(2), mo.profit.toFixed(2), `${mo.margin}%`]),
+      [],
+      ["Total", String(saleRecords.length), totalRevenue.toFixed(2), totalCost.toFixed(2), totalProfit.toFixed(2), `${totalMargin}%`],
+    ];
+
+    const csv = rows.map((r) => r.map(esc).join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "stockpile-all-months.csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="font-display text-2xl font-medium">Monthly archives</h1>
-        <p className="text-paper-dim text-sm mt-1">Your sales grouped by month — tax-ready P&amp;L</p>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="font-display text-2xl font-medium">Monthly archives</h1>
+          <p className="text-paper-dim text-sm mt-1">Your sales grouped by month — tax-ready P&amp;L</p>
+        </div>
+        {months.length > 0 && (
+          <button
+            onClick={exportAll}
+            className="flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg border border-line text-paper-dim hover:text-paper hover:border-paper-faint transition-colors shrink-0"
+          >
+            <IconDownload /> Export all
+          </button>
+        )}
       </div>
 
       {months.length === 0 ? (
