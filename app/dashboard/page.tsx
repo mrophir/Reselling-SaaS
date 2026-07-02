@@ -1304,6 +1304,12 @@ export default function DashboardPage() {
     if (target) addToast(`${target.name} removed`, "warning");
   }
 
+  function unassignFromStorage(id: number) {
+    const target = items.find((i) => i.id === id);
+    setItems((prev) => prev.map((i) => i.id === id ? { ...i, bin: undefined } : i));
+    if (target) addToast(`${target.name} removed from storage`);
+  }
+
   function toggleListed(item: Item) {
     const next: Stage = item.stage === "unlisted" ? "listed" : "unlisted";
     setItems((prev) => prev.map((i) => i.id === item.id ? { ...i, stage: next } : i));
@@ -1427,7 +1433,7 @@ export default function DashboardPage() {
         <main className="flex-1 p-6 max-w-[1152px] w-full mx-auto">
           {navKey === "overview"   && <Overview items={items} stage={stage} setStage={setStage} onSell={setSellTarget} onToggleListed={toggleListed} liveProfit={liveProfit} liveSold={liveSold} query={query} />}
           {navKey === "stock"      && <Stock items={items} onSell={setSellTarget} onToggleListed={toggleListed} onEdit={setEditTarget} onRemove={removeItem} query={query} />}
-          {navKey === "storage"    && <StorageMap items={items} storageLocations={storageLocations} onAddStorage={() => setStorageModalOpen(true)} onRemoveItem={removeItem} />}
+          {navKey === "storage"    && <StorageMap items={items} storageLocations={storageLocations} onAddStorage={() => setStorageModalOpen(true)} onRemoveItem={unassignFromStorage} />}
           {navKey === "calculator" && <ProfitCalculator />}
           {navKey === "archives"   && <Archives saleRecords={saleRecords} />}
         </main>
