@@ -447,9 +447,11 @@ function SellModal({ item, onClose, onConfirm }: { item: Item; onClose: () => vo
 function ItemRow({ item, onSell, onToggleListed }: { item: Item; onSell: (item: Item) => void; onToggleListed: (item: Item) => void }) {
   const c = COND[item.cond];
   const aging = (item.age ?? 0) >= 60 && item.stage !== "sold";
+  const [noteOpen, setNoteOpen] = useState(false);
 
   return (
-    <div className="flex items-center justify-between gap-3 px-4 py-3.5 border-t border-line-soft first:border-t-0 hover:bg-ink-soft/40 transition-colors">
+    <div className="border-t border-line-soft first:border-t-0">
+    <div className="flex items-center justify-between gap-3 px-4 py-3.5 hover:bg-ink-soft/40 transition-colors">
       <div className="flex items-center gap-3 min-w-0">
         <span className="w-2 h-2 rounded-full shrink-0" style={{ background: c.dot }} />
         <span className="text-sm font-medium truncate">{item.name}</span>
@@ -510,8 +512,26 @@ function ItemRow({ item, onSell, onToggleListed }: { item: Item; onSell: (item: 
           </button>
         )}
 
+        {item.notes && (
+          <button
+            onClick={() => setNoteOpen((o) => !o)}
+            className={`flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-md border transition-all ${noteOpen ? "border-amber/40 bg-amber/10 text-amber" : "border-line-soft text-paper-faint hover:border-amber/30 hover:text-amber"}`}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+            {noteOpen ? "Hide note" : "See note"}
+          </button>
+        )}
+
       </div>
     </div>
+    {noteOpen && item.notes && (
+      <div className="px-4 pb-3">
+        <p className="text-xs text-paper-dim bg-ink-soft border border-line-soft rounded-lg px-3 py-2 leading-relaxed">{item.notes}</p>
+      </div>
+    )}
+  </div>
   );
 }
 
