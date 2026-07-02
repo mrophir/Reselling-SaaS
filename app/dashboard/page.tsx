@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 /* ---------- data ---------- */
 
@@ -20,7 +20,7 @@ interface Item {
   platform?: string; bin?: string;
 }
 
-const ITEMS: Item[] = [
+const SEED_ITEMS: Item[] = [
   { id: 1, code: "IT-0231", name: "Carhartt beanie",       cond: "excellent", paid: 2,  stage: "unlisted", age: 4  },
   { id: 2, code: "IT-0229", name: "Levi 501 — vintage",    cond: "fair",      paid: 5,  stage: "unlisted", age: 94 },
   { id: 3, code: "IT-0228", name: "Nike fleece hoodie",    cond: "good",      paid: 4,  stage: "unlisted", age: 12 },
@@ -39,8 +39,7 @@ type NavKey = "overview" | "stock" | "storage" | "calculator" | "archives";
 
 const NAV: { key: NavKey; label: string; icon: React.ReactNode }[] = [
   {
-    key: "overview",
-    label: "Overview",
+    key: "overview", label: "Overview",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] shrink-0">
         <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>
@@ -49,8 +48,7 @@ const NAV: { key: NavKey; label: string; icon: React.ReactNode }[] = [
     ),
   },
   {
-    key: "stock",
-    label: "Stock",
+    key: "stock", label: "Stock",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] shrink-0">
         <path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/>
@@ -58,8 +56,7 @@ const NAV: { key: NavKey; label: string; icon: React.ReactNode }[] = [
     ),
   },
   {
-    key: "storage",
-    label: "Storage map",
+    key: "storage", label: "Storage map",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] shrink-0">
         <rect x="3" y="4" width="8" height="7" rx="1"/><rect x="13" y="4" width="8" height="7" rx="1"/>
@@ -68,8 +65,7 @@ const NAV: { key: NavKey; label: string; icon: React.ReactNode }[] = [
     ),
   },
   {
-    key: "calculator",
-    label: "Profit calculator",
+    key: "calculator", label: "Profit calculator",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] shrink-0">
         <rect x="4" y="2" width="16" height="20" rx="2"/>
@@ -79,8 +75,7 @@ const NAV: { key: NavKey; label: string; icon: React.ReactNode }[] = [
     ),
   },
   {
-    key: "archives",
-    label: "Monthly archives",
+    key: "archives", label: "Monthly archives",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] shrink-0">
         <rect x="3" y="4" width="18" height="4" rx="1"/>
@@ -95,14 +90,7 @@ const NAV: { key: NavKey; label: string; icon: React.ReactNode }[] = [
 
 const gbp = (n: number) => (n < 0 ? "−£" : "£") + Math.abs(n).toFixed(2);
 
-const counts = {
-  unlisted: ITEMS.filter((i) => i.stage === "unlisted").length,
-  listed:   ITEMS.filter((i) => i.stage === "listed").length,
-  sold:     31,
-};
-const deadMoney = ITEMS.filter((i) => i.stage === "unlisted").reduce((s, i) => s + i.paid, 0);
-
-/* ---------- small shared icons ---------- */
+/* ---------- icons ---------- */
 
 function IconFilter() {
   return (
@@ -141,6 +129,156 @@ function IconBin() {
       <rect x="3" y="4" width="8" height="7" rx="1"/><rect x="13" y="4" width="8" height="7" rx="1"/>
       <rect x="3" y="13" width="8" height="7" rx="1"/><rect x="13" y="13" width="8" height="7" rx="1"/>
     </svg>
+  );
+}
+
+/* ---------- add stock modal ---------- */
+
+const EMPTY_FORM = { name: "", paid: "", cond: "good" as CondKey, bin: "" };
+
+function AddStockModal({ onClose, onAdd }: { onClose: () => void; onAdd: (item: Item) => void }) {
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [error, setError] = useState("");
+  const nameRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    nameRef.current?.focus();
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!form.name.trim()) { setError("Item name is required."); return; }
+    const paid = parseFloat(form.paid);
+    if (isNaN(paid) || paid < 0) { setError("Enter a valid price paid."); return; }
+
+    const id = Date.now();
+    const code = `IT-${String(id).slice(-4)}`;
+    onAdd({ id, code, name: form.name.trim(), cond: form.cond, paid, stage: "unlisted", age: 0, bin: form.bin.trim() || undefined });
+    onClose();
+  }
+
+  const conditions: CondKey[] = ["excellent", "good", "fair", "flawed"];
+  const fieldCls = "w-full bg-ink border border-line rounded-xl px-3.5 py-2.5 text-sm text-paper outline-none focus:border-amber/60 transition-colors placeholder:text-paper-faint";
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* backdrop */}
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+
+      {/* sheet */}
+      <div className="relative w-full max-w-md rounded-2xl border border-line bg-ink-card shadow-2xl shadow-black/60 overflow-hidden">
+        {/* header */}
+        <div className="flex items-center justify-between px-6 py-5 border-b border-line">
+          <div>
+            <h2 className="font-display font-medium text-lg">Add stock</h2>
+            <p className="text-paper-faint text-xs mt-0.5">New items land in Unlisted</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="grid place-items-center w-8 h-8 rounded-lg text-paper-faint hover:text-paper hover:bg-ink-soft transition-colors"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+
+        {/* form */}
+        <form onSubmit={submit} className="px-6 py-5 space-y-5">
+          {/* item name */}
+          <div>
+            <label className="block text-sm text-paper-dim mb-1.5">Item name</label>
+            <input
+              ref={nameRef}
+              className={fieldCls}
+              placeholder="e.g. Carhartt beanie"
+              value={form.name}
+              onChange={(e) => { setForm((f) => ({ ...f, name: e.target.value })); setError(""); }}
+            />
+          </div>
+
+          {/* price paid */}
+          <div>
+            <label className="block text-sm text-paper-dim mb-1.5">Price paid (£)</label>
+            <div className="relative">
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-paper-faint text-sm">£</span>
+              <input
+                className={`${fieldCls} pl-7`}
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="0.00"
+                value={form.paid}
+                onChange={(e) => { setForm((f) => ({ ...f, paid: e.target.value })); setError(""); }}
+              />
+            </div>
+          </div>
+
+          {/* condition */}
+          <div>
+            <label className="block text-sm text-paper-dim mb-2">Condition</label>
+            <div className="grid grid-cols-4 gap-2">
+              {conditions.map((c) => {
+                const active = form.cond === c;
+                const meta = COND[c];
+                return (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => setForm((f) => ({ ...f, cond: c }))}
+                    className="flex flex-col items-center gap-1.5 py-3 rounded-xl border transition-all text-xs font-medium"
+                    style={{
+                      borderColor: active ? meta.dot + "80" : "var(--color-line)",
+                      background: active ? meta.bg : "transparent",
+                      color: active ? meta.fg : "var(--color-paper-faint)",
+                    }}
+                  >
+                    <span className="w-2.5 h-2.5 rounded-full" style={{ background: meta.dot }} />
+                    {meta.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* storage code */}
+          <div>
+            <label className="block text-sm text-paper-dim mb-1.5">
+              Storage code <span className="text-paper-faint">(optional)</span>
+            </label>
+            <input
+              className={fieldCls}
+              placeholder="e.g. A1, Bin C4, Shelf 2"
+              value={form.bin}
+              onChange={(e) => setForm((f) => ({ ...f, bin: e.target.value }))}
+            />
+            <p className="text-xs text-paper-faint mt-1.5">Where it lives so you can find it fast</p>
+          </div>
+
+          {error && <p className="text-sm text-rust">{error}</p>}
+
+          {/* actions */}
+          <div className="flex gap-3 pt-1">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 py-2.5 rounded-xl border border-line text-sm text-paper-dim hover:text-paper hover:border-paper-faint transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="flex-1 py-2.5 rounded-xl bg-amber text-ink text-sm font-medium hover:bg-paper transition-colors"
+            >
+              Add to stock
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 }
 
@@ -194,9 +332,15 @@ function ItemRow({ item }: { item: Item }) {
 
 /* ---------- sections ---------- */
 
-function Overview({ stage, setStage }: { stage: Stage; setStage: (s: Stage) => void }) {
+function Overview({ items, stage, setStage }: { items: Item[]; stage: Stage; setStage: (s: Stage) => void }) {
   const stages: Stage[] = ["unlisted", "listed", "sold"];
-  const shown = ITEMS.filter((i) => i.stage === stage);
+  const shown = items.filter((i) => i.stage === stage);
+  const counts = {
+    unlisted: items.filter((i) => i.stage === "unlisted").length,
+    listed:   items.filter((i) => i.stage === "listed").length,
+    sold:     31,
+  };
+  const deadMoney = items.filter((i) => i.stage === "unlisted").reduce((s, i) => s + i.paid, 0);
 
   return (
     <div>
@@ -205,7 +349,6 @@ function Overview({ stage, setStage }: { stage: Stage; setStage: (s: Stage) => v
         <p className="text-paper-dim text-sm mt-1">Wednesday, 1 July · here&apos;s where your stock stands</p>
       </div>
 
-      {/* leak alert */}
       <div className="rounded-2xl border border-amber/30 bg-amber/[0.07] p-5 mb-6 flex items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-4">
           <span className="grid place-items-center w-12 h-12 rounded-xl bg-amber/15 text-amber">
@@ -229,13 +372,12 @@ function Overview({ stage, setStage }: { stage: Stage; setStage: (s: Stage) => v
         </button>
       </div>
 
-      {/* stat cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         {[
-          { label: "Unlisted", value: counts.unlisted, cls: "text-amber" },
-          { label: "Listed",   value: counts.listed,   cls: "" },
-          { label: "Sold · Jul", value: 31,           cls: "" },
-          { label: "Profit · Jul", value: "£612",     cls: "text-moss" },
+          { label: "Unlisted",    value: counts.unlisted, cls: "text-amber" },
+          { label: "Listed",      value: counts.listed,   cls: "" },
+          { label: "Sold · Jul",  value: 31,              cls: "" },
+          { label: "Profit · Jul",value: "£612",          cls: "text-moss" },
         ].map((s) => (
           <div key={s.label} className="rounded-xl border border-line bg-ink-card px-4 py-3.5">
             <p className="text-[13px] text-paper-faint">{s.label}</p>
@@ -244,7 +386,6 @@ function Overview({ stage, setStage }: { stage: Stage; setStage: (s: Stage) => v
         ))}
       </div>
 
-      {/* pipeline */}
       <div className="rounded-2xl border border-line bg-ink-card overflow-hidden">
         <div className="flex items-center gap-1 p-2 border-b border-line overflow-x-auto">
           {stages.map((s) => (
@@ -252,30 +393,28 @@ function Overview({ stage, setStage }: { stage: Stage; setStage: (s: Stage) => v
               key={s}
               onClick={() => setStage(s)}
               className={`px-4 py-2 rounded-lg text-sm whitespace-nowrap shrink-0 capitalize transition-colors ${
-                s === stage
-                  ? "bg-ink-soft text-paper font-medium"
-                  : "text-paper-dim hover:text-paper"
+                s === stage ? "bg-ink-soft text-paper font-medium" : "text-paper-dim hover:text-paper"
               }`}
             >
               {s} · {counts[s]}
             </button>
           ))}
           <div className="ml-auto flex gap-1 px-2 shrink-0">
-            <button className="grid place-items-center w-8 h-8 rounded-md text-paper-faint hover:text-paper hover:bg-ink-soft transition-colors">
-              <IconFilter />
-            </button>
-            <button className="grid place-items-center w-8 h-8 rounded-md text-paper-faint hover:text-paper hover:bg-ink-soft transition-colors">
-              <IconSort />
-            </button>
+            <button className="grid place-items-center w-8 h-8 rounded-md text-paper-faint hover:text-paper hover:bg-ink-soft transition-colors"><IconFilter /></button>
+            <button className="grid place-items-center w-8 h-8 rounded-md text-paper-faint hover:text-paper hover:bg-ink-soft transition-colors"><IconSort /></button>
           </div>
         </div>
-        <div>{shown.map((it) => <ItemRow key={it.id} item={it} />)}</div>
+        <div>
+          {shown.length > 0
+            ? shown.map((it) => <ItemRow key={it.id} item={it} />)
+            : <p className="px-4 py-8 text-center text-sm text-paper-faint">No items in this stage yet.</p>}
+        </div>
       </div>
     </div>
   );
 }
 
-function Stock() {
+function Stock({ items }: { items: Item[] }) {
   return (
     <div>
       <div className="mb-6">
@@ -283,16 +422,19 @@ function Stock() {
         <p className="text-paper-dim text-sm mt-1">Every item across all three stages</p>
       </div>
       <div className="rounded-2xl border border-line bg-ink-card overflow-hidden">
-        <div>{ITEMS.map((it) => <ItemRow key={it.id} item={it} />)}</div>
+        {items.length > 0
+          ? <div>{items.map((it) => <ItemRow key={it.id} item={it} />)}</div>
+          : <p className="px-4 py-8 text-center text-sm text-paper-faint">No stock yet — hit Add stock to get started.</p>}
       </div>
     </div>
   );
 }
 
-function StorageMap() {
-  const bins = ["A1", "A2", "B1", "B2", "C1", "C4"];
+function StorageMap({ items }: { items: Item[] }) {
+  const binsWithItems = Array.from(new Set(items.filter((i) => i.bin).map((i) => i.bin!)));
+  const allBins = Array.from(new Set([...["A1", "A2", "B1", "B2", "C1", "C4"], ...binsWithItems])).sort();
   const byBin: Record<string, Item[]> = {};
-  ITEMS.forEach((i) => { if (i.bin) (byBin[i.bin] = byBin[i.bin] ?? []).push(i); });
+  items.forEach((i) => { if (i.bin) (byBin[i.bin] = byBin[i.bin] ?? []).push(i); });
 
   return (
     <div>
@@ -301,17 +443,15 @@ function StorageMap() {
         <p className="text-paper-dim text-sm mt-1">What&apos;s inside each bin — tap an item to find it fast</p>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {bins.map((b) => {
-          const items = byBin[b] ?? [];
+        {allBins.map((b) => {
+          const binItems = byBin[b] ?? [];
           return (
             <div key={b} className="rounded-2xl border border-line bg-ink-card p-4">
               <div className="flex items-center justify-between mb-3">
-                <span className="flex items-center gap-2 font-medium">
-                  <IconBin />Bin {b}
-                </span>
-                <span className="text-xs text-paper-faint font-mono">{items.length} items</span>
+                <span className="flex items-center gap-2 font-medium"><IconBin />Bin {b}</span>
+                <span className="text-xs text-paper-faint font-mono">{binItems.length} items</span>
               </div>
-              {items.length > 0 ? items.map((it) => (
+              {binItems.length > 0 ? binItems.map((it) => (
                 <div key={it.id} className="flex items-center gap-2 text-sm text-paper-dim mb-1.5">
                   <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: COND[it.cond].dot }} />
                   <span className="truncate">{it.name}</span>
@@ -375,9 +515,7 @@ function ProfitCalculator() {
         <h1 className="font-display text-2xl font-medium">Profit calculator</h1>
         <p className="text-paper-dim text-sm mt-1">Work out your real take-home before you list — 2026 UK fees</p>
       </div>
-
       <div className="grid md:grid-cols-2 gap-5">
-        {/* inputs */}
         <div className="rounded-2xl border border-line bg-ink-card p-5 space-y-4">
           <div className="grid grid-cols-2 gap-3">
             <div>
@@ -389,7 +527,6 @@ function ProfitCalculator() {
               <input className={fieldCls} type="number" value={prc} onChange={(e) => setPrc(+e.target.value)} />
             </div>
           </div>
-
           <div>
             <label className="block text-sm text-paper-dim mb-1.5">Platform</label>
             <select className={fieldCls} value={plat} onChange={(e) => setPlat(e.target.value as Plat)}>
@@ -399,7 +536,6 @@ function ProfitCalculator() {
               <option value="facebook">Facebook</option>
             </select>
           </div>
-
           {isEbay && (
             <div>
               <label className="block text-sm text-paper-dim mb-1.5">eBay account type</label>
@@ -409,7 +545,6 @@ function ProfitCalculator() {
               </div>
             </div>
           )}
-
           <div>
             <label className="block text-sm text-paper-dim mb-1.5">Who pays postage?</label>
             {choosable && (
@@ -427,30 +562,23 @@ function ProfitCalculator() {
             <p className="text-xs text-paper-faint">{note}</p>
           </div>
         </div>
-
-        {/* results */}
         <div className="rounded-2xl border border-line bg-ink-card p-5 flex flex-col">
           <div className="space-y-3 text-sm">
             <div className="flex items-center justify-between text-paper-dim">
-              <span>Sale price</span>
-              <span className="font-mono text-paper">{gbp(prc)}</span>
+              <span>Sale price</span><span className="font-mono text-paper">{gbp(prc)}</span>
             </div>
             <div className="flex items-center justify-between text-paper-dim">
-              <span>{feeLabel}</span>
-              <span className="font-mono text-rust">{gbp(-fee)}</span>
+              <span>{feeLabel}</span><span className="font-mono text-rust">{gbp(-fee)}</span>
             </div>
             {postDed > 0 && (
               <div className="flex items-center justify-between text-paper-dim">
-                <span>Postage</span>
-                <span className="font-mono text-rust">{gbp(-postDed)}</span>
+                <span>Postage</span><span className="font-mono text-rust">{gbp(-postDed)}</span>
               </div>
             )}
             <div className="flex items-center justify-between text-paper-dim">
-              <span>Cost of item</span>
-              <span className="font-mono text-rust">{gbp(-cst)}</span>
+              <span>Cost of item</span><span className="font-mono text-rust">{gbp(-cst)}</span>
             </div>
           </div>
-
           <div className="mt-auto pt-5">
             <div className="rounded-xl bg-ink-soft px-4 py-4 flex items-center justify-between">
               <div>
@@ -467,7 +595,6 @@ function ProfitCalculator() {
           </div>
         </div>
       </div>
-
       <p className="text-xs text-paper-faint mt-5">
         Fees reflect 2026 UK rates. Vinted &amp; Facebook charge sellers £0; Depop keeps payment processing; eBay depends on private vs business. Rates change — keep these current.
       </p>
@@ -516,15 +643,21 @@ export default function DashboardPage() {
   const [navKey, setNavKey] = useState<NavKey>("overview");
   const [stage, setStage] = useState<Stage>("unlisted");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [items, setItems] = useState<Item[]>(SEED_ITEMS);
+
+  function addItem(item: Item) {
+    setItems((prev) => [item, ...prev]);
+  }
 
   return (
     <div className="flex min-h-screen bg-ink">
-      {/* mobile overlay */}
+      {modalOpen && (
+        <AddStockModal onClose={() => setModalOpen(false)} onAdd={addItem} />
+      )}
+
       {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-30 md:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
+        <div className="fixed inset-0 bg-black/50 z-30 md:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
       {/* sidebar */}
@@ -533,7 +666,6 @@ export default function DashboardPage() {
           sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         }`}
       >
-        {/* brand */}
         <div className="h-16 flex items-center gap-2.5 px-4 border-b border-line">
           <span className="relative grid place-items-center w-7 h-7 rounded-[6px] bg-amber overflow-hidden shrink-0">
             <span className="absolute bottom-0 inset-x-0 bg-ink/25" style={{ height: "38%" }} />
@@ -542,7 +674,6 @@ export default function DashboardPage() {
           <span className="font-display text-[16px] font-medium">Stockpile</span>
         </div>
 
-        {/* nav */}
         <nav className="flex-1 p-3 flex flex-col gap-1">
           {NAV.map((n) => (
             <button
@@ -560,15 +691,14 @@ export default function DashboardPage() {
           ))}
         </nav>
 
-        {/* footer */}
         <div className="p-3 border-t border-line">
           <div className="rounded-lg bg-ink-card border border-line-soft p-3 mb-3">
             <div className="flex items-center justify-between text-xs mb-2">
-              <span className="text-paper-faint">207 / 500 items</span>
+              <span className="text-paper-faint">{items.length} / 500 items</span>
               <span className="text-amber">Reseller</span>
             </div>
             <div className="h-1.5 rounded-full bg-line overflow-hidden">
-              <div className="h-full bg-amber rounded-full" style={{ width: "41%" }} />
+              <div className="h-full bg-amber rounded-full transition-all duration-500" style={{ width: `${Math.min(items.length / 500 * 100, 100)}%` }} />
             </div>
             <button className="mt-3 w-full text-center text-xs py-1.5 rounded-md border border-line-soft text-paper-dim hover:text-paper hover:border-paper-faint transition-colors">
               Upgrade to Operator
@@ -585,7 +715,6 @@ export default function DashboardPage() {
 
       {/* main column */}
       <div className="flex-1 min-w-0 flex flex-col">
-        {/* top bar */}
         <header className="h-16 border-b border-line flex items-center gap-4 px-6 sticky top-0 bg-ink/85 backdrop-blur-md z-10">
           <button
             onClick={() => setSidebarOpen(true)}
@@ -606,7 +735,10 @@ export default function DashboardPage() {
             />
           </div>
 
-          <button className="flex items-center gap-2 text-sm font-medium px-3.5 py-2 rounded-lg bg-amber text-ink hover:bg-paper transition-colors shrink-0">
+          <button
+            onClick={() => setModalOpen(true)}
+            className="flex items-center gap-2 text-sm font-medium px-3.5 py-2 rounded-lg bg-amber text-ink hover:bg-paper transition-colors shrink-0"
+          >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
               <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
             </svg>
@@ -625,13 +757,12 @@ export default function DashboardPage() {
           </div>
         </header>
 
-        {/* content */}
         <main className="flex-1 p-6 max-w-[1152px] w-full mx-auto">
-          {navKey === "overview"    && <Overview stage={stage} setStage={setStage} />}
-          {navKey === "stock"       && <Stock />}
-          {navKey === "storage"     && <StorageMap />}
-          {navKey === "calculator"  && <ProfitCalculator />}
-          {navKey === "archives"    && <Archives />}
+          {navKey === "overview"   && <Overview items={items} stage={stage} setStage={setStage} />}
+          {navKey === "stock"      && <Stock items={items} />}
+          {navKey === "storage"    && <StorageMap items={items} />}
+          {navKey === "calculator" && <ProfitCalculator />}
+          {navKey === "archives"   && <Archives />}
         </main>
       </div>
     </div>
