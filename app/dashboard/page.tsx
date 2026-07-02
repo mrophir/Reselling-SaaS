@@ -1357,11 +1357,13 @@ export default function DashboardPage() {
       {/* sidebar */}
       <aside className={`fixed md:sticky top-0 h-screen w-[230px] shrink-0 border-r border-line bg-ink-soft/40 flex flex-col z-40 transition-transform duration-200 ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}>
         <div className="h-16 flex items-center gap-2.5 px-4 border-b border-line">
-          <span className="relative grid place-items-center w-7 h-7 rounded-[6px] bg-amber overflow-hidden shrink-0">
-            <span className="absolute bottom-0 inset-x-0 bg-ink/25" style={{ height: "38%" }} />
-            <span className="relative w-[3px] h-3.5 rounded-full bg-ink" />
-          </span>
-          <span className="font-display text-[16px] font-medium">Stockpile</span>
+          <a href="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
+            <span className="relative grid place-items-center w-7 h-7 rounded-[6px] bg-amber overflow-hidden shrink-0">
+              <span className="absolute bottom-0 inset-x-0 bg-ink/25" style={{ height: "38%" }} />
+              <span className="relative w-[3px] h-3.5 rounded-full bg-ink" />
+            </span>
+            <span className="font-display text-[16px] font-medium">Stockpile</span>
+          </a>
         </div>
         <nav className="flex-1 p-3 flex flex-col gap-1">
           {NAV.map((n) => (
