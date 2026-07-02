@@ -316,14 +316,22 @@ function ItemRow({ item }: { item: Item }) {
         )}
         <span className="hidden sm:block font-mono">{item.code}</span>
         {item.stage === "unlisted" && (
-          <button className="border border-line-soft rounded-md px-2.5 py-1 text-paper-dim hover:text-amber hover:border-amber/40 transition-colors text-[11px]">
-            List it
-          </button>
+          <span className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-md bg-amber/12 text-amber border border-amber/25">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber" />
+            Not listed
+          </span>
         )}
         {item.stage === "listed" && (
-          <button className="border border-line-soft rounded-md px-2.5 py-1 text-paper-dim hover:text-moss hover:border-moss/40 transition-colors text-[11px]">
-            Mark sold
-          </button>
+          <span className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-md bg-moss/12 text-moss border border-moss/25">
+            <span className="w-1.5 h-1.5 rounded-full bg-moss" />
+            Listed
+          </span>
+        )}
+        {item.stage === "sold" && (
+          <span className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-md bg-paper-faint/10 text-paper-faint border border-line">
+            <span className="w-1.5 h-1.5 rounded-full bg-paper-faint" />
+            Sold
+          </span>
         )}
       </div>
     </div>
