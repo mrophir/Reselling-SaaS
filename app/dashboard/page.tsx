@@ -141,7 +141,11 @@ function ModalShell({ onClose, children }: { onClose: () => void; children: Reac
 
 const EMPTY_FORM = { name: "", paid: "", cond: "good" as CondKey, bin: "" };
 
-function AddStockModal({ onClose, onAdd }: { onClose: () => void; onAdd: (item: Item) => void }) {
+function AddStockModal({ onClose, onAdd, storageLocations }: {
+  onClose: () => void;
+  onAdd: (item: Item) => void;
+  storageLocations: string[];
+}) {
   const [form, setForm] = useState(EMPTY_FORM);
   const [error, setError] = useState("");
   const nameRef = useRef<HTMLInputElement>(null);
@@ -155,7 +159,7 @@ function AddStockModal({ onClose, onAdd }: { onClose: () => void; onAdd: (item: 
     const paid = parseFloat(form.paid);
     if (isNaN(paid) || paid < 0) { setError("Enter a valid price paid."); return; }
     const id = Date.now();
-    onAdd({ id, code: `IT-${String(id).slice(-4)}`, name: form.name.trim(), cond: form.cond, paid, stage: "unlisted", age: 0, bin: form.bin.trim() || undefined });
+    onAdd({ id, code: `IT-${String(id).slice(-4)}`, name: form.name.trim(), cond: form.cond, paid, stage: "unlisted", age: 0, bin: form.bin || undefined });
     onClose();
   }
 
@@ -203,15 +207,75 @@ function AddStockModal({ onClose, onAdd }: { onClose: () => void; onAdd: (item: 
           </div>
         </div>
         <div>
-          <label className="block text-sm text-paper-dim mb-1.5">Storage code <span className="text-paper-faint">(optional)</span></label>
-          <input className={field} placeholder="e.g. A1, Bin C4" value={form.bin}
-            onChange={(e) => setForm((f) => ({ ...f, bin: e.target.value }))} />
-          <p className="text-xs text-paper-faint mt-1.5">Where it lives so you can find it fast</p>
+          <label className="block text-sm text-paper-dim mb-1.5">
+            Storage location <span className="text-paper-faint">(optional)</span>
+          </label>
+          {storageLocations.length > 0 ? (
+            <select
+              className={field}
+              value={form.bin}
+              onChange={(e) => setForm((f) => ({ ...f, bin: e.target.value }))}
+            >
+              <option value="">No location assigned</option>
+              {storageLocations.map((loc) => (
+                <option key={loc} value={loc}>{loc}</option>
+              ))}
+            </select>
+          ) : (
+            <div className="rounded-xl border border-line-soft bg-ink-soft px-3.5 py-2.5 text-sm text-paper-faint">
+              No storage locations yet — create one in the Storage map first
+            </div>
+          )}
         </div>
         {error && <p className="text-sm text-rust">{error}</p>}
         <div className="flex gap-3 pt-1">
           <button type="button" onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-line text-sm text-paper-dim hover:text-paper hover:border-paper-faint transition-colors">Cancel</button>
           <button type="submit" className="flex-1 py-2.5 rounded-xl bg-amber text-ink text-sm font-medium hover:bg-paper transition-colors">Add to stock</button>
+        </div>
+      </form>
+    </ModalShell>
+  );
+}
+
+/* ---------- add storage modal ---------- */
+
+function AddStorageModal({ onClose, onAdd }: { onClose: () => void; onAdd: (name: string) => void }) {
+  const [name, setName] = useState("");
+  const [error, setError] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+  useEscClose(onClose);
+
+  useEffect(() => { inputRef.current?.focus(); }, []);
+
+  function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!name.trim()) { setError("Storage name is required."); return; }
+    onAdd(name.trim());
+    onClose();
+  }
+
+  const field = "w-full bg-ink border border-line rounded-xl px-3.5 py-2.5 text-sm text-paper outline-none focus:border-amber/60 transition-colors placeholder:text-paper-faint";
+
+  return (
+    <ModalShell onClose={onClose}>
+      <div className="flex items-center justify-between px-6 py-5 border-b border-line">
+        <div>
+          <h2 className="font-display font-medium text-lg">Add storage location</h2>
+          <p className="text-paper-faint text-xs mt-0.5">Give it a name you&apos;ll recognise</p>
+        </div>
+        <button onClick={onClose} className="grid place-items-center w-8 h-8 rounded-lg text-paper-faint hover:text-paper hover:bg-ink-soft transition-colors"><IconClose /></button>
+      </div>
+      <form onSubmit={submit} className="px-6 py-5 space-y-5">
+        <div>
+          <label className="block text-sm text-paper-dim mb-1.5">Location name</label>
+          <input ref={inputRef} className={field} placeholder="e.g. Bin A1, Shelf 2, Blue box"
+            value={name} onChange={(e) => { setName(e.target.value); setError(""); }} />
+          <p className="text-xs text-paper-faint mt-1.5">Items assigned here will appear in this location on the storage map</p>
+        </div>
+        {error && <p className="text-sm text-rust">{error}</p>}
+        <div className="flex gap-3 pt-1">
+          <button type="button" onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-line text-sm text-paper-dim hover:text-paper hover:border-paper-faint transition-colors">Cancel</button>
+          <button type="submit" className="flex-1 py-2.5 rounded-xl bg-amber text-ink text-sm font-medium hover:bg-paper transition-colors">Create location</button>
         </div>
       </form>
     </ModalShell>
@@ -464,37 +528,67 @@ function Stock({ items, onSell, onToggleListed }: { items: Item[]; onSell: (item
   );
 }
 
-function StorageMap({ items }: { items: Item[] }) {
-  const binsWithItems = Array.from(new Set(items.filter((i) => i.bin).map((i) => i.bin!)));
-  const allBins = Array.from(new Set([...["A1", "A2", "B1", "B2", "C1", "C4"], ...binsWithItems])).sort();
+function StorageMap({ items, storageLocations, onAddStorage }: {
+  items: Item[];
+  storageLocations: string[];
+  onAddStorage: () => void;
+}) {
   const byBin: Record<string, Item[]> = {};
   items.forEach((i) => { if (i.bin) (byBin[i.bin] = byBin[i.bin] ?? []).push(i); });
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="font-display text-2xl font-medium">Storage map</h1>
-        <p className="text-paper-dim text-sm mt-1">What&apos;s inside each bin — tap an item to find it fast</p>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="font-display text-2xl font-medium">Storage map</h1>
+          <p className="text-paper-dim text-sm mt-1">What&apos;s inside each location — find any item instantly</p>
+        </div>
+        <button
+          onClick={onAddStorage}
+          className="flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg bg-amber text-ink hover:bg-paper transition-colors shrink-0"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Add storage
+        </button>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {allBins.map((b) => {
-          const binItems = byBin[b] ?? [];
-          return (
-            <div key={b} className="rounded-2xl border border-line bg-ink-card p-4">
-              <div className="flex items-center justify-between mb-3">
-                <span className="flex items-center gap-2 font-medium"><IconBin />Bin {b}</span>
-                <span className="text-xs text-paper-faint font-mono">{binItems.length} items</span>
-              </div>
-              {binItems.length > 0 ? binItems.map((it) => (
-                <div key={it.id} className="flex items-center gap-2 text-sm text-paper-dim mb-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: COND[it.cond].dot }} />
-                  <span className="truncate">{it.name}</span>
+
+      {storageLocations.length === 0 ? (
+        <div className="rounded-2xl border border-line bg-ink-card px-8 py-16 text-center">
+          <span className="grid place-items-center w-12 h-12 rounded-xl bg-ink-soft border border-line-soft text-amber mx-auto mb-4">
+            <IconBin />
+          </span>
+          <p className="font-medium text-paper mb-1">No storage locations yet</p>
+          <p className="text-sm text-paper-faint mb-5">Create a location like "Bin A1" or "Shelf 2" to start organising your stock.</p>
+          <button onClick={onAddStorage} className="inline-flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg bg-amber text-ink hover:bg-paper transition-colors">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Add first location
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {storageLocations.map((loc) => {
+            const locItems = byBin[loc] ?? [];
+            return (
+              <div key={loc} className="rounded-2xl border border-line bg-ink-card p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="flex items-center gap-2 font-medium"><IconBin />{loc}</span>
+                  <span className="text-xs text-paper-faint font-mono">{locItems.length} items</span>
                 </div>
-              )) : <p className="text-xs text-paper-faint">Empty</p>}
-            </div>
-          );
-        })}
-      </div>
+                {locItems.length > 0 ? locItems.map((it) => (
+                  <div key={it.id} className="flex items-center gap-2 text-sm text-paper-dim mb-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: COND[it.cond].dot }} />
+                    <span className="truncate">{it.name}</span>
+                  </div>
+                )) : <p className="text-xs text-paper-faint">Empty — assign items here when adding stock</p>}
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
@@ -681,13 +775,19 @@ export default function DashboardPage() {
   const [navKey, setNavKey]       = useState<NavKey>("overview");
   const [stage, setStage]         = useState<Stage>("unlisted");
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [addModalOpen, setAddModalOpen] = useState(false);
-  const [sellTarget, setSellTarget]    = useState<Item | null>(null);
-  const [items, setItems]         = useState<Item[]>([]);
-  const [saleRecords, setSaleRecords]  = useState<SaleRecord[]>([]);
+  const [addModalOpen, setAddModalOpen]     = useState(false);
+  const [storageModalOpen, setStorageModalOpen] = useState(false);
+  const [sellTarget, setSellTarget]         = useState<Item | null>(null);
+  const [items, setItems]                   = useState<Item[]>([]);
+  const [saleRecords, setSaleRecords]       = useState<SaleRecord[]>([]);
+  const [storageLocations, setStorageLocations] = useState<string[]>([]);
 
   function addItem(item: Item) {
     setItems((prev) => [item, ...prev]);
+  }
+
+  function addStorageLocation(name: string) {
+    setStorageLocations((prev) => prev.includes(name) ? prev : [...prev, name]);
   }
 
   function toggleListed(item: Item) {
@@ -712,7 +812,8 @@ export default function DashboardPage() {
 
   return (
     <div className="flex min-h-screen bg-ink">
-      {addModalOpen && <AddStockModal onClose={() => setAddModalOpen(false)} onAdd={addItem} />}
+      {addModalOpen && <AddStockModal onClose={() => setAddModalOpen(false)} onAdd={addItem} storageLocations={storageLocations} />}
+      {storageModalOpen && <AddStorageModal onClose={() => setStorageModalOpen(false)} onAdd={addStorageLocation} />}
       {sellTarget   && (
         <SellModal
           item={sellTarget}
@@ -787,7 +888,7 @@ export default function DashboardPage() {
         <main className="flex-1 p-6 max-w-[1152px] w-full mx-auto">
           {navKey === "overview"   && <Overview items={items} stage={stage} setStage={setStage} onSell={setSellTarget} onToggleListed={toggleListed} liveProfit={liveProfit} liveSold={liveSold} />}
           {navKey === "stock"      && <Stock items={items} onSell={setSellTarget} onToggleListed={toggleListed} />}
-          {navKey === "storage"    && <StorageMap items={items} />}
+          {navKey === "storage"    && <StorageMap items={items} storageLocations={storageLocations} onAddStorage={() => setStorageModalOpen(true)} />}
           {navKey === "calculator" && <ProfitCalculator />}
           {navKey === "archives"   && <Archives saleRecords={saleRecords} />}
         </main>
