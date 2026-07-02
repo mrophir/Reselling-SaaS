@@ -306,7 +306,7 @@ function SellModal({ item, onClose, onConfirm }: { item: Item; onClose: () => vo
 
 /* ---------- item row ---------- */
 
-function ItemRow({ item, onSell }: { item: Item; onSell: (item: Item) => void }) {
+function ItemRow({ item, onSell, onToggleListed }: { item: Item; onSell: (item: Item) => void; onToggleListed: (item: Item) => void }) {
   const c = COND[item.cond];
   const aging = (item.age ?? 0) >= 60 && item.stage !== "sold";
 
@@ -332,16 +332,26 @@ function ItemRow({ item, onSell }: { item: Item; onSell: (item: Item) => void })
         )}
         <span className="hidden sm:block font-mono">{item.code}</span>
 
-        {/* status badge */}
+        {/* status badge — clickable to toggle listed state */}
         {item.stage === "unlisted" && (
-          <span className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-md bg-amber/12 text-amber border border-amber/25">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber" />Not listed
-          </span>
+          <button
+            onClick={() => onToggleListed(item)}
+            className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-md bg-amber/12 text-amber border border-amber/25 hover:bg-moss/12 hover:text-moss hover:border-moss/25 transition-all duration-200 group"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-amber group-hover:bg-moss transition-colors duration-200" />
+            <span className="group-hover:hidden">Not listed</span>
+            <span className="hidden group-hover:inline">Mark listed</span>
+          </button>
         )}
         {item.stage === "listed" && (
-          <span className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-md bg-moss/12 text-moss border border-moss/25">
-            <span className="w-1.5 h-1.5 rounded-full bg-moss" />Listed
-          </span>
+          <button
+            onClick={() => onToggleListed(item)}
+            className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-md bg-moss/12 text-moss border border-moss/25 hover:bg-amber/12 hover:text-amber hover:border-amber/25 transition-all duration-200 group"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-moss group-hover:bg-amber transition-colors duration-200" />
+            <span className="group-hover:hidden">Listed</span>
+            <span className="hidden group-hover:inline">Unlist</span>
+          </button>
         )}
         {item.stage === "sold" && (
           <span className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-md bg-paper-faint/10 text-paper-faint border border-line">
@@ -369,10 +379,11 @@ function ItemRow({ item, onSell }: { item: Item; onSell: (item: Item) => void })
 /* ---------- sections ---------- */
 
 function Overview({
-  items, stage, setStage, onSell, liveProfit, liveSold,
+  items, stage, setStage, onSell, onToggleListed, liveProfit, liveSold,
 }: {
   items: Item[]; stage: Stage; setStage: (s: Stage) => void;
-  onSell: (item: Item) => void; liveProfit: number; liveSold: number;
+  onSell: (item: Item) => void; onToggleListed: (item: Item) => void;
+  liveProfit: number; liveSold: number;
 }) {
   const stages: Stage[] = ["unlisted", "listed", "sold"];
   const shown = items.filter((i) => i.stage === stage);
@@ -438,7 +449,7 @@ function Overview({
         </div>
         <div>
           {shown.length > 0
-            ? shown.map((it) => <ItemRow key={it.id} item={it} onSell={onSell} />)
+            ? shown.map((it) => <ItemRow key={it.id} item={it} onSell={onSell} onToggleListed={onToggleListed} />)
             : <p className="px-4 py-8 text-center text-sm text-paper-faint">No items in this stage yet.</p>}
         </div>
       </div>
@@ -446,7 +457,7 @@ function Overview({
   );
 }
 
-function Stock({ items, onSell }: { items: Item[]; onSell: (item: Item) => void }) {
+function Stock({ items, onSell, onToggleListed }: { items: Item[]; onSell: (item: Item) => void; onToggleListed: (item: Item) => void }) {
   return (
     <div>
       <div className="mb-6">
@@ -455,7 +466,7 @@ function Stock({ items, onSell }: { items: Item[]; onSell: (item: Item) => void 
       </div>
       <div className="rounded-2xl border border-line bg-ink-card overflow-hidden">
         {items.length > 0
-          ? <div>{items.map((it) => <ItemRow key={it.id} item={it} onSell={onSell} />)}</div>
+          ? <div>{items.map((it) => <ItemRow key={it.id} item={it} onSell={onSell} onToggleListed={onToggleListed} />)}</div>
           : <p className="px-4 py-8 text-center text-sm text-paper-faint">No stock yet — hit Add stock to get started.</p>}
       </div>
     </div>
@@ -681,6 +692,14 @@ export default function DashboardPage() {
     setItems((prev) => [item, ...prev]);
   }
 
+  function toggleListed(item: Item) {
+    setItems((prev) => prev.map((i) =>
+      i.id === item.id
+        ? { ...i, stage: (i.stage === "unlisted" ? "listed" : "unlisted") as Stage }
+        : i
+    ));
+  }
+
   function confirmSale(item: Item, soldFor: number) {
     const profit = soldFor - item.paid;
     setItems((prev) => prev.map((i) => i.id === item.id ? { ...i, stage: "sold" as Stage } : i));
@@ -768,8 +787,8 @@ export default function DashboardPage() {
         </header>
 
         <main className="flex-1 p-6 max-w-[1152px] w-full mx-auto">
-          {navKey === "overview"   && <Overview items={items} stage={stage} setStage={setStage} onSell={setSellTarget} liveProfit={liveProfit} liveSold={liveSold} />}
-          {navKey === "stock"      && <Stock items={items} onSell={setSellTarget} />}
+          {navKey === "overview"   && <Overview items={items} stage={stage} setStage={setStage} onSell={setSellTarget} onToggleListed={toggleListed} liveProfit={liveProfit} liveSold={liveSold} />}
+          {navKey === "stock"      && <Stock items={items} onSell={setSellTarget} onToggleListed={toggleListed} />}
           {navKey === "storage"    && <StorageMap items={items} />}
           {navKey === "calculator" && <ProfitCalculator />}
           {navKey === "archives"   && <Archives saleRecords={saleRecords} />}
