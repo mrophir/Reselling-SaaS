@@ -1049,6 +1049,8 @@ function ProfitCalculator() {
 /* ---------- archives ---------- */
 
 function Archives({ saleRecords }: { saleRecords: SaleRecord[] }) {
+  const [openMonth, setOpenMonth] = useState<string | null>(null);
+
   // group sale records by month
   const byMonth = saleRecords.reduce<Record<string, SaleRecord[]>>((acc, r) => {
     (acc[r.month] = acc[r.month] ?? []).push(r);
@@ -1122,66 +1124,96 @@ function Archives({ saleRecords }: { saleRecords: SaleRecord[] }) {
         </div>
       ) : (
         <div className="space-y-3">
-          {months.map((mo) => (
-            <div key={mo.m} className="rounded-2xl border border-amber/20 bg-amber/[0.04] p-5">
-              <div className="flex items-center justify-between gap-4 flex-wrap">
-                <div className="flex items-center gap-4">
-                  <span className="grid place-items-center w-11 h-11 rounded-xl bg-ink-soft border border-line-soft text-amber shrink-0">
-                    <IconArchive />
-                  </span>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <p className="font-medium">{mo.m}</p>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber/15 text-amber border border-amber/25">LIVE</span>
-                    </div>
-                    <p className="text-sm text-paper-dim mt-0.5">{mo.sold} items sold · {mo.margin}% margin</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-6">
-                  <div className="text-right">
-                    <p className="font-mono text-xl text-moss">{gbp(mo.profit)}</p>
-                    <p className="text-xs text-paper-faint">net profit</p>
-                  </div>
-                  <button
-                    onClick={() => exportMonthCSV(mo.m, mo.records, mo.revenue, mo.cost, mo.profit, mo.margin)}
-                    className="flex items-center gap-2 text-sm px-3 py-2 rounded-lg border border-line-soft text-paper-dim hover:text-paper hover:border-paper-faint transition-colors"
-                  >
-                    <IconDownload /> Export CSV
-                  </button>
-                </div>
-              </div>
-
-              {/* P&L breakdown */}
-              <div className="mt-4 pt-4 border-t border-line-soft grid grid-cols-3 gap-4 text-sm">
-                <div>
-                  <p className="text-xs text-paper-faint mb-1">Revenue</p>
-                  <p className="font-mono text-paper">{gbp(mo.revenue)}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-paper-faint mb-1">Cost of goods</p>
-                  <p className="font-mono text-rust">{gbp(mo.cost)}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-paper-faint mb-1">Net profit</p>
-                  <p className="font-mono text-moss">{gbp(mo.profit)}</p>
-                </div>
-              </div>
-
-              {/* individual sale rows */}
-              <div className="mt-4 pt-4 border-t border-line-soft space-y-2">
-                {mo.records.map((r) => (
-                  <div key={r.id} className="flex items-center justify-between text-sm">
-                    <span className="text-paper-dim truncate max-w-[200px]">{r.itemName}</span>
-                    <div className="flex items-center gap-4 shrink-0">
-                      <span className="text-paper-faint font-mono text-xs">cost {gbp(r.paid)}</span>
-                      <span className="text-paper font-mono text-xs">sold {gbp(r.soldFor)}</span>
-                      <span className="font-mono text-xs font-medium" style={{ color: r.profit >= 0 ? "var(--color-moss)" : "var(--color-rust)" }}>{gbp(r.profit)}</span>
+          {months.map((mo) => {
+            const isOpen = openMonth === mo.m;
+            return (
+              <div key={mo.m} className="rounded-2xl border border-amber/20 bg-amber/[0.04] overflow-hidden">
+                {/* clickable header row */}
+                <button
+                  onClick={() => setOpenMonth(isOpen ? null : mo.m)}
+                  className="w-full p-5 flex items-center justify-between gap-4 text-left hover:bg-amber/[0.04] transition-colors"
+                >
+                  <div className="flex items-center gap-4">
+                    <span className="grid place-items-center w-11 h-11 rounded-xl bg-ink-soft border border-line-soft text-amber shrink-0">
+                      <IconArchive />
+                    </span>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium">{mo.m}</p>
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber/15 text-amber border border-amber/25">LIVE</span>
+                      </div>
+                      <p className="text-sm text-paper-dim mt-0.5">{mo.sold} items sold · {mo.margin}% margin</p>
                     </div>
                   </div>
-                ))}
+                  <div className="flex items-center gap-5 shrink-0">
+                    <div className="text-right">
+                      <p className="font-mono text-xl text-moss">{gbp(mo.profit)}</p>
+                      <p className="text-xs text-paper-faint">net profit</p>
+                    </div>
+                    <svg
+                      viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                      className={`w-4 h-4 text-paper-faint transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+                    >
+                      <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                  </div>
+                </button>
+
+                {/* expandable body */}
+                {isOpen && (
+                  <div className="px-5 pb-5 border-t border-amber/10">
+                    {/* P&L breakdown */}
+                    <div className="mt-4 grid grid-cols-3 gap-4 text-sm">
+                      <div>
+                        <p className="text-xs text-paper-faint mb-1">Revenue</p>
+                        <p className="font-mono text-paper">{gbp(mo.revenue)}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-paper-faint mb-1">Cost of goods</p>
+                        <p className="font-mono text-rust">{gbp(mo.cost)}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-paper-faint mb-1">Net profit</p>
+                        <p className="font-mono text-moss">{gbp(mo.profit)}</p>
+                      </div>
+                    </div>
+
+                    {/* individual sale rows */}
+                    <div className="mt-4 pt-4 border-t border-line-soft space-y-1">
+                      <div className="flex items-center justify-between text-[11px] font-mono text-paper-faint pb-2">
+                        <span>Item</span>
+                        <div className="flex items-center gap-8 pr-1">
+                          <span>Cost</span>
+                          <span>Sold</span>
+                          <span>Profit</span>
+                        </div>
+                      </div>
+                      {mo.records.map((r) => (
+                        <div key={r.id} className="flex items-center justify-between text-sm py-1.5 border-t border-line-soft/50 first:border-t-0">
+                          <span className="text-paper-dim truncate max-w-[240px]">{r.itemName}</span>
+                          <div className="flex items-center gap-6 shrink-0">
+                            <span className="text-paper-faint font-mono text-xs w-16 text-right">{gbp(r.paid)}</span>
+                            <span className="text-paper font-mono text-xs w-16 text-right">{gbp(r.soldFor)}</span>
+                            <span className="font-mono text-xs font-medium w-16 text-right" style={{ color: r.profit >= 0 ? "var(--color-moss)" : "var(--color-rust)" }}>{gbp(r.profit)}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* export button */}
+                    <div className="mt-4 pt-4 border-t border-line-soft flex justify-end">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); exportMonthCSV(mo.m, mo.records, mo.revenue, mo.cost, mo.profit, mo.margin); }}
+                        className="flex items-center gap-2 text-sm px-3 py-2 rounded-lg border border-line-soft text-paper-dim hover:text-paper hover:border-paper-faint transition-colors"
+                      >
+                        <IconDownload /> Export CSV
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
