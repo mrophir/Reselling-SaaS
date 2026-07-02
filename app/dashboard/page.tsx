@@ -977,6 +977,45 @@ function Archives({ saleRecords }: { saleRecords: SaleRecord[] }) {
   );
 }
 
+/* ---------- notification panel ---------- */
+
+function NotificationPanel({ saleRecords }: { saleRecords: SaleRecord[] }) {
+  const recent = saleRecords.slice(0, 15);
+  return (
+    <div className="rise absolute right-0 top-[calc(100%+8px)] w-80 rounded-2xl border border-line bg-ink-card shadow-2xl shadow-black/60 overflow-hidden z-50">
+      <div className="px-4 py-3.5 border-b border-line flex items-center justify-between">
+        <span className="font-display font-medium text-sm">Recent sales</span>
+        {saleRecords.length > 0 && (
+          <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-moss/15 text-moss border border-moss/25">{saleRecords.length} sold</span>
+        )}
+      </div>
+      {recent.length === 0 ? (
+        <p className="px-4 py-10 text-center text-sm text-paper-faint">No sales yet — mark an item as sold to see it here.</p>
+      ) : (
+        <div className="max-h-[340px] overflow-y-auto divide-y divide-line-soft">
+          {recent.map((r) => (
+            <div key={r.id} className="flex items-center gap-3 px-4 py-3 hover:bg-ink-soft/40 transition-colors">
+              <span className="grid place-items-center w-8 h-8 rounded-lg bg-moss/10 text-moss shrink-0">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">{r.itemName}</p>
+                <p className="text-xs text-paper-faint mt-0.5">{r.month}</p>
+              </div>
+              <div className="text-right shrink-0">
+                <p className="text-sm font-mono text-paper">{gbp(r.soldFor)}</p>
+                <p className="text-xs font-mono mt-0.5" style={{ color: r.profit >= 0 ? "var(--color-moss)" : "var(--color-rust)" }}>
+                  {r.profit >= 0 ? "+" : ""}{gbp(r.profit)}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ---------- page ---------- */
 
 export default function DashboardPage() {
@@ -992,6 +1031,17 @@ export default function DashboardPage() {
   const [toasts, setToasts]               = useState<Toast[]>([]);
   const [query, setQuery]                 = useState("");
   const [hydrated, setHydrated]           = useState(false);
+  const [notifOpen, setNotifOpen]         = useState(false);
+  const notifRef                          = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!notifOpen) return;
+    function handleOutside(e: MouseEvent) {
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) setNotifOpen(false);
+    }
+    document.addEventListener("mousedown", handleOutside);
+    return () => document.removeEventListener("mousedown", handleOutside);
+  }, [notifOpen]);
 
   // Load persisted state from localStorage on first mount
   useEffect(() => {
@@ -1142,9 +1192,18 @@ export default function DashboardPage() {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             <span className="hidden sm:block">Add stock</span>
           </button>
-          <button className="grid place-items-center w-9 h-9 rounded-lg text-paper-dim hover:text-paper hover:bg-ink-card transition-colors shrink-0">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px]"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-          </button>
+          <div ref={notifRef} className="relative shrink-0">
+            <button
+              onClick={() => setNotifOpen((o) => !o)}
+              className="relative grid place-items-center w-9 h-9 rounded-lg text-paper-dim hover:text-paper hover:bg-ink-card transition-colors"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px]"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              {saleRecords.length > 0 && (
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-moss border-2 border-ink" />
+              )}
+            </button>
+            {notifOpen && <NotificationPanel saleRecords={saleRecords} />}
+          </div>
           <div className="grid place-items-center w-9 h-9 rounded-full bg-ink-card border border-line text-xs font-medium text-paper-dim shrink-0">JD</div>
         </header>
 
