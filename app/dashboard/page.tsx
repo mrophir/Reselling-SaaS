@@ -1637,10 +1637,6 @@ export default function DashboardPage() {
               Upgrade to Operator
             </button>
           </div>
-          <button className="w-full flex items-center justify-center gap-2 py-2 rounded-lg text-sm text-paper-faint hover:text-paper hover:bg-ink-card transition-colors">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><polyline points="15 18 9 12 15 6"/></svg>
-            Collapse
-          </button>
         </div>
       </aside>
 
