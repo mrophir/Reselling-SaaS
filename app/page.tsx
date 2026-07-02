@@ -74,6 +74,9 @@ function Nav() {
           <a href="#" className="hidden sm:block text-sm text-paper-dim hover:text-paper transition-colors px-3 py-2">
             Log in
           </a>
+          <a href="/dashboard" className="hidden sm:block text-sm font-medium px-4 py-2 rounded-lg border border-line text-paper hover:border-paper-faint hover:-translate-y-0.5 transition-all duration-200">
+            Dashboard
+          </a>
           <a href="#cta" className="btn-shine text-sm font-medium px-4 py-2 rounded-lg bg-amber text-ink hover:bg-paper transition-colors">
             Sign up free
           </a>
