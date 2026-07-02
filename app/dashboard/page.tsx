@@ -629,13 +629,46 @@ function Stock({ items, onSell, onToggleListed, query }: {
     ? items.filter((i) => i.name.toLowerCase().includes(q) || i.code.toLowerCase().includes(q) || (i.bin?.toLowerCase().includes(q) ?? false))
     : items;
 
+  function exportStock() {
+    const esc = (s: string | number) => `"${String(s).replace(/"/g, '""')}"`;
+    const rows: string[][] = [
+      ["Stockpile — Stock Export"],
+      [],
+      ["Item Code", "Name", "Condition", "Paid (£)", "Status", "Platform", "Storage Bin", "Notes"],
+      ...items.map((i) => [
+        i.code, i.name, COND[i.cond].label, i.paid.toFixed(2),
+        i.stage, i.platform ?? "", i.bin ?? "", i.notes ?? "",
+      ]),
+    ];
+    const csv = rows.map((r) => r.map(esc).join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "stockpile-stock.csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="font-display text-2xl font-medium">Stock</h1>
-        <p className="text-paper-dim text-sm mt-1">
-          {q ? `${shown.length} result${shown.length !== 1 ? "s" : ""} for "${query}"` : "Every item across all three stages"}
-        </p>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="font-display text-2xl font-medium">Stock</h1>
+          <p className="text-paper-dim text-sm mt-1">
+            {q ? `${shown.length} result${shown.length !== 1 ? "s" : ""} for "${query}"` : "Every item across all three stages"}
+          </p>
+        </div>
+        {items.length > 0 && (
+          <button
+            onClick={exportStock}
+            className="flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg border border-line text-paper-dim hover:text-paper hover:border-paper-faint transition-colors shrink-0"
+          >
+            <IconDownload /> Export CSV
+          </button>
+        )}
       </div>
       <div className="rounded-2xl border border-line bg-ink-card overflow-hidden">
         {shown.length > 0
