@@ -17,7 +17,7 @@ type Stage = "unlisted" | "listed" | "sold";
 interface Item {
   id: number; code: string; name: string; cond: CondKey;
   paid: number; stage: Stage; age?: number;
-  platform?: string; bin?: string;
+  platform?: string; bin?: string; receipt?: string;
 }
 
 interface SaleRecord {
@@ -128,6 +128,29 @@ function useEscClose(onClose: () => void) {
   }, [onClose]);
 }
 
+function compressImage(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onerror = reject;
+      img.onload = () => {
+        const MAX = 1000;
+        let w = img.naturalWidth, h = img.naturalHeight;
+        if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
+        if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; }
+        const canvas = document.createElement("canvas");
+        canvas.width = w; canvas.height = h;
+        canvas.getContext("2d")!.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL("image/jpeg", 0.72));
+      };
+      img.src = e.target!.result as string;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 /* ---------- icons ---------- */
 
 function IconFilter() {
@@ -197,7 +220,7 @@ function ToastContainer({ toasts, onDismiss }: { toasts: Toast[]; onDismiss: (id
 
 /* ---------- add stock modal ---------- */
 
-const EMPTY_FORM = { name: "", paid: "", cond: "good" as CondKey, bin: "", itemCode: "" };
+const EMPTY_FORM = { name: "", paid: "", cond: "good" as CondKey, bin: "", itemCode: "", receipt: "" };
 
 function AddStockModal({ onClose, onAdd, storageLocations }: {
   onClose: () => void;
@@ -206,6 +229,7 @@ function AddStockModal({ onClose, onAdd, storageLocations }: {
 }) {
   const [form, setForm] = useState(EMPTY_FORM);
   const [error, setError] = useState("");
+  const [compressing, setCompressing] = useState(false);
   const nameRef = useRef<HTMLInputElement>(null);
   useEscClose(onClose);
 
@@ -218,7 +242,7 @@ function AddStockModal({ onClose, onAdd, storageLocations }: {
     if (isNaN(paid) || paid < 0) { setError("Enter a valid price paid."); return; }
     const id = Date.now();
     const code = form.itemCode.trim() || `IT-${String(id).slice(-4)}`;
-    onAdd({ id, code, name: form.name.trim(), cond: form.cond, paid, stage: "unlisted", age: 0, bin: form.bin || undefined });
+    onAdd({ id, code, name: form.name.trim(), cond: form.cond, paid, stage: "unlisted", age: 0, bin: form.bin || undefined, receipt: form.receipt || undefined });
     onClose();
   }
 
@@ -296,6 +320,54 @@ function AddStockModal({ onClose, onAdd, storageLocations }: {
             value={form.itemCode}
             onChange={(e) => setForm((f) => ({ ...f, itemCode: e.target.value }))}
           />
+        </div>
+        <div>
+          <label className="block text-sm text-paper-dim mb-1.5">
+            Receipt <span className="text-paper-faint">(optional)</span>
+          </label>
+          {form.receipt ? (
+            <div className="relative rounded-xl overflow-hidden border border-line">
+              <img src={form.receipt} alt="Receipt" className="w-full max-h-44 object-cover" />
+              <button
+                type="button"
+                onClick={() => setForm((f) => ({ ...f, receipt: "" }))}
+                className="absolute top-2 right-2 grid place-items-center w-7 h-7 rounded-lg bg-ink/80 text-paper hover:bg-rust/70 transition-colors"
+              >
+                <IconClose />
+              </button>
+            </div>
+          ) : (
+            <label className={`flex flex-col items-center gap-2 rounded-xl border border-dashed px-4 py-5 cursor-pointer transition-colors ${compressing ? "border-amber/40 bg-amber/[0.04]" : "border-line hover:border-amber/40 hover:bg-amber/[0.04]"}`}>
+              {compressing ? (
+                <span className="text-sm text-paper-faint">Compressing…</span>
+              ) : (
+                <>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-paper-faint">
+                    <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+                    <polyline points="21 15 16 10 5 21"/>
+                  </svg>
+                  <span className="text-sm text-paper-faint text-center">Click to upload a photo of your receipt</span>
+                  <span className="text-xs text-paper-faint">JPG or PNG</span>
+                </>
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  setCompressing(true);
+                  try {
+                    const compressed = await compressImage(file);
+                    setForm((f) => ({ ...f, receipt: compressed }));
+                  } catch {}
+                  setCompressing(false);
+                  e.target.value = "";
+                }}
+              />
+            </label>
+          )}
         </div>
         {error && <p className="text-sm text-rust">{error}</p>}
         <div className="flex gap-3 pt-1">
@@ -434,6 +506,7 @@ function SellModal({ item, onClose, onConfirm }: { item: Item; onClose: () => vo
 function ItemRow({ item, onSell, onToggleListed }: { item: Item; onSell: (item: Item) => void; onToggleListed: (item: Item) => void }) {
   const c = COND[item.cond];
   const aging = (item.age ?? 0) >= 60 && item.stage !== "sold";
+  const [receiptOpen, setReceiptOpen] = useState(false);
 
   return (
     <div className="flex items-center justify-between gap-3 px-4 py-3.5 border-t border-line-soft first:border-t-0 hover:bg-ink-soft/40 transition-colors">
@@ -495,6 +568,32 @@ function ItemRow({ item, onSell, onToggleListed }: { item: Item; onSell: (item: 
             </svg>
             Mark sold
           </button>
+        )}
+
+        {/* receipt viewer */}
+        {item.receipt && (
+          <>
+            <button
+              onClick={() => setReceiptOpen(true)}
+              title="View receipt"
+              className="grid place-items-center w-7 h-7 rounded-md bg-amber/10 text-amber hover:bg-amber/20 transition-colors"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+                <line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/>
+              </svg>
+            </button>
+            {receiptOpen && (
+              <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onClick={() => setReceiptOpen(false)}>
+                <div className="relative max-w-lg w-full" onClick={(e) => e.stopPropagation()}>
+                  <img src={item.receipt} alt="Receipt" className="w-full rounded-2xl border border-line shadow-2xl" />
+                  <button onClick={() => setReceiptOpen(false)} className="absolute top-3 right-3 grid place-items-center w-8 h-8 rounded-lg bg-ink/80 text-paper hover:bg-rust/70 transition-colors">
+                    <IconClose />
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
