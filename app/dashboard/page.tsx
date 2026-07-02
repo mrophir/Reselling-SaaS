@@ -365,6 +365,100 @@ function AddStorageModal({ onClose, onAdd }: { onClose: () => void; onAdd: (name
   );
 }
 
+/* ---------- edit stock modal ---------- */
+
+function EditStockModal({ item, onClose, onSave, storageLocations }: {
+  item: Item; onClose: () => void;
+  onSave: (updated: Item) => void;
+  storageLocations: string[];
+}) {
+  const [form, setForm] = useState({
+    name: item.name, paid: String(item.paid), cond: item.cond,
+    bin: item.bin ?? "", itemCode: item.code, notes: item.notes ?? "",
+  });
+  const [error, setError] = useState("");
+  const nameRef = useRef<HTMLInputElement>(null);
+  useEscClose(onClose);
+  useEffect(() => { nameRef.current?.focus(); }, []);
+
+  function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!form.name.trim()) { setError("Item name is required."); return; }
+    const paid = parseFloat(form.paid);
+    if (isNaN(paid) || paid < 0) { setError("Enter a valid price paid."); return; }
+    onSave({ ...item, name: form.name.trim(), paid, cond: form.cond, bin: form.bin || undefined, code: form.itemCode.trim() || item.code, notes: form.notes.trim() || undefined });
+    onClose();
+  }
+
+  const conditions: CondKey[] = ["excellent", "good", "fair", "flawed"];
+  const field = "w-full bg-ink border border-line rounded-xl px-3.5 py-2.5 text-sm text-paper outline-none focus:border-amber/60 transition-colors placeholder:text-paper-faint";
+
+  return (
+    <ModalShell onClose={onClose}>
+      <div className="flex items-center justify-between px-6 py-5 border-b border-line">
+        <div>
+          <h2 className="font-display font-medium text-lg">Edit stock</h2>
+          <p className="text-paper-faint text-xs mt-0.5 truncate max-w-[260px]">{item.name}</p>
+        </div>
+        <button onClick={onClose} className="grid place-items-center w-8 h-8 rounded-lg text-paper-faint hover:text-paper hover:bg-ink-soft transition-colors"><IconClose /></button>
+      </div>
+      <form onSubmit={submit} className="px-6 py-5 space-y-5">
+        <div>
+          <label className="block text-sm text-paper-dim mb-1.5">Item name</label>
+          <input ref={nameRef} className={field} value={form.name} onChange={(e) => { setForm((f) => ({ ...f, name: e.target.value })); setError(""); }} />
+        </div>
+        <div>
+          <label className="block text-sm text-paper-dim mb-1.5">Price paid (£)</label>
+          <div className="relative">
+            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-paper-faint text-sm">£</span>
+            <input className={`${field} pl-7`} type="number" min="0" step="0.01" value={form.paid} onChange={(e) => { setForm((f) => ({ ...f, paid: e.target.value })); setError(""); }} />
+          </div>
+        </div>
+        <div>
+          <label className="block text-sm text-paper-dim mb-2">Condition</label>
+          <div className="grid grid-cols-4 gap-2">
+            {conditions.map((c) => {
+              const active = form.cond === c;
+              const meta = COND[c];
+              return (
+                <button key={c} type="button" onClick={() => setForm((f) => ({ ...f, cond: c }))}
+                  className="flex flex-col items-center gap-1.5 py-3 rounded-xl border transition-all text-xs font-medium"
+                  style={{ borderColor: active ? meta.dot + "80" : "var(--color-line)", background: active ? meta.bg : "transparent", color: active ? meta.fg : "var(--color-paper-faint)" }}>
+                  <span className="w-2.5 h-2.5 rounded-full" style={{ background: meta.dot }} />{meta.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+        <div>
+          <label className="block text-sm text-paper-dim mb-1.5">Storage location <span className="text-paper-faint">(optional)</span></label>
+          {storageLocations.length > 0 ? (
+            <select className={field} value={form.bin} onChange={(e) => setForm((f) => ({ ...f, bin: e.target.value }))}>
+              <option value="">No location assigned</option>
+              {storageLocations.map((loc) => <option key={loc} value={loc}>{loc}</option>)}
+            </select>
+          ) : (
+            <div className="rounded-xl border border-line-soft bg-ink-soft px-3.5 py-2.5 text-sm text-paper-faint">No storage locations yet</div>
+          )}
+        </div>
+        <div>
+          <label className="block text-sm text-paper-dim mb-1.5">Item code</label>
+          <input className={field} value={form.itemCode} onChange={(e) => setForm((f) => ({ ...f, itemCode: e.target.value }))} />
+        </div>
+        <div>
+          <label className="block text-sm text-paper-dim mb-1.5">Notes <span className="text-paper-faint">(optional)</span></label>
+          <textarea className={`${field} resize-none`} rows={3} value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} />
+        </div>
+        {error && <p className="text-sm text-rust">{error}</p>}
+        <div className="flex gap-3 pt-1">
+          <button type="button" onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-line text-sm text-paper-dim hover:text-paper hover:border-paper-faint transition-colors">Cancel</button>
+          <button type="submit" className="flex-1 py-2.5 rounded-xl bg-amber text-ink text-sm font-medium hover:bg-paper transition-colors">Save changes</button>
+        </div>
+      </form>
+    </ModalShell>
+  );
+}
+
 /* ---------- sell modal ---------- */
 
 function SellModal({ item, onClose, onConfirm }: { item: Item; onClose: () => void; onConfirm: (soldFor: number) => void }) {
@@ -444,10 +538,14 @@ function SellModal({ item, onClose, onConfirm }: { item: Item; onClose: () => vo
 
 /* ---------- item row ---------- */
 
-function ItemRow({ item, onSell, onToggleListed }: { item: Item; onSell: (item: Item) => void; onToggleListed: (item: Item) => void }) {
+function ItemRow({ item, onSell, onToggleListed, onEdit, onRemove }: {
+  item: Item; onSell: (item: Item) => void; onToggleListed: (item: Item) => void;
+  onEdit?: (item: Item) => void; onRemove?: (id: number) => void;
+}) {
   const c = COND[item.cond];
   const aging = (item.age ?? 0) >= 60 && item.stage !== "sold";
   const [noteOpen, setNoteOpen] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   return (
     <div className="border-t border-line-soft first:border-t-0">
@@ -522,6 +620,42 @@ function ItemRow({ item, onSell, onToggleListed }: { item: Item; onSell: (item: 
             </svg>
             {noteOpen ? "Hide note" : "See note"}
           </button>
+        )}
+
+        {onEdit && (
+          <button
+            onClick={() => onEdit(item)}
+            title="Edit item"
+            className="grid place-items-center w-7 h-7 rounded-md text-paper-faint hover:text-paper hover:bg-ink-soft transition-colors"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+          </button>
+        )}
+
+        {onRemove && (
+          confirmDelete ? (
+            <button
+              onClick={() => onRemove(item.id)}
+              className="flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-md bg-rust/15 text-rust border border-rust/30 hover:bg-rust/25 transition-all"
+              onBlur={() => setConfirmDelete(false)}
+            >
+              Confirm?
+            </button>
+          ) : (
+            <button
+              onClick={() => setConfirmDelete(true)}
+              title="Delete item"
+              className="grid place-items-center w-7 h-7 rounded-md text-paper-faint hover:text-rust hover:bg-rust/10 transition-colors"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+                <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+              </svg>
+            </button>
+          )
         )}
 
       </div>
@@ -621,8 +755,9 @@ function Overview({
   );
 }
 
-function Stock({ items, onSell, onToggleListed, query }: {
-  items: Item[]; onSell: (item: Item) => void; onToggleListed: (item: Item) => void; query: string;
+function Stock({ items, onSell, onToggleListed, onEdit, onRemove, query }: {
+  items: Item[]; onSell: (item: Item) => void; onToggleListed: (item: Item) => void;
+  onEdit: (item: Item) => void; onRemove: (id: number) => void; query: string;
 }) {
   const q = query.toLowerCase().trim();
   const shown = q
@@ -672,7 +807,7 @@ function Stock({ items, onSell, onToggleListed, query }: {
       </div>
       <div className="rounded-2xl border border-line bg-ink-card overflow-hidden">
         {shown.length > 0
-          ? <div>{shown.map((it) => <ItemRow key={it.id} item={it} onSell={onSell} onToggleListed={onToggleListed} />)}</div>
+          ? <div>{shown.map((it) => <ItemRow key={it.id} item={it} onSell={onSell} onToggleListed={onToggleListed} onEdit={onEdit} onRemove={onRemove} />)}</div>
           : q
             ? <p className="px-4 py-8 text-center text-sm text-paper-faint">No results for &ldquo;{query}&rdquo; — try a different name, code, or bin.</p>
             : <p className="px-4 py-8 text-center text-sm text-paper-faint">No stock yet — hit Add stock to get started.</p>}
@@ -1100,6 +1235,7 @@ export default function DashboardPage() {
   const [query, setQuery]                 = useState("");
   const [hydrated, setHydrated]           = useState(false);
   const [notifOpen, setNotifOpen]         = useState(false);
+  const [editTarget, setEditTarget]       = useState<Item | null>(null);
   const notifRef                          = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -1139,6 +1275,11 @@ export default function DashboardPage() {
     if (!hydrated) return;
     localStorage.setItem("stockpile-locations", JSON.stringify(storageLocations));
   }, [storageLocations, hydrated]);
+
+  function editItem(updated: Item) {
+    setItems((prev) => prev.map((i) => i.id === updated.id ? updated : i));
+    addToast(`${updated.name} updated`);
+  }
 
   function addToast(message: string, type: Toast["type"] = "success") {
     setToasts((prev) => [...prev, { id: Date.now(), message, type }]);
@@ -1187,6 +1328,14 @@ export default function DashboardPage() {
       <ToastContainer toasts={toasts} onDismiss={dismissToast} />
       {addModalOpen && <AddStockModal onClose={() => setAddModalOpen(false)} onAdd={addItem} storageLocations={storageLocations} />}
       {storageModalOpen && <AddStorageModal onClose={() => setStorageModalOpen(false)} onAdd={addStorageLocation} />}
+      {editTarget && (
+        <EditStockModal
+          item={editTarget}
+          onClose={() => setEditTarget(null)}
+          onSave={(updated) => { editItem(updated); setEditTarget(null); }}
+          storageLocations={storageLocations}
+        />
+      )}
       {sellTarget   && (
         <SellModal
           item={sellTarget}
@@ -1277,7 +1426,7 @@ export default function DashboardPage() {
 
         <main className="flex-1 p-6 max-w-[1152px] w-full mx-auto">
           {navKey === "overview"   && <Overview items={items} stage={stage} setStage={setStage} onSell={setSellTarget} onToggleListed={toggleListed} liveProfit={liveProfit} liveSold={liveSold} query={query} />}
-          {navKey === "stock"      && <Stock items={items} onSell={setSellTarget} onToggleListed={toggleListed} query={query} />}
+          {navKey === "stock"      && <Stock items={items} onSell={setSellTarget} onToggleListed={toggleListed} onEdit={setEditTarget} onRemove={removeItem} query={query} />}
           {navKey === "storage"    && <StorageMap items={items} storageLocations={storageLocations} onAddStorage={() => setStorageModalOpen(true)} onRemoveItem={removeItem} />}
           {navKey === "calculator" && <ProfitCalculator />}
           {navKey === "archives"   && <Archives saleRecords={saleRecords} />}
