@@ -28,9 +28,11 @@ interface SaleRecord {
   soldFor: number;
   profit: number;
   month: string;
+  platform?: string;
 }
 
 const CURRENT_MONTH = "July 2026";
+const SALE_PLATFORMS = ["Vinted", "eBay", "Depop", "Facebook Marketplace", "Other"] as const;
 
 const SEED_ITEMS: Item[] = [
   { id: 1, code: "IT-0231", name: "Carhartt beanie",       cond: "excellent", paid: 2,  stage: "unlisted", age: 4  },
@@ -462,9 +464,10 @@ function EditStockModal({ item, onClose, onSave, storageLocations }: {
 
 /* ---------- sell modal ---------- */
 
-function SellModal({ item, onClose, onConfirm }: { item: Item; onClose: () => void; onConfirm: (soldFor: number) => void }) {
-  const [soldFor, setSoldFor] = useState("");
-  const [error, setError] = useState("");
+function SellModal({ item, onClose, onConfirm }: { item: Item; onClose: () => void; onConfirm: (soldFor: number, platform: string) => void }) {
+  const [soldFor, setSoldFor]   = useState("");
+  const [platform, setPlatform] = useState("");
+  const [error, setError]       = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   useEscClose(onClose);
 
@@ -476,7 +479,7 @@ function SellModal({ item, onClose, onConfirm }: { item: Item; onClose: () => vo
   function submit(e: React.FormEvent) {
     e.preventDefault();
     if (isNaN(price) || price < 0) { setError("Enter a valid sold price."); return; }
-    onConfirm(price);
+    onConfirm(price, platform);
     onClose();
   }
 
@@ -509,6 +512,22 @@ function SellModal({ item, onClose, onConfirm }: { item: Item; onClose: () => vo
               value={soldFor}
               onChange={(e) => { setSoldFor(e.target.value); setError(""); }}
             />
+          </div>
+        </div>
+
+        {/* platform */}
+        <div>
+          <label className="block text-sm text-paper-dim mb-1.5">Sold on</label>
+          <div className="grid grid-cols-3 gap-2">
+            {SALE_PLATFORMS.map((p) => (
+              <button
+                key={p} type="button"
+                onClick={() => setPlatform(platform === p ? "" : p)}
+                className={`py-2 px-3 rounded-xl text-xs font-medium border transition-all ${platform === p ? "bg-amber/15 border-amber/40 text-amber" : "bg-ink border-line-soft text-paper-faint hover:border-paper-faint hover:text-paper"}`}
+              >
+                {p}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -1280,7 +1299,10 @@ function Archives({ saleRecords, onDeleteSale, onEditSale }: {
                       </div>
                       {mo.records.map((r) => (
                         <div key={r.id} className="flex items-center justify-between text-sm py-1.5 border-t border-line-soft/50 first:border-t-0 group">
-                          <span className="text-paper-dim truncate max-w-[180px]">{r.itemName}</span>
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span className="text-paper-dim truncate max-w-[160px]">{r.itemName}</span>
+                            {r.platform && <span className="shrink-0 text-[10px] px-1.5 py-0.5 rounded bg-line text-paper-faint font-mono">{r.platform}</span>}
+                          </div>
                           <div className="flex items-center gap-4 shrink-0">
                             <span className="text-paper-faint font-mono text-xs w-14 text-right">{gbp(r.paid)}</span>
                             <span className="text-paper font-mono text-xs w-14 text-right">{gbp(r.soldFor)}</span>
@@ -1542,11 +1564,11 @@ export default function DashboardPage() {
     addToast(next === "listed" ? `${item.name} marked as listed` : `${item.name} moved back to unlisted`);
   }
 
-  function confirmSale(item: Item, soldFor: number) {
+  function confirmSale(item: Item, soldFor: number, platform: string) {
     const profit = soldFor - item.paid;
     setItems((prev) => prev.map((i) => i.id === item.id ? { ...i, stage: "sold" as Stage } : i));
     setSaleRecords((prev) => [
-      { id: Date.now(), itemId: item.id, itemName: item.name, paid: item.paid, soldFor, profit, month: CURRENT_MONTH },
+      { id: Date.now(), itemId: item.id, itemName: item.name, paid: item.paid, soldFor, profit, month: CURRENT_MONTH, platform: platform || undefined },
       ...prev,
     ]);
     addToast(`${item.name} sold for ${gbp(soldFor)} · ${profit >= 0 ? "+" : ""}${gbp(profit)}`);
@@ -1597,7 +1619,7 @@ export default function DashboardPage() {
         <SellModal
           item={sellTarget}
           onClose={() => setSellTarget(null)}
-          onConfirm={(price) => confirmSale(sellTarget, price)}
+          onConfirm={(price, platform) => confirmSale(sellTarget, price, platform)}
         />
       )}
 
