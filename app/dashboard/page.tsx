@@ -1046,10 +1046,76 @@ function ProfitCalculator() {
   );
 }
 
+/* ---------- edit sale modal ---------- */
+
+function EditSaleModal({ record, onSave, onClose }: { record: SaleRecord; onSave: (r: SaleRecord) => void; onClose: () => void }) {
+  const [name, setName]       = useState(record.itemName);
+  const [paid, setPaid]       = useState(String(record.paid));
+  const [soldFor, setSoldFor] = useState(String(record.soldFor));
+  useEscClose(onClose);
+
+  const profit = (parseFloat(soldFor) || 0) - (parseFloat(paid) || 0);
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!name.trim()) return;
+    onSave({ ...record, itemName: name.trim(), paid: parseFloat(paid) || 0, soldFor: parseFloat(soldFor) || 0, profit });
+    onClose();
+  }
+
+  return (
+    <ModalShell onClose={onClose}>
+      <h2 className="font-display text-lg font-medium mb-5">Edit sale record</h2>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-xs text-paper-faint mb-1.5">Item name</label>
+          <input
+            value={name} onChange={(e) => setName(e.target.value)}
+            className="w-full bg-ink-soft border border-line-soft rounded-xl px-3 py-2.5 text-sm text-paper placeholder:text-paper-faint focus:outline-none focus:border-amber/50"
+            required
+          />
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs text-paper-faint mb-1.5">Cost paid (£)</label>
+            <input
+              type="number" min="0" step="0.01" value={paid} onChange={(e) => setPaid(e.target.value)}
+              className="w-full bg-ink-soft border border-line-soft rounded-xl px-3 py-2.5 text-sm text-paper placeholder:text-paper-faint focus:outline-none focus:border-amber/50"
+            />
+          </div>
+          <div>
+            <label className="block text-xs text-paper-faint mb-1.5">Sold for (£)</label>
+            <input
+              type="number" min="0" step="0.01" value={soldFor} onChange={(e) => setSoldFor(e.target.value)}
+              className="w-full bg-ink-soft border border-line-soft rounded-xl px-3 py-2.5 text-sm text-paper placeholder:text-paper-faint focus:outline-none focus:border-amber/50"
+            />
+          </div>
+        </div>
+        <div className="rounded-xl bg-ink-soft border border-line-soft px-3 py-2.5 flex items-center justify-between text-sm">
+          <span className="text-paper-faint">Profit</span>
+          <span className="font-mono font-medium" style={{ color: profit >= 0 ? "var(--color-moss)" : "var(--color-rust)" }}>
+            {profit >= 0 ? "+" : ""}{gbp(profit)}
+          </span>
+        </div>
+        <div className="flex gap-3 pt-1">
+          <button type="button" onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-line-soft text-sm text-paper-dim hover:text-paper transition-colors">Cancel</button>
+          <button type="submit" className="flex-1 py-2.5 rounded-xl bg-amber text-ink font-medium text-sm hover:bg-amber-deep transition-colors">Save changes</button>
+        </div>
+      </form>
+    </ModalShell>
+  );
+}
+
 /* ---------- archives ---------- */
 
-function Archives({ saleRecords }: { saleRecords: SaleRecord[] }) {
-  const [openMonth, setOpenMonth] = useState<string | null>(null);
+function Archives({ saleRecords, onDeleteSale, onEditSale }: {
+  saleRecords: SaleRecord[];
+  onDeleteSale: (id: number) => void;
+  onEditSale: (record: SaleRecord) => void;
+}) {
+  const [openMonth, setOpenMonth]         = useState<string | null>(null);
+  const [editTarget, setEditTarget]       = useState<SaleRecord | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
 
   // group sale records by month
   const byMonth = saleRecords.reduce<Record<string, SaleRecord[]>>((acc, r) => {
@@ -1099,6 +1165,13 @@ function Archives({ saleRecords }: { saleRecords: SaleRecord[] }) {
 
   return (
     <div>
+      {editTarget && (
+        <EditSaleModal
+          record={editTarget}
+          onSave={(r) => { onEditSale(r); setEditTarget(null); }}
+          onClose={() => setEditTarget(null)}
+        />
+      )}
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="font-display text-2xl font-medium">Monthly archives</h1>
@@ -1189,12 +1262,39 @@ function Archives({ saleRecords }: { saleRecords: SaleRecord[] }) {
                         </div>
                       </div>
                       {mo.records.map((r) => (
-                        <div key={r.id} className="flex items-center justify-between text-sm py-1.5 border-t border-line-soft/50 first:border-t-0">
-                          <span className="text-paper-dim truncate max-w-[240px]">{r.itemName}</span>
-                          <div className="flex items-center gap-6 shrink-0">
-                            <span className="text-paper-faint font-mono text-xs w-16 text-right">{gbp(r.paid)}</span>
-                            <span className="text-paper font-mono text-xs w-16 text-right">{gbp(r.soldFor)}</span>
-                            <span className="font-mono text-xs font-medium w-16 text-right" style={{ color: r.profit >= 0 ? "var(--color-moss)" : "var(--color-rust)" }}>{gbp(r.profit)}</span>
+                        <div key={r.id} className="flex items-center justify-between text-sm py-1.5 border-t border-line-soft/50 first:border-t-0 group">
+                          <span className="text-paper-dim truncate max-w-[180px]">{r.itemName}</span>
+                          <div className="flex items-center gap-4 shrink-0">
+                            <span className="text-paper-faint font-mono text-xs w-14 text-right">{gbp(r.paid)}</span>
+                            <span className="text-paper font-mono text-xs w-14 text-right">{gbp(r.soldFor)}</span>
+                            <span className="font-mono text-xs font-medium w-14 text-right" style={{ color: r.profit >= 0 ? "var(--color-moss)" : "var(--color-rust)" }}>{gbp(r.profit)}</span>
+                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <button
+                                onClick={() => setEditTarget(r)}
+                                className="grid place-items-center w-6 h-6 rounded-md text-paper-faint hover:text-amber hover:bg-amber/10 transition-colors"
+                                title="Edit sale"
+                              >
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                              </button>
+                              {confirmDeleteId === r.id ? (
+                                <button
+                                  onClick={() => { onDeleteSale(r.id); setConfirmDeleteId(null); }}
+                                  onBlur={() => setConfirmDeleteId(null)}
+                                  autoFocus
+                                  className="px-2 h-6 rounded-md text-[10px] font-medium bg-rust/20 text-rust border border-rust/30 hover:bg-rust/30 transition-colors"
+                                >
+                                  Confirm?
+                                </button>
+                              ) : (
+                                <button
+                                  onClick={() => setConfirmDeleteId(r.id)}
+                                  className="grid place-items-center w-6 h-6 rounded-md text-paper-faint hover:text-rust hover:bg-rust/10 transition-colors"
+                                  title="Delete sale"
+                                >
+                                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M9 6V4h6v2"/></svg>
+                                </button>
+                              )}
+                            </div>
                           </div>
                         </div>
                       ))}
@@ -1435,6 +1535,17 @@ export default function DashboardPage() {
     addToast(`${item.name} sold for ${gbp(soldFor)} · ${profit >= 0 ? "+" : ""}${gbp(profit)}`);
   }
 
+  function deleteSale(id: number) {
+    const record = saleRecords.find((r) => r.id === id);
+    setSaleRecords((prev) => prev.filter((r) => r.id !== id));
+    if (record) addToast(`Sale record for "${record.itemName}" removed`, "warning");
+  }
+
+  function editSale(updated: SaleRecord) {
+    setSaleRecords((prev) => prev.map((r) => r.id === updated.id ? updated : r));
+    addToast(`Sale record for "${updated.itemName}" updated`);
+  }
+
   const liveProfit = saleRecords.reduce((s, r) => s + r.profit, 0);
   const liveSold   = saleRecords.length;
 
@@ -1563,7 +1674,7 @@ export default function DashboardPage() {
           {navKey === "stock"      && <Stock items={items} onSell={setSellTarget} onToggleListed={toggleListed} onEdit={setEditTarget} onRemove={removeItem} query={query} />}
           {navKey === "storage"    && <StorageMap items={items} storageLocations={storageLocations} onAddStorage={() => setStorageModalOpen(true)} onRemoveItem={unassignFromStorage} />}
           {navKey === "calculator" && <ProfitCalculator />}
-          {navKey === "archives"   && <Archives saleRecords={saleRecords} />}
+          {navKey === "archives"   && <Archives saleRecords={saleRecords} onDeleteSale={deleteSale} onEditSale={editSale} />}
         </main>
       </div>
     </div>
