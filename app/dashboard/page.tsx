@@ -538,9 +538,9 @@ function SellModal({ item, onClose, onConfirm }: { item: Item; onClose: () => vo
 
 /* ---------- item row ---------- */
 
-function ItemRow({ item, onSell, onToggleListed, onEdit, onRemove }: {
+function ItemRow({ item, onSell, onToggleListed, onEdit, onRemove, onUnsell }: {
   item: Item; onSell: (item: Item) => void; onToggleListed: (item: Item) => void;
-  onEdit?: (item: Item) => void; onRemove?: (id: number) => void;
+  onEdit?: (item: Item) => void; onRemove?: (id: number) => void; onUnsell?: (id: number) => void;
 }) {
   const c = COND[item.cond];
   const ageDays = item.createdAt
@@ -600,9 +600,14 @@ function ItemRow({ item, onSell, onToggleListed, onEdit, onRemove }: {
           </button>
         )}
         {item.stage === "sold" && (
-          <span className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-md bg-paper-faint/10 text-paper-faint border border-line">
-            <span className="w-1.5 h-1.5 rounded-full bg-paper-faint" />Sold
-          </span>
+          <button
+            onClick={() => onUnsell?.(item.id)}
+            className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-md bg-paper-faint/10 text-paper-faint border border-line hover:bg-rust/10 hover:text-rust hover:border-rust/30 transition-all duration-200 group"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-paper-faint group-hover:bg-rust transition-colors duration-200" />
+            <span className="group-hover:hidden">Sold</span>
+            <span className="hidden group-hover:inline">Mark unsold</span>
+          </button>
         )}
 
         {/* mark sold toggle — only on active items */}
@@ -763,9 +768,9 @@ function Overview({
   );
 }
 
-function Stock({ items, onSell, onToggleListed, onEdit, onRemove, query }: {
+function Stock({ items, onSell, onToggleListed, onEdit, onRemove, onUnsell, query }: {
   items: Item[]; onSell: (item: Item) => void; onToggleListed: (item: Item) => void;
-  onEdit: (item: Item) => void; onRemove: (id: number) => void; query: string;
+  onEdit: (item: Item) => void; onRemove: (id: number) => void; onUnsell: (id: number) => void; query: string;
 }) {
   const q = query.toLowerCase().trim();
   const shown = q
@@ -815,7 +820,7 @@ function Stock({ items, onSell, onToggleListed, onEdit, onRemove, query }: {
       </div>
       <div className="rounded-2xl border border-line bg-ink-card overflow-hidden">
         {shown.length > 0
-          ? <div>{shown.map((it) => <ItemRow key={it.id} item={it} onSell={onSell} onToggleListed={onToggleListed} onEdit={onEdit} onRemove={onRemove} />)}</div>
+          ? <div>{shown.map((it) => <ItemRow key={it.id} item={it} onSell={onSell} onToggleListed={onToggleListed} onEdit={onEdit} onRemove={onRemove} onUnsell={onUnsell} />)}</div>
           : q
             ? <p className="px-4 py-8 text-center text-sm text-paper-faint">No results for &ldquo;{query}&rdquo; — try a different name, code, or bin.</p>
             : <p className="px-4 py-8 text-center text-sm text-paper-faint">No stock yet — hit Add stock to get started.</p>}
@@ -1535,6 +1540,12 @@ export default function DashboardPage() {
     addToast(`${item.name} sold for ${gbp(soldFor)} · ${profit >= 0 ? "+" : ""}${gbp(profit)}`);
   }
 
+  function unsellItem(id: number) {
+    const item = items.find((i) => i.id === id);
+    setItems((prev) => prev.map((i) => i.id === id ? { ...i, stage: "unlisted" as Stage } : i));
+    if (item) addToast(`${item.name} moved back to unlisted`, "info");
+  }
+
   function deleteSale(id: number) {
     const record = saleRecords.find((r) => r.id === id);
     setSaleRecords((prev) => prev.filter((r) => r.id !== id));
@@ -1671,7 +1682,7 @@ export default function DashboardPage() {
 
         <main className="flex-1 p-6 max-w-[1152px] w-full mx-auto">
           {navKey === "overview"   && <Overview items={items} stage={stage} setStage={setStage} onSell={setSellTarget} onToggleListed={toggleListed} liveProfit={liveProfit} liveSold={liveSold} query={query} />}
-          {navKey === "stock"      && <Stock items={items} onSell={setSellTarget} onToggleListed={toggleListed} onEdit={setEditTarget} onRemove={removeItem} query={query} />}
+          {navKey === "stock"      && <Stock items={items} onSell={setSellTarget} onToggleListed={toggleListed} onEdit={setEditTarget} onRemove={removeItem} onUnsell={unsellItem} query={query} />}
           {navKey === "storage"    && <StorageMap items={items} storageLocations={storageLocations} onAddStorage={() => setStorageModalOpen(true)} onRemoveItem={unassignFromStorage} />}
           {navKey === "calculator" && <ProfitCalculator />}
           {navKey === "archives"   && <Archives saleRecords={saleRecords} onDeleteSale={deleteSale} onEditSale={editSale} />}
