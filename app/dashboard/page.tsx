@@ -540,7 +540,9 @@ function Stock({ items, onSell, onToggleListed }: { items: Item[]; onSell: (item
   );
 }
 
-function LocationDetailModal({ location, items, onClose }: { location: string; items: Item[]; onClose: () => void }) {
+function LocationDetailModal({ location, items, onClose, onRemove }: {
+  location: string; items: Item[]; onClose: () => void; onRemove: (id: number) => void;
+}) {
   useEscClose(onClose);
   return (
     <ModalShell onClose={onClose}>
@@ -559,7 +561,7 @@ function LocationDetailModal({ location, items, onClose }: { location: string; i
             {items.map((it) => {
               const c = COND[it.cond];
               return (
-                <div key={it.id} className="flex items-center justify-between gap-3 rounded-xl border border-line-soft bg-ink-soft px-4 py-3">
+                <div key={it.id} className="flex items-center justify-between gap-3 rounded-xl border border-line-soft bg-ink-soft px-4 py-3 group">
                   <div className="flex items-center gap-3 min-w-0">
                     <span className="w-2 h-2 rounded-full shrink-0" style={{ background: c.dot }} />
                     <div className="min-w-0">
@@ -579,6 +581,15 @@ function LocationDetailModal({ location, items, onClose }: { location: string; i
                       <span className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-paper-faint/10 text-paper-faint border border-line">Sold</span>
                     )}
                     <span className="text-xs text-paper-faint font-mono">£{it.paid}</span>
+                    <button
+                      onClick={() => onRemove(it.id)}
+                      className="grid place-items-center w-7 h-7 rounded-lg text-paper-faint hover:text-rust hover:bg-rust/10 transition-colors"
+                      title="Remove item"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+                        <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                      </svg>
+                    </button>
                   </div>
                 </div>
               );
@@ -590,10 +601,11 @@ function LocationDetailModal({ location, items, onClose }: { location: string; i
   );
 }
 
-function StorageMap({ items, storageLocations, onAddStorage }: {
+function StorageMap({ items, storageLocations, onAddStorage, onRemoveItem }: {
   items: Item[];
   storageLocations: string[];
   onAddStorage: () => void;
+  onRemoveItem: (id: number) => void;
 }) {
   const [selected, setSelected] = useState<string | null>(null);
   const byBin: Record<string, Item[]> = {};
@@ -622,6 +634,7 @@ function StorageMap({ items, storageLocations, onAddStorage }: {
           location={selected}
           items={byBin[selected] ?? []}
           onClose={() => setSelected(null)}
+          onRemove={(id) => { onRemoveItem(id); if ((byBin[selected] ?? []).length <= 1) setSelected(null); }}
         />
       )}
 
@@ -866,6 +879,10 @@ export default function DashboardPage() {
     setStorageLocations((prev) => prev.includes(name) ? prev : [...prev, name]);
   }
 
+  function removeItem(id: number) {
+    setItems((prev) => prev.filter((i) => i.id !== id));
+  }
+
   function toggleListed(item: Item) {
     setItems((prev) => prev.map((i) =>
       i.id === item.id
@@ -964,7 +981,7 @@ export default function DashboardPage() {
         <main className="flex-1 p-6 max-w-[1152px] w-full mx-auto">
           {navKey === "overview"   && <Overview items={items} stage={stage} setStage={setStage} onSell={setSellTarget} onToggleListed={toggleListed} liveProfit={liveProfit} liveSold={liveSold} />}
           {navKey === "stock"      && <Stock items={items} onSell={setSellTarget} onToggleListed={toggleListed} />}
-          {navKey === "storage"    && <StorageMap items={items} storageLocations={storageLocations} onAddStorage={() => setStorageModalOpen(true)} />}
+          {navKey === "storage"    && <StorageMap items={items} storageLocations={storageLocations} onAddStorage={() => setStorageModalOpen(true)} onRemoveItem={removeItem} />}
           {navKey === "calculator" && <ProfitCalculator />}
           {navKey === "archives"   && <Archives saleRecords={saleRecords} />}
         </main>
