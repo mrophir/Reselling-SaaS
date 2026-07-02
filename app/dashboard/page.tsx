@@ -686,10 +686,10 @@ function ItemRow({ item, onSell, onToggleListed, onEdit, onRemove, onUnsell }: {
 /* ---------- sections ---------- */
 
 function Overview({
-  items, stage, setStage, onSell, onToggleListed, liveProfit, liveSold, query,
+  items, stage, setStage, onSell, onToggleListed, onUnsell, liveProfit, liveSold, query,
 }: {
   items: Item[]; stage: Stage; setStage: (s: Stage) => void;
-  onSell: (item: Item) => void; onToggleListed: (item: Item) => void;
+  onSell: (item: Item) => void; onToggleListed: (item: Item) => void; onUnsell: (id: number) => void;
   liveProfit: number; liveSold: number; query: string;
 }) {
   const q = query.toLowerCase().trim();
@@ -731,17 +731,28 @@ function Overview({
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-        {[
-          { label: "Unlisted",     value: counts.unlisted,           cls: "text-amber" },
-          { label: "Listed",       value: counts.listed,             cls: "" },
-          { label: "Sold · Jul",   value: counts.sold,               cls: "" },
-          { label: "Profit · Jul", value: gbp(totalProfit),          cls: "text-moss" },
-        ].map((s) => (
-          <div key={s.label} className="rounded-xl border border-line bg-ink-card px-4 py-3.5">
-            <p className="text-[13px] text-paper-faint">{s.label}</p>
-            <p className={`font-mono text-2xl mt-1 ${s.cls}`}>{s.value}</p>
-          </div>
-        ))}
+        {([
+          { label: "Unlisted", value: counts.unlisted, cls: "text-amber", stageKey: "unlisted" as Stage },
+          { label: "Listed",   value: counts.listed,   cls: "",           stageKey: "listed"   as Stage },
+          { label: "Sold · Jul", value: counts.sold,   cls: "",           stageKey: "sold"     as Stage },
+        ] as const).map((s) => {
+          const active = stage === s.stageKey;
+          return (
+            <button
+              key={s.label}
+              onClick={() => setStage(s.stageKey)}
+              className={`rounded-xl border px-4 py-3.5 text-left transition-all ${active ? "border-amber/40 bg-amber/[0.06]" : "border-line bg-ink-card hover:border-line hover:bg-ink-soft/60"}`}
+            >
+              <p className="text-[13px] text-paper-faint">{s.label}</p>
+              <p className={`font-mono text-2xl mt-1 ${s.cls}`}>{s.value}</p>
+              {active && <p className="text-[10px] text-amber/70 mt-1 font-mono">showing below ↓</p>}
+            </button>
+          );
+        })}
+        <div className="rounded-xl border border-line bg-ink-card px-4 py-3.5">
+          <p className="text-[13px] text-paper-faint">Profit · Jul</p>
+          <p className="font-mono text-2xl mt-1 text-moss">{gbp(totalProfit)}</p>
+        </div>
       </div>
 
       <div className="rounded-2xl border border-line bg-ink-card overflow-hidden">
@@ -759,7 +770,7 @@ function Overview({
         </div>
         <div>
           {shown.length > 0
-            ? shown.map((it) => <ItemRow key={it.id} item={it} onSell={onSell} onToggleListed={onToggleListed} />)
+            ? shown.map((it) => <ItemRow key={it.id} item={it} onSell={onSell} onToggleListed={onToggleListed} onUnsell={onUnsell} />)
             : q
               ? <p className="px-4 py-8 text-center text-sm text-paper-faint">No results for &ldquo;{query}&rdquo; in this stage.</p>
               : <p className="px-4 py-8 text-center text-sm text-paper-faint">No items in this stage yet.</p>}
@@ -1690,7 +1701,7 @@ export default function DashboardPage() {
         </header>
 
         <main className="flex-1 p-6 max-w-[1152px] w-full mx-auto">
-          {navKey === "overview"   && <Overview items={items} stage={stage} setStage={setStage} onSell={setSellTarget} onToggleListed={toggleListed} liveProfit={liveProfit} liveSold={liveSold} query={query} />}
+          {navKey === "overview"   && <Overview items={items} stage={stage} setStage={setStage} onSell={setSellTarget} onToggleListed={toggleListed} onUnsell={unsellItem} liveProfit={liveProfit} liveSold={liveSold} query={query} />}
           {navKey === "stock"      && <Stock items={items} onSell={setSellTarget} onToggleListed={toggleListed} onEdit={setEditTarget} onRemove={removeItem} onUnsell={unsellItem} query={query} />}
           {navKey === "storage"    && <StorageMap items={items} storageLocations={storageLocations} onAddStorage={() => setStorageModalOpen(true)} onRemoveItem={unassignFromStorage} />}
           {navKey === "calculator" && <ProfitCalculator />}
