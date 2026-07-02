@@ -95,6 +95,31 @@ const NAV: { key: NavKey; label: string; icon: React.ReactNode }[] = [
 
 const gbp = (n: number) => (n < 0 ? "−£" : "£") + Math.abs(n).toFixed(2);
 
+function exportMonthCSV(month: string, records: SaleRecord[], revenue: number, cost: number, profit: number, margin: number) {
+  const esc = (s: string | number) => `"${String(s).replace(/"/g, '""')}"`;
+  const rows: string[][] = [
+    [`Stockpile Export — ${month}`],
+    [],
+    ["Item Name", "Cost Paid (£)", "Sold For (£)", "Profit (£)"],
+    ...records.map((r) => [r.itemName, r.paid.toFixed(2), r.soldFor.toFixed(2), r.profit.toFixed(2)]),
+    [],
+    ["", "Revenue",      "", revenue.toFixed(2)],
+    ["", "Cost of goods","", cost.toFixed(2)],
+    ["", "Net profit",   "", profit.toFixed(2)],
+    ["", "Margin",       "", `${margin}%`],
+  ];
+  const csv = rows.map((r) => r.map(esc).join(",")).join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `stockpile-${month.toLowerCase().replace(/\s+/g, "-")}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 function useEscClose(onClose: () => void) {
   useEffect(() => {
     const fn = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
@@ -133,6 +158,39 @@ function ModalShell({ onClose, children }: { onClose: () => void; children: Reac
       <div className="relative w-full max-w-md rounded-2xl border border-line bg-ink-card shadow-2xl shadow-black/60 overflow-hidden">
         {children}
       </div>
+    </div>
+  );
+}
+
+/* ---------- toasts ---------- */
+
+interface Toast { id: number; message: string; type: "success" | "info" | "warning"; }
+
+function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: (id: number) => void }) {
+  useEffect(() => {
+    const t = setTimeout(() => onDismiss(toast.id), 3200);
+    return () => clearTimeout(t);
+  }, [toast.id, onDismiss]);
+
+  const style = {
+    success: { border: "border-moss/30",  bg: "bg-moss/10",  dot: "var(--color-moss)"  },
+    info:    { border: "border-amber/30", bg: "bg-amber/10", dot: "var(--color-amber)" },
+    warning: { border: "border-rust/30",  bg: "bg-rust/10",  dot: "var(--color-rust)"  },
+  }[toast.type];
+
+  return (
+    <div className={`toast-slide pointer-events-auto flex items-center gap-3 rounded-xl border ${style.border} ${style.bg} bg-ink-card px-4 py-3 shadow-lg shadow-black/50 min-w-[260px] max-w-[360px]`}>
+      <span className="w-2 h-2 rounded-full shrink-0" style={{ background: style.dot }} />
+      <span className="text-sm text-paper flex-1 leading-snug">{toast.message}</span>
+      <button onClick={() => onDismiss(toast.id)} className="text-paper-faint hover:text-paper transition-colors ml-1 shrink-0"><IconClose /></button>
+    </div>
+  );
+}
+
+function ToastContainer({ toasts, onDismiss }: { toasts: Toast[]; onDismiss: (id: number) => void }) {
+  return (
+    <div className="fixed bottom-6 right-6 z-[100] flex flex-col gap-2 items-end pointer-events-none">
+      {toasts.map((t) => <ToastItem key={t.id} toast={t} onDismiss={onDismiss} />)}
     </div>
   );
 }
@@ -446,14 +504,17 @@ function ItemRow({ item, onSell, onToggleListed }: { item: Item; onSell: (item: 
 /* ---------- sections ---------- */
 
 function Overview({
-  items, stage, setStage, onSell, onToggleListed, liveProfit, liveSold,
+  items, stage, setStage, onSell, onToggleListed, liveProfit, liveSold, query,
 }: {
   items: Item[]; stage: Stage; setStage: (s: Stage) => void;
   onSell: (item: Item) => void; onToggleListed: (item: Item) => void;
-  liveProfit: number; liveSold: number;
+  liveProfit: number; liveSold: number; query: string;
 }) {
+  const q = query.toLowerCase().trim();
+  const matchQ = (i: Item) => !q || i.name.toLowerCase().includes(q) || i.code.toLowerCase().includes(q) || (i.bin?.toLowerCase().includes(q) ?? false);
+
   const stages: Stage[] = ["unlisted", "listed", "sold"];
-  const shown = items.filter((i) => i.stage === stage);
+  const shown = items.filter((i) => i.stage === stage && matchQ(i));
   const counts = {
     unlisted: items.filter((i) => i.stage === "unlisted").length,
     listed:   items.filter((i) => i.stage === "listed").length,
@@ -517,24 +578,37 @@ function Overview({
         <div>
           {shown.length > 0
             ? shown.map((it) => <ItemRow key={it.id} item={it} onSell={onSell} onToggleListed={onToggleListed} />)
-            : <p className="px-4 py-8 text-center text-sm text-paper-faint">No items in this stage yet.</p>}
+            : q
+              ? <p className="px-4 py-8 text-center text-sm text-paper-faint">No results for &ldquo;{query}&rdquo; in this stage.</p>
+              : <p className="px-4 py-8 text-center text-sm text-paper-faint">No items in this stage yet.</p>}
         </div>
       </div>
     </div>
   );
 }
 
-function Stock({ items, onSell, onToggleListed }: { items: Item[]; onSell: (item: Item) => void; onToggleListed: (item: Item) => void }) {
+function Stock({ items, onSell, onToggleListed, query }: {
+  items: Item[]; onSell: (item: Item) => void; onToggleListed: (item: Item) => void; query: string;
+}) {
+  const q = query.toLowerCase().trim();
+  const shown = q
+    ? items.filter((i) => i.name.toLowerCase().includes(q) || i.code.toLowerCase().includes(q) || (i.bin?.toLowerCase().includes(q) ?? false))
+    : items;
+
   return (
     <div>
       <div className="mb-6">
         <h1 className="font-display text-2xl font-medium">Stock</h1>
-        <p className="text-paper-dim text-sm mt-1">Every item across all three stages</p>
+        <p className="text-paper-dim text-sm mt-1">
+          {q ? `${shown.length} result${shown.length !== 1 ? "s" : ""} for "${query}"` : "Every item across all three stages"}
+        </p>
       </div>
       <div className="rounded-2xl border border-line bg-ink-card overflow-hidden">
-        {items.length > 0
-          ? <div>{items.map((it) => <ItemRow key={it.id} item={it} onSell={onSell} onToggleListed={onToggleListed} />)}</div>
-          : <p className="px-4 py-8 text-center text-sm text-paper-faint">No stock yet — hit Add stock to get started.</p>}
+        {shown.length > 0
+          ? <div>{shown.map((it) => <ItemRow key={it.id} item={it} onSell={onSell} onToggleListed={onToggleListed} />)}</div>
+          : q
+            ? <p className="px-4 py-8 text-center text-sm text-paper-faint">No results for &ldquo;{query}&rdquo; — try a different name, code, or bin.</p>
+            : <p className="px-4 py-8 text-center text-sm text-paper-faint">No stock yet — hit Add stock to get started.</p>}
       </div>
     </div>
   );
@@ -815,8 +889,11 @@ function Archives({ saleRecords }: { saleRecords: SaleRecord[] }) {
                     <p className="font-mono text-xl text-moss">{gbp(mo.profit)}</p>
                     <p className="text-xs text-paper-faint">net profit</p>
                   </div>
-                  <button className="flex items-center gap-2 text-sm px-3 py-2 rounded-lg border border-line-soft text-paper-dim hover:text-paper hover:border-paper-faint transition-colors">
-                    <IconDownload /> Export
+                  <button
+                    onClick={() => exportMonthCSV(mo.m, mo.records, mo.revenue, mo.cost, mo.profit, mo.margin)}
+                    className="flex items-center gap-2 text-sm px-3 py-2 rounded-lg border border-line-soft text-paper-dim hover:text-paper hover:border-paper-faint transition-colors"
+                  >
+                    <IconDownload /> Export CSV
                   </button>
                 </div>
               </div>
@@ -870,25 +947,66 @@ export default function DashboardPage() {
   const [items, setItems]                   = useState<Item[]>([]);
   const [saleRecords, setSaleRecords]       = useState<SaleRecord[]>([]);
   const [storageLocations, setStorageLocations] = useState<string[]>([]);
+  const [toasts, setToasts]               = useState<Toast[]>([]);
+  const [query, setQuery]                 = useState("");
+  const [hydrated, setHydrated]           = useState(false);
+
+  // Load persisted state from localStorage on first mount
+  useEffect(() => {
+    try {
+      const s = localStorage.getItem("stockpile-items");
+      if (s) setItems(JSON.parse(s));
+      const r = localStorage.getItem("stockpile-sales");
+      if (r) setSaleRecords(JSON.parse(r));
+      const l = localStorage.getItem("stockpile-locations");
+      if (l) setStorageLocations(JSON.parse(l));
+    } catch {}
+    setHydrated(true);
+  }, []);
+
+  // Persist items whenever they change (after initial load)
+  useEffect(() => {
+    if (!hydrated) return;
+    localStorage.setItem("stockpile-items", JSON.stringify(items));
+  }, [items, hydrated]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    localStorage.setItem("stockpile-sales", JSON.stringify(saleRecords));
+  }, [saleRecords, hydrated]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    localStorage.setItem("stockpile-locations", JSON.stringify(storageLocations));
+  }, [storageLocations, hydrated]);
+
+  function addToast(message: string, type: Toast["type"] = "success") {
+    setToasts((prev) => [...prev, { id: Date.now(), message, type }]);
+  }
+  function dismissToast(id: number) {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }
 
   function addItem(item: Item) {
     setItems((prev) => [item, ...prev]);
+    addToast(`${item.name} added to stock`);
   }
 
   function addStorageLocation(name: string) {
     setStorageLocations((prev) => prev.includes(name) ? prev : [...prev, name]);
+    addToast(`Storage location "${name}" created`, "info");
   }
 
   function removeItem(id: number) {
+    const target = items.find((i) => i.id === id);
     setItems((prev) => prev.filter((i) => i.id !== id));
+    if (target) addToast(`${target.name} removed`, "warning");
   }
 
   function toggleListed(item: Item) {
-    setItems((prev) => prev.map((i) =>
-      i.id === item.id
-        ? { ...i, stage: (i.stage === "unlisted" ? "listed" : "unlisted") as Stage }
-        : i
-    ));
+    const next: Stage = item.stage === "unlisted" ? "listed" : "unlisted";
+    setItems((prev) => prev.map((i) => i.id === item.id ? { ...i, stage: next } : i));
+    addToast(next === "listed" ? `${item.name} marked as listed` : `${item.name} moved back to unlisted`);
   }
 
   function confirmSale(item: Item, soldFor: number) {
@@ -898,6 +1016,7 @@ export default function DashboardPage() {
       { id: Date.now(), itemName: item.name, paid: item.paid, soldFor, profit, month: CURRENT_MONTH },
       ...prev,
     ]);
+    addToast(`${item.name} sold for ${gbp(soldFor)} · ${profit >= 0 ? "+" : ""}${gbp(profit)}`);
   }
 
   const liveProfit = saleRecords.reduce((s, r) => s + r.profit, 0);
@@ -905,6 +1024,7 @@ export default function DashboardPage() {
 
   return (
     <div className="flex min-h-screen bg-ink">
+      <ToastContainer toasts={toasts} onDismiss={dismissToast} />
       {addModalOpen && <AddStockModal onClose={() => setAddModalOpen(false)} onAdd={addItem} storageLocations={storageLocations} />}
       {storageModalOpen && <AddStorageModal onClose={() => setStorageModalOpen(false)} onAdd={addStorageLocation} />}
       {sellTarget   && (
@@ -966,7 +1086,15 @@ export default function DashboardPage() {
           </button>
           <div className="flex items-center gap-2.5 flex-1 min-w-0 max-w-[420px]">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] text-paper-faint shrink-0"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input placeholder="Find an item or bin…" className="bg-transparent border-none outline-none text-sm text-paper placeholder:text-paper-faint w-full" />
+            <input
+              placeholder="Find an item or bin…"
+              className="bg-transparent border-none outline-none text-sm text-paper placeholder:text-paper-faint w-full"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+            {query && (
+              <button onClick={() => setQuery("")} className="text-paper-faint hover:text-paper transition-colors shrink-0"><IconClose /></button>
+            )}
           </div>
           <button onClick={() => setAddModalOpen(true)} className="flex items-center gap-2 text-sm font-medium px-3.5 py-2 rounded-lg bg-amber text-ink hover:bg-paper transition-colors shrink-0">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -979,8 +1107,8 @@ export default function DashboardPage() {
         </header>
 
         <main className="flex-1 p-6 max-w-[1152px] w-full mx-auto">
-          {navKey === "overview"   && <Overview items={items} stage={stage} setStage={setStage} onSell={setSellTarget} onToggleListed={toggleListed} liveProfit={liveProfit} liveSold={liveSold} />}
-          {navKey === "stock"      && <Stock items={items} onSell={setSellTarget} onToggleListed={toggleListed} />}
+          {navKey === "overview"   && <Overview items={items} stage={stage} setStage={setStage} onSell={setSellTarget} onToggleListed={toggleListed} liveProfit={liveProfit} liveSold={liveSold} query={query} />}
+          {navKey === "stock"      && <Stock items={items} onSell={setSellTarget} onToggleListed={toggleListed} query={query} />}
           {navKey === "storage"    && <StorageMap items={items} storageLocations={storageLocations} onAddStorage={() => setStorageModalOpen(true)} onRemoveItem={removeItem} />}
           {navKey === "calculator" && <ProfitCalculator />}
           {navKey === "archives"   && <Archives saleRecords={saleRecords} />}
