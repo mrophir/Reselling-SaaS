@@ -1544,6 +1544,11 @@ export default function DashboardPage() {
   function unsellItem(id: number) {
     const item = items.find((i) => i.id === id);
     setItems((prev) => prev.map((i) => i.id === id ? { ...i, stage: "unlisted" as Stage } : i));
+    // Remove the most recent sale record linked to this item
+    setSaleRecords((prev) => {
+      const latest = [...prev].filter((r) => r.itemId === id).sort((a, b) => b.id - a.id)[0];
+      return latest ? prev.filter((r) => r.id !== latest.id) : prev;
+    });
     if (item) addToast(`${item.name} moved back to unlisted`, "info");
   }
 
