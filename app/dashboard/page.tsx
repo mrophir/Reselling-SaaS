@@ -685,7 +685,7 @@ export default function DashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [sellTarget, setSellTarget]    = useState<Item | null>(null);
-  const [items, setItems]         = useState<Item[]>(SEED_ITEMS);
+  const [items, setItems]         = useState<Item[]>([]);
   const [saleRecords, setSaleRecords]  = useState<SaleRecord[]>([]);
 
   function addItem(item: Item) {
