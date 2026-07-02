@@ -17,7 +17,7 @@ type Stage = "unlisted" | "listed" | "sold";
 interface Item {
   id: number; code: string; name: string; cond: CondKey;
   paid: number; stage: Stage; age?: number;
-  platform?: string; bin?: string;
+  platform?: string; bin?: string; notes?: string;
 }
 
 interface SaleRecord {
@@ -198,7 +198,7 @@ function ToastContainer({ toasts, onDismiss }: { toasts: Toast[]; onDismiss: (id
 
 /* ---------- add stock modal ---------- */
 
-const EMPTY_FORM = { name: "", paid: "", cond: "good" as CondKey, bin: "", itemCode: "" };
+const EMPTY_FORM = { name: "", paid: "", cond: "good" as CondKey, bin: "", itemCode: "", notes: "" };
 
 function AddStockModal({ onClose, onAdd, storageLocations }: {
   onClose: () => void;
@@ -219,7 +219,7 @@ function AddStockModal({ onClose, onAdd, storageLocations }: {
     if (isNaN(paid) || paid < 0) { setError("Enter a valid price paid."); return; }
     const id = Date.now();
     const code = form.itemCode.trim() || `IT-${String(id).slice(-4)}`;
-    onAdd({ id, code, name: form.name.trim(), cond: form.cond, paid, stage: "unlisted", age: 0, bin: form.bin || undefined });
+    onAdd({ id, code, name: form.name.trim(), cond: form.cond, paid, stage: "unlisted", age: 0, bin: form.bin || undefined, notes: form.notes.trim() || undefined });
     onClose();
   }
 
@@ -296,6 +296,18 @@ function AddStockModal({ onClose, onAdd, storageLocations }: {
             placeholder="e.g. SKU-001, TAG-42 — auto-generated if left blank"
             value={form.itemCode}
             onChange={(e) => setForm((f) => ({ ...f, itemCode: e.target.value }))}
+          />
+        </div>
+        <div>
+          <label className="block text-sm text-paper-dim mb-1.5">
+            Notes <span className="text-paper-faint">(optional)</span>
+          </label>
+          <textarea
+            className={`${field} resize-none`}
+            rows={3}
+            placeholder="e.g. small mark on left sleeve, missing button, bought as bundle…"
+            value={form.notes}
+            onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
           />
         </div>
         {error && <p className="text-sm text-rust">{error}</p>}
@@ -643,6 +655,7 @@ function LocationDetailModal({ location, items, onClose, onRemove }: {
                     <div className="min-w-0">
                       <p className="text-sm font-medium truncate">{it.name}</p>
                       <p className="text-xs text-paper-faint font-mono mt-0.5">{it.code}</p>
+                      {it.notes && <p className="text-xs text-paper-faint mt-0.5 truncate">{it.notes}</p>}
                     </div>
                   </div>
                   <div className="flex items-center gap-3 shrink-0">
