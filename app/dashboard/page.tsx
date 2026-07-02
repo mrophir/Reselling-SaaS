@@ -139,7 +139,7 @@ function ModalShell({ onClose, children }: { onClose: () => void; children: Reac
 
 /* ---------- add stock modal ---------- */
 
-const EMPTY_FORM = { name: "", paid: "", cond: "good" as CondKey, bin: "" };
+const EMPTY_FORM = { name: "", paid: "", cond: "good" as CondKey, bin: "", itemCode: "" };
 
 function AddStockModal({ onClose, onAdd, storageLocations }: {
   onClose: () => void;
@@ -159,7 +159,8 @@ function AddStockModal({ onClose, onAdd, storageLocations }: {
     const paid = parseFloat(form.paid);
     if (isNaN(paid) || paid < 0) { setError("Enter a valid price paid."); return; }
     const id = Date.now();
-    onAdd({ id, code: `IT-${String(id).slice(-4)}`, name: form.name.trim(), cond: form.cond, paid, stage: "unlisted", age: 0, bin: form.bin || undefined });
+    const code = form.itemCode.trim() || `IT-${String(id).slice(-4)}`;
+    onAdd({ id, code, name: form.name.trim(), cond: form.cond, paid, stage: "unlisted", age: 0, bin: form.bin || undefined });
     onClose();
   }
 
@@ -226,6 +227,17 @@ function AddStockModal({ onClose, onAdd, storageLocations }: {
               No storage locations yet — create one in the Storage map first
             </div>
           )}
+        </div>
+        <div>
+          <label className="block text-sm text-paper-dim mb-1.5">
+            Item code <span className="text-paper-faint">(optional)</span>
+          </label>
+          <input
+            className={field}
+            placeholder="e.g. SKU-001, TAG-42 — auto-generated if left blank"
+            value={form.itemCode}
+            onChange={(e) => setForm((f) => ({ ...f, itemCode: e.target.value }))}
+          />
         </div>
         {error && <p className="text-sm text-rust">{error}</p>}
         <div className="flex gap-3 pt-1">
@@ -528,11 +540,62 @@ function Stock({ items, onSell, onToggleListed }: { items: Item[]; onSell: (item
   );
 }
 
+function LocationDetailModal({ location, items, onClose }: { location: string; items: Item[]; onClose: () => void }) {
+  useEscClose(onClose);
+  return (
+    <ModalShell onClose={onClose}>
+      <div className="flex items-center justify-between px-6 py-5 border-b border-line">
+        <div>
+          <h2 className="font-display font-medium text-lg">{location}</h2>
+          <p className="text-paper-faint text-xs mt-0.5">{items.length} item{items.length !== 1 ? "s" : ""} stored here</p>
+        </div>
+        <button onClick={onClose} className="grid place-items-center w-8 h-8 rounded-lg text-paper-faint hover:text-paper hover:bg-ink-soft transition-colors"><IconClose /></button>
+      </div>
+      <div className="px-6 py-4 max-h-[60vh] overflow-y-auto">
+        {items.length === 0 ? (
+          <p className="text-sm text-paper-faint text-center py-8">No items assigned to this location yet.</p>
+        ) : (
+          <div className="space-y-2">
+            {items.map((it) => {
+              const c = COND[it.cond];
+              return (
+                <div key={it.id} className="flex items-center justify-between gap-3 rounded-xl border border-line-soft bg-ink-soft px-4 py-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className="w-2 h-2 rounded-full shrink-0" style={{ background: c.dot }} />
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium truncate">{it.name}</p>
+                      <p className="text-xs text-paper-faint font-mono mt-0.5">{it.code}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <span className="text-[11px] px-2 py-0.5 rounded-md" style={{ background: c.bg, color: c.fg }}>{c.label}</span>
+                    {it.stage === "unlisted" && (
+                      <span className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-amber/12 text-amber border border-amber/25">Not listed</span>
+                    )}
+                    {it.stage === "listed" && (
+                      <span className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-moss/12 text-moss border border-moss/25">Listed</span>
+                    )}
+                    {it.stage === "sold" && (
+                      <span className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-paper-faint/10 text-paper-faint border border-line">Sold</span>
+                    )}
+                    <span className="text-xs text-paper-faint font-mono">£{it.paid}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </ModalShell>
+  );
+}
+
 function StorageMap({ items, storageLocations, onAddStorage }: {
   items: Item[];
   storageLocations: string[];
   onAddStorage: () => void;
 }) {
+  const [selected, setSelected] = useState<string | null>(null);
   const byBin: Record<string, Item[]> = {};
   items.forEach((i) => { if (i.bin) (byBin[i.bin] = byBin[i.bin] ?? []).push(i); });
 
@@ -554,6 +617,14 @@ function StorageMap({ items, storageLocations, onAddStorage }: {
         </button>
       </div>
 
+      {selected && (
+        <LocationDetailModal
+          location={selected}
+          items={byBin[selected] ?? []}
+          onClose={() => setSelected(null)}
+        />
+      )}
+
       {storageLocations.length === 0 ? (
         <div className="rounded-2xl border border-line bg-ink-card px-8 py-16 text-center">
           <span className="grid place-items-center w-12 h-12 rounded-xl bg-ink-soft border border-line-soft text-amber mx-auto mb-4">
@@ -573,9 +644,13 @@ function StorageMap({ items, storageLocations, onAddStorage }: {
           {storageLocations.map((loc) => {
             const locItems = byBin[loc] ?? [];
             return (
-              <div key={loc} className="rounded-2xl border border-line bg-ink-card p-4">
+              <button
+                key={loc}
+                onClick={() => setSelected(loc)}
+                className="rounded-2xl border border-line bg-ink-card p-4 text-left hover:border-paper-faint/40 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/25 transition-all duration-200 group"
+              >
                 <div className="flex items-center justify-between mb-3">
-                  <span className="flex items-center gap-2 font-medium"><IconBin />{loc}</span>
+                  <span className="flex items-center gap-2 font-medium text-paper group-hover:text-amber transition-colors"><IconBin />{loc}</span>
                   <span className="text-xs text-paper-faint font-mono">{locItems.length} items</span>
                 </div>
                 {locItems.length > 0 ? locItems.map((it) => (
@@ -584,7 +659,8 @@ function StorageMap({ items, storageLocations, onAddStorage }: {
                     <span className="truncate">{it.name}</span>
                   </div>
                 )) : <p className="text-xs text-paper-faint">Empty — assign items here when adding stock</p>}
-              </div>
+                <p className="text-[11px] text-paper-faint mt-3 group-hover:text-amber/60 transition-colors">Click to view details →</p>
+              </button>
             );
           })}
         </div>
