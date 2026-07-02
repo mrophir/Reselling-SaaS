@@ -31,15 +31,6 @@ interface SaleRecord {
 
 const CURRENT_MONTH = "July 2026";
 
-/* Base seed data for historical months (excluding current month) */
-const SEED_MONTHS = [
-  { m: "June 2026", sold: 44, revenue: 1460, cost: 569, profit: 891, margin: 61 },
-  { m: "May 2026",  sold: 28, revenue:  930, cost: 427, profit: 503, margin: 54 },
-];
-
-/* Current month seed baseline (existing sales before this session) */
-const CURRENT_MONTH_SEED = { sold: 31, revenue: 1050, cost: 438, profit: 612 };
-
 const SEED_ITEMS: Item[] = [
   { id: 1, code: "IT-0231", name: "Carhartt beanie",       cond: "excellent", paid: 2,  stage: "unlisted", age: 4  },
   { id: 2, code: "IT-0229", name: "Levi 501 — vintage",    cond: "fair",      paid: 5,  stage: "unlisted", age: 94 },
@@ -390,10 +381,10 @@ function Overview({
   const counts = {
     unlisted: items.filter((i) => i.stage === "unlisted").length,
     listed:   items.filter((i) => i.stage === "listed").length,
-    sold:     CURRENT_MONTH_SEED.sold + liveSold,
+    sold:     liveSold,
   };
   const deadMoney = items.filter((i) => i.stage === "unlisted").reduce((s, i) => s + i.paid, 0);
-  const totalProfit = CURRENT_MONTH_SEED.profit + liveProfit;
+  const totalProfit = liveProfit;
 
   return (
     <div>
@@ -590,19 +581,19 @@ function ProfitCalculator() {
 /* ---------- archives ---------- */
 
 function Archives({ saleRecords }: { saleRecords: SaleRecord[] }) {
-  const liveSold    = saleRecords.length;
-  const liveRevenue = saleRecords.reduce((s, r) => s + r.soldFor, 0);
-  const liveCost    = saleRecords.reduce((s, r) => s + r.paid, 0);
-  const liveProfit  = saleRecords.reduce((s, r) => s + r.profit, 0);
+  // group sale records by month
+  const byMonth = saleRecords.reduce<Record<string, SaleRecord[]>>((acc, r) => {
+    (acc[r.month] = acc[r.month] ?? []).push(r);
+    return acc;
+  }, {});
 
-  const julySold    = CURRENT_MONTH_SEED.sold    + liveSold;
-  const julyRevenue = CURRENT_MONTH_SEED.revenue + liveRevenue;
-  const julyProfit  = CURRENT_MONTH_SEED.profit  + liveProfit;
-  const julyCost    = CURRENT_MONTH_SEED.cost    + liveCost;
-  const julyMargin  = julyRevenue > 0 ? Math.round(julyProfit / julyRevenue * 100) : 0;
-
-  const currentMonthRow = { m: CURRENT_MONTH, sold: julySold, revenue: julyRevenue, cost: julyCost, profit: julyProfit, margin: julyMargin, live: true as const };
-  const allMonths: { m: string; sold: number; revenue: number; cost: number; profit: number; margin: number; live?: true }[] = [currentMonthRow, ...SEED_MONTHS];
+  const months = Object.entries(byMonth).map(([m, records]) => {
+    const revenue = records.reduce((s, r) => s + r.soldFor, 0);
+    const cost    = records.reduce((s, r) => s + r.paid, 0);
+    const profit  = records.reduce((s, r) => s + r.profit, 0);
+    const margin  = revenue > 0 ? Math.round(profit / revenue * 100) : 0;
+    return { m, sold: records.length, revenue, cost, profit, margin, records };
+  });
 
   return (
     <div>
@@ -611,54 +602,61 @@ function Archives({ saleRecords }: { saleRecords: SaleRecord[] }) {
         <p className="text-paper-dim text-sm mt-1">Your sales grouped by month — tax-ready P&amp;L</p>
       </div>
 
-      <div className="space-y-3">
-        {allMonths.map((mo) => (
-          <div key={mo.m} className={`rounded-2xl border p-5 ${mo.live ? "border-amber/20 bg-amber/[0.04]" : "border-line bg-ink-card"}`}>
-            <div className="flex items-center justify-between gap-4 flex-wrap">
-              <div className="flex items-center gap-4">
-                <span className="grid place-items-center w-11 h-11 rounded-xl bg-ink-soft border border-line-soft text-amber shrink-0">
-                  <IconArchive />
-                </span>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <p className="font-medium">{mo.m}</p>
-                    {mo.live && <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber/15 text-amber border border-amber/25">LIVE</span>}
+      {months.length === 0 ? (
+        <div className="rounded-2xl border border-line bg-ink-card px-8 py-16 text-center">
+          <span className="grid place-items-center w-12 h-12 rounded-xl bg-ink-soft border border-line-soft text-amber mx-auto mb-4">
+            <IconArchive />
+          </span>
+          <p className="font-medium text-paper mb-1">No sales yet</p>
+          <p className="text-sm text-paper-faint">Mark an item as sold and it will appear here with full P&amp;L.</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {months.map((mo) => (
+            <div key={mo.m} className="rounded-2xl border border-amber/20 bg-amber/[0.04] p-5">
+              <div className="flex items-center justify-between gap-4 flex-wrap">
+                <div className="flex items-center gap-4">
+                  <span className="grid place-items-center w-11 h-11 rounded-xl bg-ink-soft border border-line-soft text-amber shrink-0">
+                    <IconArchive />
+                  </span>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <p className="font-medium">{mo.m}</p>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber/15 text-amber border border-amber/25">LIVE</span>
+                    </div>
+                    <p className="text-sm text-paper-dim mt-0.5">{mo.sold} items sold · {mo.margin}% margin</p>
                   </div>
-                  <p className="text-sm text-paper-dim mt-0.5">{mo.sold} items sold · {mo.margin}% margin</p>
+                </div>
+                <div className="flex items-center gap-6">
+                  <div className="text-right">
+                    <p className="font-mono text-xl text-moss">{gbp(mo.profit)}</p>
+                    <p className="text-xs text-paper-faint">net profit</p>
+                  </div>
+                  <button className="flex items-center gap-2 text-sm px-3 py-2 rounded-lg border border-line-soft text-paper-dim hover:text-paper hover:border-paper-faint transition-colors">
+                    <IconDownload /> Export
+                  </button>
                 </div>
               </div>
-              <div className="flex items-center gap-6">
-                <div className="text-right">
-                  <p className="font-mono text-xl text-moss">{gbp(mo.profit)}</p>
-                  <p className="text-xs text-paper-faint">net profit</p>
+
+              {/* P&L breakdown */}
+              <div className="mt-4 pt-4 border-t border-line-soft grid grid-cols-3 gap-4 text-sm">
+                <div>
+                  <p className="text-xs text-paper-faint mb-1">Revenue</p>
+                  <p className="font-mono text-paper">{gbp(mo.revenue)}</p>
                 </div>
-                <button className="flex items-center gap-2 text-sm px-3 py-2 rounded-lg border border-line-soft text-paper-dim hover:text-paper hover:border-paper-faint transition-colors">
-                  <IconDownload /> Export
-                </button>
+                <div>
+                  <p className="text-xs text-paper-faint mb-1">Cost of goods</p>
+                  <p className="font-mono text-rust">{gbp(mo.cost)}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-paper-faint mb-1">Net profit</p>
+                  <p className="font-mono text-moss">{gbp(mo.profit)}</p>
+                </div>
               </div>
-            </div>
 
-            {/* P&L breakdown */}
-            <div className="mt-4 pt-4 border-t border-line-soft grid grid-cols-3 gap-4 text-sm">
-              <div>
-                <p className="text-xs text-paper-faint mb-1">Revenue</p>
-                <p className="font-mono text-paper">{gbp(mo.revenue)}</p>
-              </div>
-              <div>
-                <p className="text-xs text-paper-faint mb-1">Cost of goods</p>
-                <p className="font-mono text-rust">{gbp(mo.cost)}</p>
-              </div>
-              <div>
-                <p className="text-xs text-paper-faint mb-1">Net profit</p>
-                <p className="font-mono text-moss">{gbp(mo.profit)}</p>
-              </div>
-            </div>
-
-            {/* live sale rows for current month */}
-            {mo.live && saleRecords.length > 0 && (
+              {/* individual sale rows */}
               <div className="mt-4 pt-4 border-t border-line-soft space-y-2">
-                <p className="text-xs font-mono text-paper-faint uppercase tracking-wider mb-3">This session</p>
-                {saleRecords.map((r) => (
+                {mo.records.map((r) => (
                   <div key={r.id} className="flex items-center justify-between text-sm">
                     <span className="text-paper-dim truncate max-w-[200px]">{r.itemName}</span>
                     <div className="flex items-center gap-4 shrink-0">
@@ -669,10 +667,10 @@ function Archives({ saleRecords }: { saleRecords: SaleRecord[] }) {
                   </div>
                 ))}
               </div>
-            )}
-          </div>
-        ))}
-      </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
