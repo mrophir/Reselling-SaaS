@@ -22,6 +22,7 @@ interface Item {
 
 interface SaleRecord {
   id: number;
+  itemId?: number;
   itemName: string;
   paid: number;
   soldFor: number;
@@ -1534,7 +1535,7 @@ export default function DashboardPage() {
     const profit = soldFor - item.paid;
     setItems((prev) => prev.map((i) => i.id === item.id ? { ...i, stage: "sold" as Stage } : i));
     setSaleRecords((prev) => [
-      { id: Date.now(), itemName: item.name, paid: item.paid, soldFor, profit, month: CURRENT_MONTH },
+      { id: Date.now(), itemId: item.id, itemName: item.name, paid: item.paid, soldFor, profit, month: CURRENT_MONTH },
       ...prev,
     ]);
     addToast(`${item.name} sold for ${gbp(soldFor)} · ${profit >= 0 ? "+" : ""}${gbp(profit)}`);
@@ -1549,7 +1550,10 @@ export default function DashboardPage() {
   function deleteSale(id: number) {
     const record = saleRecords.find((r) => r.id === id);
     setSaleRecords((prev) => prev.filter((r) => r.id !== id));
-    if (record) addToast(`Sale record for "${record.itemName}" removed`, "warning");
+    if (record?.itemId) {
+      setItems((prev) => prev.map((i) => i.id === record.itemId ? { ...i, stage: "unlisted" as Stage } : i));
+    }
+    if (record) addToast(`${record.itemName} returned to stock`, "info");
   }
 
   function editSale(updated: SaleRecord) {
