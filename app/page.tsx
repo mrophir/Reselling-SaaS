@@ -90,94 +90,63 @@ function Nav() {
 
 function Hero() {
   return (
-    <section id="top" className="grain relative overflow-hidden pt-36 pb-24 px-6">
-      <div className="orb absolute top-24 right-1/4 w-[500px] h-[500px] rounded-full bg-amber/[0.06] blur-3xl pointer-events-none" />
-      <div className="relative mx-auto max-w-6xl grid lg:grid-cols-[1.05fr_0.95fr] gap-16 items-center">
-        <div>
-          <div className="rise inline-flex items-center gap-2 text-xs font-mono uppercase tracking-[0.18em] text-amber mb-7">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber" style={{ animation: "blink 1.6s infinite" }} />
-            Stock management & profit tracking for resellers
-          </div>
-          <h1 className="rise font-display font-medium leading-[0.98] tracking-tight text-[clamp(2.6rem,6vw,4.6rem)]" style={{ animationDelay: "0.05s" }}>
-            Manage your stock.{" "}
-            <span className="relative whitespace-nowrap">
-              <span className="text-amber">Own your profit.</span>
-            </span>
-          </h1>
-          <p className="rise mt-7 text-lg text-paper-dim max-w-xl leading-relaxed" style={{ animationDelay: "0.12s" }}>
-            Stockpile gives you a live view of everything you own, exactly where it's stored, and what you're actually making so every item is accounted for and every penny is tracked from source to sold.
-          </p>
-          <div className="rise mt-9 flex flex-wrap items-center gap-4" style={{ animationDelay: "0.18s" }}>
-            <a href="#cta" className="btn-shine px-6 py-3.5 rounded-xl bg-amber text-ink font-medium hover:bg-paper transition-colors">
-              Start managing free
-            </a>
-            <a href="#vs" className="px-6 py-3.5 rounded-xl border border-line text-paper hover:border-paper-faint hover:-translate-y-0.5 transition-all duration-200">
-              Why not a spreadsheet?
-            </a>
-          </div>
-          <p className="rise mt-5 text-sm text-paper-faint" style={{ animationDelay: "0.22s" }}>
-            £19.99/mo · no card to start · cancel anytime
-          </p>
+    <section id="top" className="grain relative overflow-hidden pt-40 pb-28 px-6">
+      <div className="orb absolute top-10 left-1/2 -translate-x-1/2 w-[800px] h-[500px] rounded-full bg-amber/[0.055] blur-3xl pointer-events-none" />
+
+      <div className="relative mx-auto max-w-4xl text-center">
+        {/* social proof pill */}
+        <div className="rise inline-flex items-center gap-3 rounded-full border border-line bg-ink-card/80 px-4 py-2 mb-10 text-xs">
+          <span className="flex items-center gap-1.5 text-paper-dim">
+            <span className="w-1.5 h-1.5 rounded-full bg-moss shrink-0" style={{ animation: "blink 1.6s infinite" }} />
+            Trusted by resellers across the UK
+          </span>
+          <span className="w-px h-3 bg-line shrink-0" />
+          <span className="text-amber font-mono font-medium">10,000+ items tracked</span>
         </div>
-        <HeroPanel />
+
+        {/* heading */}
+        <h1 className="rise font-display font-medium leading-[0.94] tracking-tight text-[clamp(3rem,7.5vw,5.8rem)]" style={{ animationDelay: "0.06s" }}>
+          Manage your stock.<br />
+          <span className="text-amber">Own your profit.</span>
+        </h1>
+
+        {/* subtext */}
+        <p className="rise mt-8 text-lg text-paper-dim max-w-xl mx-auto leading-relaxed" style={{ animationDelay: "0.12s" }}>
+          A live view of everything you own, exactly where it's stored, and what you're actually making — from source to sold.
+        </p>
+
+        {/* CTAs */}
+        <div className="rise mt-10 flex items-center justify-center gap-4 flex-wrap" style={{ animationDelay: "0.17s" }}>
+          <a href="#cta" className="btn-shine inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-amber text-ink font-medium text-[15px] hover:bg-paper transition-colors">
+            Start managing free
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
+          <a href="#vs" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl border border-line text-paper hover:border-paper-faint hover:-translate-y-0.5 transition-all duration-200 text-[15px]">
+            Why not a spreadsheet?
+          </a>
+        </div>
+
+        {/* built for */}
+        <p className="rise mt-6 text-sm" style={{ animationDelay: "0.22s" }}>
+          <span className="text-paper-faint">Built for</span>
+          <span className="text-paper-dim"> · Weekend sourcers · Full-time flippers · Scaling operators</span>
+        </p>
+
+        {/* stats row */}
+        <div className="rise mt-16 inline-grid grid-cols-3 gap-px bg-line rounded-2xl overflow-hidden border border-line shadow-xl shadow-black/30" style={{ animationDelay: "0.26s" }}>
+          {[
+            { v: "£0",    l: "to get started" },
+            { v: "5 min", l: "to first insight" },
+            { v: "100%",  l: "profit visibility" },
+          ].map((s) => (
+            <div key={s.l} className="bg-ink-card px-8 py-5 text-center">
+              <div className="font-mono text-2xl font-medium text-amber">{s.v}</div>
+              <div className="text-xs text-paper-faint mt-1.5">{s.l}</div>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
-  );
-}
-
-function HeroPanel() {
-  return (
-    <div className="rise float relative" style={{ animationDelay: "0.15s" }}>
-      <div className="relative rounded-2xl border border-line bg-ink-card p-5 shadow-2xl shadow-black/40 overflow-hidden">
-        <div className="scan-line" />
-        <div className="rounded-xl bg-amber/10 border border-amber/30 p-4 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className="grid place-items-center w-9 h-9 rounded-lg bg-amber/20 text-amber text-lg">⚠</div>
-            <div>
-              <p className="font-mono text-amber text-lg leading-none">£<Counter to={486} /></p>
-              <p className="text-xs text-paper-faint mt-1">of stock not listed</p>
-            </div>
-          </div>
-          <span className="text-xs font-medium px-3 py-1.5 rounded-lg bg-amber text-ink">Clear pile</span>
-        </div>
-        <div className="grid grid-cols-3 gap-2.5 mt-4">
-          {[
-            { l: "Unlisted", v: "23", c: "text-amber" },
-            { l: "Listed", v: "184", c: "text-paper" },
-            { l: "Profit / Jul", v: "£612", c: "text-moss" },
-          ].map((s) => (
-            <div key={s.l} className="rounded-lg bg-ink-soft border border-line-soft px-3 py-3">
-              <p className="text-[11px] text-paper-faint">{s.l}</p>
-              <p className={`font-mono text-xl mt-1 ${s.c}`}>{s.v}</p>
-            </div>
-          ))}
-        </div>
-        <div className="mt-4 space-y-2">
-          {[
-            { n: "North Face puffer", b: "Bin A1", p: "Vinted", t: "good", age: "" },
-            { n: "Levi 501 - vintage", b: "Bin C4", p: "-", t: "fair", age: "94d" },
-            { n: "Carhartt beanie", b: "Bin A2", p: "Depop", t: "excellent", age: "" },
-          ].map((it) => (
-            <div key={it.n} className="flex items-center justify-between gap-3 rounded-lg bg-ink-soft border border-line-soft px-3.5 py-3">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <span className="text-sm truncate">{it.n}</span>
-                <CondDot t={it.t} />
-                {it.age && (
-                  <span className="shrink-0 text-[10px] font-mono px-1.5 py-0.5 rounded bg-rust/15 text-rust">{it.age}</span>
-                )}
-              </div>
-              <div className="flex items-center gap-3 shrink-0 text-[11px] text-paper-faint font-mono">
-                <span>{it.b}</span>
-                <span className="text-paper-dim">{it.p}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="absolute -right-3 -bottom-3 hidden sm:block rounded-xl bg-paper text-ink px-4 py-2.5 shadow-xl shadow-black/40 float-tag">
-        <p className="font-mono text-xs leading-none">sold · £45 net</p>
-      </div>
-    </div>
   );
 }
 
@@ -437,12 +406,14 @@ function Problem() {
   return (
     <section id="problem" className="px-6 py-28">
       <div className="mx-auto max-w-6xl">
-        <SectionEyebrow>The reseller's tax</SectionEyebrow>
-        <h2 className="font-display font-medium text-[clamp(2rem,4.5vw,3.2rem)] leading-[1.05] tracking-tight max-w-3xl">
+        <div className="text-center mb-14">
+        <SectionEyebrow center>The reseller's tax</SectionEyebrow>
+        <h2 className="font-display font-medium text-[clamp(2rem,4.5vw,3.2rem)] leading-[1.05] tracking-tight">
           Volume doesn't kill resellers.{" "}
           <span className="text-paper-dim">Losing track does.</span>
         </h2>
-        <div className="mt-16 grid md:grid-cols-3 gap-px bg-line rounded-2xl overflow-hidden border border-line">
+        </div>
+        <div className="grid md:grid-cols-3 gap-px bg-line rounded-2xl overflow-hidden border border-line">
           {items.map((it, i) => (
             <Reveal key={it.k} delay={i * 0.13}>
               <div className="bg-ink-card p-8 h-full">
@@ -460,89 +431,267 @@ function Problem() {
 
 /* ---------- features ---------- */
 
-function Features() {
-  return (
-    <section id="features" className="px-6 py-28 border-t border-line">
-      <div className="mx-auto max-w-6xl">
-        <SectionEyebrow>What it does</SectionEyebrow>
-        <h2 className="font-display font-medium text-[clamp(2rem,4.5vw,3.2rem)] leading-[1.05] tracking-tight max-w-3xl">
-          One job: nothing slips through the cracks.
-        </h2>
-        <p className="mt-5 text-paper-dim max-w-2xl text-lg">
-          Five tools, built around the one thing a spreadsheet can't do: actively watch the gap between bought and sold.
-        </p>
-        <div className="mt-16 grid md:grid-cols-6 gap-5">
-          <BigFeature />
-          <Feature className="md:col-span-2" icon="◉" title="3-stage pipeline" body="Unlisted → Listed → Sold. Every item has one clear state. The unlisted pile is loud on purpose." />
-          <Feature className="md:col-span-2" icon="⊞" title="Storage map" body="Assign each item to a physical location. Tap any bin to see exactly what's inside — name, code, condition, and status. Remove something from a location without losing it from your stock." />
-          <Feature className="md:col-span-2" icon="∑" title="Triggered profit engine" body="Mark sold and a modal forces the real numbers: price, postage, fees. Exact net profit, instantly." />
-          <Feature className="md:col-span-2" icon="◷" title="Aging flags" body="Anything unlisted or unsold past 60 or 90 days gets flagged, so dead stock gets relisted or dropped, not forgotten." />
-          <Feature className="md:col-span-3" icon="£" title="Profit calculator" body="Work out your exact take-home before you list. 2026 UK fees built in for Vinted, eBay, Depop, and Facebook — toggle private vs business seller, who pays postage, and see net profit and ROI update live." />
-          <Feature className="md:col-span-3" icon="▤" title="Monthly archives, tax-ready" body="Sales group into clean monthly views with revenue, cost, and margin. Export a single month or download every month in one CSV — one file, handed straight to your accountant." />
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function BigFeature() {
-  return (
-    <Reveal className="md:col-span-6">
-      <div className="relative overflow-hidden rounded-2xl border border-amber/30 bg-gradient-to-br from-amber/[0.08] to-transparent p-8 md:p-10">
-        <div className="grid md:grid-cols-[1fr_0.8fr] gap-10 items-center">
-          <div>
-            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-[0.16em] text-amber mb-5">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber" /> The core
-            </div>
-            <h3 className="font-display text-2xl md:text-3xl font-medium mb-4 leading-tight">
-              The "not listed yet" alert
-            </h3>
-            <p className="text-paper-dim leading-relaxed text-[15px] max-w-md">
-              The app opens shouting your dead money: the total value of stock you've paid for but haven't put up for sale anywhere. Watch it shrink as you list. Hit zero and it turns green.
-            </p>
-          </div>
-          <LeakMeter />
-        </div>
-      </div>
-    </Reveal>
-  );
-}
-
-function LeakMeter() {
-  const { ref, seen } = useInView<HTMLDivElement>(0.4);
-  const bars = [
-    { v: "£486", h: 88, color: "bg-amber", text: "text-amber" },
-    { v: "£210", h: 52, color: "bg-amber/60", text: "text-amber" },
-    { v: "£0", h: 22, color: "bg-moss", text: "text-moss" },
+function PipelineTab() {
+  const cols = [
+    { label: "Unlisted", color: "#f0a020", items: ["Stone Island Jumper", "Adidas Tracksuit", "Patagonia Fleece"] },
+    { label: "Listed",   color: "#7fae4a", items: ["North Face Puffer", "Levi 501 Jeans", "Carhartt Beanie", "Nike Air Max 90"] },
+    { label: "Sold",     color: "#b8b1a3", items: ["Champion Hoodie", "Gucci Belt"] },
   ];
   return (
-    <div ref={ref} className="flex items-end justify-center gap-3 h-44">
-      {bars.map((b, i) => (
-        <div key={i} className="flex flex-col items-center gap-2 w-16">
-          <div className="relative w-full rounded-t-lg bg-ink-soft border border-line-soft overflow-hidden flex items-end" style={{ height: 140 }}>
-            <div
-              className={`w-full ${b.color} transition-[height] duration-1000 ease-out`}
-              style={{ height: seen ? `${b.h}%` : "100%", transitionDelay: `${i * 180}ms` }}
-            />
+    <div className="grid grid-cols-3 gap-4 p-6 h-full">
+      {cols.map((col) => (
+        <div key={col.label}>
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs font-mono font-medium" style={{ color: col.color }}>{col.label}</span>
+            <span className="text-[10px] font-mono text-paper-faint bg-ink px-1.5 py-0.5 rounded border border-line-soft">{col.items.length}</span>
           </div>
-          <span className={`font-mono text-sm ${b.text}`}>{b.v}</span>
+          <div className="space-y-2">
+            {col.items.map((item) => (
+              <div key={item} className="px-3 py-2 rounded-lg border border-line-soft bg-ink text-xs text-paper-dim truncate">{item}</div>
+            ))}
+          </div>
         </div>
       ))}
     </div>
   );
 }
 
-function Feature({ icon, title, body, className = "" }: { icon: string; title: string; body: string; className?: string }) {
+function StorageTab() {
+  const bins = [
+    { id: "A1", items: ["North Face Puffer", "Carhartt Beanie"] },
+    { id: "A2", items: ["Ralph Lauren Shirt"] },
+    { id: "B1", items: ["Nike Air Max 90", "Tommy Hilfiger Jacket"] },
+    { id: "B3", items: ["Levi 501 Jeans"] },
+    { id: "C1", items: ["Burberry Scarf", "Champion Hoodie"] },
+    { id: "D2", items: [] },
+  ];
   return (
-    <Reveal className={className}>
-      <div className="rounded-2xl border border-line bg-ink-card p-7 h-full hover:border-paper-faint/50 hover:-translate-y-2 hover:shadow-xl hover:shadow-black/30 transition-all duration-300 group">
-        <div className="grid place-items-center w-11 h-11 rounded-xl bg-ink-soft border border-line-soft text-amber text-lg mb-5 group-hover:bg-amber group-hover:text-ink group-hover:scale-110 transition-all duration-300">
-          {icon}
+    <div className="grid grid-cols-3 gap-3 p-6">
+      {bins.map((bin) => (
+        <div key={bin.id} className={`rounded-xl border p-3 ${bin.items.length ? "border-amber/25 bg-amber/[0.04]" : "border-line-soft bg-ink"}`}>
+          <div className="flex items-center gap-1.5 mb-2">
+            <span className="text-[10px] font-mono font-medium text-amber">Bin {bin.id}</span>
+            {bin.items.length > 0 && <span className="text-[9px] bg-amber/15 text-amber px-1 rounded font-mono">{bin.items.length}</span>}
+          </div>
+          <div className="space-y-1">
+            {bin.items.map((it) => <div key={it} className="text-[10px] text-paper-faint truncate">{it}</div>)}
+            {bin.items.length === 0 && <div className="text-[10px] text-paper-faint/40 italic">Empty</div>}
+          </div>
         </div>
-        <h3 className="font-display text-lg font-medium mb-2.5">{title}</h3>
-        <p className="text-paper-dim leading-relaxed text-[14px]">{body}</p>
+      ))}
+    </div>
+  );
+}
+
+function ProfitTab() {
+  return (
+    <div className="p-6 space-y-4">
+      <div className="flex gap-2">
+        {["Vinted", "eBay", "Depop", "Facebook"].map((p, i) => (
+          <div key={p} className={`px-3 py-1.5 rounded-lg text-xs font-medium border ${i === 1 ? "border-amber/40 bg-amber/10 text-amber" : "border-line-soft text-paper-faint"}`}>{p}</div>
+        ))}
       </div>
-    </Reveal>
+      <div className="space-y-2">
+        {[
+          { l: "Listed price",      v: "£45.00",  c: "text-paper" },
+          { l: "Platform fee (eBay)", v: "−£5.63", c: "text-rust" },
+          { l: "Postage label",     v: "−£3.40",  c: "text-rust" },
+          { l: "Cost of item",      v: "−£8.00",  c: "text-rust" },
+        ].map((r) => (
+          <div key={r.l} className="flex items-center justify-between text-sm">
+            <span className="text-paper-faint">{r.l}</span>
+            <span className={`font-mono ${r.c}`}>{r.v}</span>
+          </div>
+        ))}
+      </div>
+      <div className="border-t border-line-soft pt-3 flex items-center justify-between">
+        <span className="text-sm font-medium text-paper">Net profit</span>
+        <span className="font-mono text-xl font-medium text-moss">+£27.97</span>
+      </div>
+      <div className="flex items-center justify-between text-sm">
+        <span className="text-paper-faint">ROI</span>
+        <span className="font-mono text-moss">+349%</span>
+      </div>
+    </div>
+  );
+}
+
+function AgingTab() {
+  const items = [
+    { name: "Champion Hoodie",       age: 2,  tier: "moss"  },
+    { name: "Burberry Scarf",        age: 8,  tier: "moss"  },
+    { name: "Carhartt Beanie",       age: 12, tier: "moss"  },
+    { name: "Nike Air Max 90",       age: 22, tier: "amber" },
+    { name: "Tommy Hilfiger Jacket", age: 28, tier: "amber" },
+    { name: "Stone Island Jumper",   age: 45, tier: "rust"  },
+    { name: "Adidas Tracksuit",      age: 52, tier: "rust"  },
+  ];
+  const cls: Record<string, string> = {
+    moss:  "bg-moss/15 text-moss border-moss/20",
+    amber: "bg-amber/15 text-amber border-amber/20",
+    rust:  "bg-rust/15 text-rust border-rust/20",
+  };
+  return (
+    <div className="p-6 space-y-2">
+      {items.map((it) => (
+        <div key={it.name} className="flex items-center justify-between px-3 py-2.5 rounded-lg border border-line-soft bg-ink">
+          <span className="text-sm text-paper-dim">{it.name}</span>
+          <span className={`text-[10px] font-mono px-2 py-0.5 rounded border ${cls[it.tier]}`}>{it.age}d</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ArchivesTab() {
+  const items = [
+    { name: "North Face Puffer",  paid: 22, sold: 55, profit: 33 },
+    { name: "Levi 501 Jeans",    paid: 8,  sold: 32, profit: 24 },
+    { name: "Nike Air Max 90",   paid: 45, sold: 90, profit: 45 },
+    { name: "Burberry Scarf",    paid: 55, sold: 120, profit: 65 },
+  ];
+  const total = items.reduce((s, r) => s + r.profit, 0);
+  return (
+    <div className="p-6">
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <div className="text-xs text-amber font-mono mb-0.5">JULY 2026</div>
+          <div className="text-sm text-paper-faint">{items.length} items sold · 71% margin</div>
+        </div>
+        <div className="text-right">
+          <div className="font-mono text-xl text-moss">+£{total}</div>
+          <div className="text-xs text-paper-faint">net profit</div>
+        </div>
+      </div>
+      <div className="grid grid-cols-3 gap-3 mb-4 text-sm">
+        <div className="bg-ink rounded-lg border border-line-soft p-3">
+          <div className="text-xs text-paper-faint mb-1">Revenue</div>
+          <div className="font-mono text-paper">£{items.reduce((s, r) => s + r.sold, 0)}</div>
+        </div>
+        <div className="bg-ink rounded-lg border border-line-soft p-3">
+          <div className="text-xs text-paper-faint mb-1">Cost</div>
+          <div className="font-mono text-rust">£{items.reduce((s, r) => s + r.paid, 0)}</div>
+        </div>
+        <div className="bg-ink rounded-lg border border-line-soft p-3">
+          <div className="text-xs text-paper-faint mb-1">Profit</div>
+          <div className="font-mono text-moss">£{total}</div>
+        </div>
+      </div>
+      <div className="space-y-2">
+        {items.map((r) => (
+          <div key={r.name} className="flex items-center justify-between text-xs">
+            <span className="text-paper-faint truncate max-w-[180px]">{r.name}</span>
+            <span className="font-mono text-moss shrink-0">+£{r.profit}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+const FEATURE_TABS = [
+  {
+    key: "pipeline",
+    label: "3-stage pipeline",
+    icon: "◉",
+    heading: "Every item has one clear state.",
+    body: "Unlisted → Listed → Sold. The unlisted pile shouts your dead money. Watch it shrink as you list. Hit zero and you're working at full efficiency.",
+    preview: <PipelineTab />,
+  },
+  {
+    key: "storage",
+    label: "Storage map",
+    icon: "⊞",
+    heading: "Know exactly where everything is.",
+    body: "Assign each item to a physical bin. When something sells at midnight, open Stockpile, search the item, and see its exact location in seconds — no digging.",
+    preview: <StorageTab />,
+  },
+  {
+    key: "profit",
+    label: "Profit calculator",
+    icon: "£",
+    heading: "Know your number before you list.",
+    body: "2026 UK fees built in for Vinted, eBay, Depop, and Facebook. Toggle who pays postage, see net profit and ROI update live — no more guessing your margin.",
+    preview: <ProfitTab />,
+  },
+  {
+    key: "aging",
+    label: "Aging flags",
+    icon: "◷",
+    heading: "Dead stock gets loud, not forgotten.",
+    body: "Every item shows how long it's been sitting. Green → Amber → Red. When something turns amber or red it appears in your notification feed with a nudge to relist or drop it.",
+    preview: <AgingTab />,
+  },
+  {
+    key: "archives",
+    label: "Monthly archives",
+    icon: "▤",
+    heading: "Tax-ready P&L, every month.",
+    body: "Sales group into clean monthly views with revenue, cost, and margin. Export a single month or every month in one CSV — one file, handed straight to your accountant.",
+    preview: <ArchivesTab />,
+  },
+] as const;
+
+function Features() {
+  const [active, setActive] = useState(0);
+  const tab = FEATURE_TABS[active];
+
+  return (
+    <section id="features" className="px-6 py-28 border-t border-line">
+      <div className="mx-auto max-w-6xl">
+        <div className="text-center mb-14">
+          <SectionEyebrow center>What it does</SectionEyebrow>
+          <h2 className="font-display font-medium text-[clamp(2rem,4.5vw,3.2rem)] leading-[1.05] tracking-tight mb-5">
+            One job: nothing slips through the cracks.
+          </h2>
+          <p className="text-paper-dim max-w-xl mx-auto text-lg">
+            Five tools built around the one thing a spreadsheet can't do — actively watch the gap between bought and sold.
+          </p>
+        </div>
+
+        {/* tab bar */}
+        <div className="flex gap-2 overflow-x-auto pb-2 justify-center mb-6 scrollbar-none">
+          {FEATURE_TABS.map((t, i) => (
+            <button
+              key={t.key}
+              onClick={() => setActive(i)}
+              className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap border transition-all duration-200 shrink-0 ${
+                i === active
+                  ? "bg-amber/10 border-amber/40 text-amber"
+                  : "border-line bg-ink-card text-paper-faint hover:text-paper hover:border-paper-faint/50"
+              }`}
+            >
+              <span className="text-base leading-none">{t.icon}</span>
+              {t.label}
+            </button>
+          ))}
+        </div>
+
+        {/* tab panel */}
+        <Reveal key={tab.key}>
+          <div className="rounded-2xl border border-line bg-ink-card overflow-hidden shadow-xl shadow-black/25">
+            <div className="grid md:grid-cols-[1fr_1.4fr]">
+              {/* description */}
+              <div className="p-8 md:p-10 border-b md:border-b-0 md:border-r border-line flex flex-col justify-center">
+                <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-[0.16em] text-amber mb-5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber" /> {tab.label}
+                </div>
+                <h3 className="font-display text-2xl font-medium mb-4 leading-snug">{tab.heading}</h3>
+                <p className="text-paper-dim leading-relaxed text-[15px]">{tab.body}</p>
+                <a href="#cta" className="mt-8 self-start inline-flex items-center gap-2 text-sm font-medium text-amber hover:text-paper transition-colors">
+                  Get started free
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </a>
+              </div>
+              {/* preview */}
+              <div className="bg-ink border-line min-h-[300px]">
+                {tab.preview}
+              </div>
+            </div>
+          </div>
+        </Reveal>
+      </div>
+    </section>
   );
 }
 
@@ -922,67 +1071,69 @@ function CTA() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-5 max-w-3xl mx-auto items-stretch">
+        <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto items-stretch">
 
           {/* Free card */}
           <Reveal delay={0}>
-            <div className="flex flex-col rounded-2xl border border-line bg-ink-card p-8 h-full hover:-translate-y-1 hover:shadow-xl hover:shadow-black/30 transition-all duration-300">
-              <p className="font-mono text-xs uppercase tracking-[0.18em] text-paper-faint mb-3">{free.name}</p>
-              <div className="flex items-baseline gap-1.5 mb-2">
-                <span className="font-display text-4xl font-medium">Free</span>
+            <div className="flex flex-col rounded-2xl border border-line bg-ink-card p-9 h-full hover:-translate-y-1 hover:shadow-xl hover:shadow-black/30 transition-all duration-300">
+              <div className="mb-6">
+                <p className="text-xs font-mono uppercase tracking-[0.18em] text-paper-faint mb-4">{free.name}</p>
+                <div className="flex items-baseline gap-1.5 mb-2">
+                  <span className="font-display text-5xl font-medium">Free</span>
+                </div>
+                <p className="text-paper-faint text-sm mt-2">{free.tagline}</p>
               </div>
-              <p className="text-paper-faint text-sm mb-6">{free.tagline}</p>
-              <div className="inline-flex self-start items-center px-3 py-1.5 rounded-lg text-xs font-mono bg-ink-soft border border-line text-paper-dim mb-6">
-                {formatItemCap("starter")} items
+              <div className="inline-flex self-start items-center px-3 py-1.5 rounded-lg text-xs font-mono bg-ink-soft border border-line text-paper-dim mb-8">
+                {formatItemCap("starter")} items included
               </div>
-              <ul className="space-y-2.5 flex-1 mb-8">
+              <ul className="space-y-3.5 flex-1 mb-10">
                 {FREE_FEATURES.map((f) => (
-                  <li key={f} className="flex items-start gap-2.5 text-[14px] text-paper-dim">
-                    <span className="mt-0.5 grid place-items-center w-4 h-4 rounded-full bg-moss/20 text-moss text-[10px] shrink-0">✓</span>
+                  <li key={f} className="flex items-start gap-3 text-[14px] text-paper-dim">
+                    <span className="mt-0.5 grid place-items-center w-4 h-4 rounded-full bg-moss/20 text-moss text-[10px] shrink-0 font-bold">✓</span>
                     {FEATURE_LABELS[f]}
                   </li>
                 ))}
               </ul>
-              <a href="#" className="block text-center px-5 py-3 rounded-xl border border-line text-paper font-medium text-sm hover:border-paper-faint transition-colors">
-                Start free
+              <a href="#" className="block text-center px-5 py-3.5 rounded-xl border border-line text-paper font-medium text-sm hover:border-paper-faint hover:bg-ink-soft transition-colors">
+                Start free — no card needed
               </a>
-              <p className="text-center text-xs text-paper-faint mt-3">No card required</p>
             </div>
           </Reveal>
 
           {/* Pro card */}
           <Reveal delay={0.1}>
-            <div className="relative flex flex-col rounded-2xl border border-amber/50 bg-gradient-to-b from-amber/[0.08] to-transparent p-8 h-full card-glow hover:-translate-y-1 hover:shadow-xl hover:shadow-black/30 transition-all duration-300">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber text-ink text-xs font-medium font-mono uppercase tracking-wider">
-                  <span className="w-1.5 h-1.5 rounded-full bg-ink/40" />
-                  Full access
+            <div className="relative flex flex-col rounded-2xl border border-amber/50 bg-gradient-to-b from-amber/[0.07] to-transparent p-9 h-full card-glow hover:-translate-y-1 hover:shadow-xl hover:shadow-black/30 transition-all duration-300">
+              <div className="absolute -top-3.5 left-8">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber text-ink text-xs font-semibold">
+                  → Popular
                 </span>
               </div>
-              <p className="font-mono text-xs uppercase tracking-[0.18em] text-paper-faint mb-3">{pro.name}</p>
-              <div className="flex items-baseline gap-1.5 mb-2">
-                <span className="font-display text-4xl font-medium">£19.99</span>
-                <span className="text-paper-faint text-sm">/ month</span>
+              <div className="mb-6">
+                <p className="text-xs font-mono uppercase tracking-[0.18em] text-paper-faint mb-4">{pro.name}</p>
+                <div className="flex items-baseline gap-1.5 mb-2">
+                  <span className="font-display text-5xl font-medium text-amber">£19.99</span>
+                  <span className="text-paper-faint text-sm">/ month</span>
+                </div>
+                <p className="text-paper-faint text-sm mt-2">{pro.tagline}</p>
               </div>
-              <p className="text-paper-faint text-sm mb-6">{pro.tagline}</p>
-              <div className="inline-flex self-start items-center px-3 py-1.5 rounded-lg text-xs font-mono bg-amber/15 text-amber border border-amber/25 mb-6">
+              <div className="inline-flex self-start items-center px-3 py-1.5 rounded-lg text-xs font-mono bg-amber/15 text-amber border border-amber/25 mb-8">
                 Unlimited items
               </div>
-              <div className="flex-1 mb-8">
-                <p className="text-xs text-paper-faint font-mono mb-3">Everything in Free, plus:</p>
-                <ul className="space-y-2.5">
+              <div className="flex-1 mb-10">
+                <p className="text-xs text-paper-faint font-mono mb-4 uppercase tracking-wider">Everything in Free, plus:</p>
+                <ul className="space-y-3.5">
                   {PRO_EXTRA_FEATURES.map((f) => (
-                    <li key={f} className="flex items-start gap-2.5 text-[14px] text-paper-dim">
-                      <span className="mt-0.5 grid place-items-center w-4 h-4 rounded-full bg-amber/20 text-amber text-[10px] shrink-0">✓</span>
+                    <li key={f} className="flex items-start gap-3 text-[14px] text-paper-dim">
+                      <span className="mt-0.5 grid place-items-center w-4 h-4 rounded-full bg-amber/20 text-amber text-[10px] shrink-0 font-bold">✓</span>
                       {FEATURE_LABELS[f]}
                     </li>
                   ))}
                 </ul>
               </div>
-              <a href="#" className="btn-shine block text-center px-5 py-3 rounded-xl bg-amber text-ink font-medium text-sm hover:bg-paper transition-colors">
+              <a href="#" className="btn-shine block text-center px-5 py-3.5 rounded-xl bg-amber text-ink font-medium text-sm hover:bg-paper transition-colors">
                 Get started
               </a>
-              <p className="text-center text-xs text-paper-faint mt-3">Cancel anytime</p>
+              <p className="text-center text-xs text-paper-faint mt-3">Cancel anytime · No hidden fees</p>
             </div>
           </Reveal>
 
