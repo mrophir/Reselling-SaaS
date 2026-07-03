@@ -1055,9 +1055,9 @@ export default function Page() {
     <main className="relative">
       <Nav />
       <Hero />
-      <DashboardMockup />
       <Strip />
       <Problem />
+      <DashboardMockup />
       <Features />
       <Who />
       <Versus />
