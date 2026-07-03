@@ -188,6 +188,225 @@ function CondDot({ t }: { t: string }) {
   return <span className={`shrink-0 w-2 h-2 rounded-full ${map[t] ?? "bg-paper-faint"}`} title={t} />;
 }
 
+/* ---------- dashboard mockup ---------- */
+
+const MOCK_ITEMS = [
+  { name: "North Face Puffer",     cond: "excellent", stage: "listed",   platform: "Vinted", age: 3,  paid: 22, bin: "A1" },
+  { name: "Levi 501 Jeans",        cond: "good",      stage: "listed",   platform: "eBay",   age: 12, paid: 8,  bin: "B3" },
+  { name: "Carhartt Beanie",       cond: "good",      stage: "listed",   platform: "Depop",  age: 3,  paid: 5,  bin: "A2" },
+  { name: "Nike Air Max 90",       cond: "fair",      stage: "listed",   platform: "eBay",   age: 28, paid: 45, bin: "C1" },
+  { name: "Ralph Lauren Shirt",    cond: "excellent", stage: "listed",   platform: "Vinted", age: 8,  paid: 12, bin: "A3" },
+  { name: "Tommy Hilfiger Jacket", cond: "good",      stage: "listed",   platform: "Depop",  age: 19, paid: 28, bin: "B1" },
+  { name: "Burberry Scarf",        cond: "excellent", stage: "listed",   platform: "eBay",   age: 5,  paid: 55, bin: "D2" },
+  { name: "Champion Hoodie",       cond: "good",      stage: "listed",   platform: "Vinted", age: 2,  paid: 9,  bin: "A4" },
+  { name: "Stone Island Jumper",   cond: "fair",      stage: "unlisted", platform: "",       age: 45, paid: 35, bin: ""   },
+  { name: "Adidas Tracksuit",      cond: "good",      stage: "unlisted", platform: "",       age: 32, paid: 18, bin: ""   },
+] as const;
+
+const COND_DOT: Record<string, string> = {
+  excellent: "#7fae4a", good: "#f0a020", fair: "#d8602f",
+};
+
+function AgeBadge({ age }: { age: number }) {
+  const [cls, col] = age <= 15
+    ? ["rgba(127,174,74,0.15)", "#7fae4a"]
+    : age <= 30
+    ? ["rgba(240,160,32,0.15)", "#f0a020"]
+    : ["rgba(216,96,47,0.15)", "#d8602f"];
+  return (
+    <span style={{ background: cls, color: col, border: `1px solid ${col}40`, borderRadius: 4, padding: "1px 5px", fontSize: 10, fontFamily: "monospace", whiteSpace: "nowrap" }}>
+      {age}d
+    </span>
+  );
+}
+
+function MockItemRow({ item }: { item: typeof MOCK_ITEMS[number] }) {
+  const dot = COND_DOT[item.cond] ?? "#6f6a5e";
+  const stageColor = item.stage === "listed" ? "#7fae4a" : "#f0a020";
+  const stageBg    = item.stage === "listed" ? "rgba(127,174,74,0.1)" : "rgba(240,160,32,0.1)";
+  const stageBdr   = item.stage === "listed" ? "rgba(127,174,74,0.25)" : "rgba(240,160,32,0.25)";
+  return (
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 14px", borderTop: "1px solid #211e1a", gap: 8 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
+        <span style={{ width: 7, height: 7, borderRadius: "50%", background: dot, flexShrink: 0 }} />
+        <span style={{ fontSize: 12, color: "#f5f1e8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 160 }}>{item.name}</span>
+        <AgeBadge age={item.age} />
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+        {item.bin && <span style={{ fontSize: 11, color: "#6f6a5e", fontFamily: "monospace" }}>{item.bin}</span>}
+        {item.platform && <span style={{ fontSize: 11, color: "#b8b1a3", fontFamily: "monospace" }}>{item.platform}</span>}
+        <span style={{ background: stageBg, color: stageColor, border: `1px solid ${stageBdr}`, borderRadius: 5, padding: "2px 7px", fontSize: 10, fontWeight: 500, whiteSpace: "nowrap" }}>
+          {item.stage === "listed" ? "Listed" : "Not listed"}
+        </span>
+        <span style={{ fontSize: 11, color: "#b8b1a3", fontFamily: "monospace" }}>£{item.paid}</span>
+      </div>
+    </div>
+  );
+}
+
+function DashboardMockup() {
+  // inner canvas is 1120×610; we scale it into a 900px-wide screen area
+  const INNER_W = 1120;
+  const INNER_H = 610;
+  const SCREEN_W = 900;
+  const scale = SCREEN_W / INNER_W;
+  const screenH = Math.round(INNER_H * scale);
+
+  const navItems = [
+    { label: "Overview",         active: true  },
+    { label: "Stock",            active: false },
+    { label: "Storage map",      active: false },
+    { label: "Calculator",       active: false },
+    { label: "Monthly archives", active: false },
+  ];
+
+  return (
+    <section className="px-6 py-16 overflow-hidden">
+      <div className="mx-auto max-w-6xl">
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-[0.18em] text-amber mb-4">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber" />
+            See it in action
+          </div>
+          <h2 className="font-display font-medium text-[clamp(1.6rem,3.5vw,2.4rem)] leading-tight tracking-tight">
+            Your entire reselling operation,<br className="hidden sm:block" /> in one screen.
+          </h2>
+        </div>
+
+        {/* laptop frame */}
+        <Reveal>
+          <div className="mx-auto" style={{ maxWidth: 980 }}>
+            {/* lid / screen */}
+            <div
+              className="rounded-2xl shadow-2xl shadow-black/70"
+              style={{ background: "#0a0908", border: "10px solid #1a1815", padding: "10px 10px 6px" }}
+            >
+              {/* camera dot */}
+              <div style={{ display: "flex", justifyContent: "center", marginBottom: 6 }}>
+                <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#211e1a" }} />
+              </div>
+
+              {/* screen viewport */}
+              <div style={{ overflow: "hidden", borderRadius: 8, height: screenH, background: "#0e0d0b", position: "relative" }}>
+                {/* inner dashboard at INNER_W × INNER_H */}
+                <div style={{ width: INNER_W, height: INNER_H, transform: `scale(${scale})`, transformOrigin: "top left", position: "absolute", top: 0, left: 0, display: "flex", fontFamily: "Inter, system-ui, sans-serif" }}>
+
+                  {/* ── sidebar ── */}
+                  <div style={{ width: 192, background: "#0e0d0b", borderRight: "1px solid #2a2722", display: "flex", flexDirection: "column", flexShrink: 0, padding: "16px 0" }}>
+                    {/* logo */}
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "0 16px 20px" }}>
+                      <span style={{ width: 24, height: 24, borderRadius: 5, background: "#f0a020", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <span style={{ width: 3, height: 12, borderRadius: 2, background: "#0e0d0b" }} />
+                      </span>
+                      <span style={{ fontSize: 15, fontWeight: 600, color: "#f5f1e8", letterSpacing: "-0.02em" }}>Stockpile</span>
+                    </div>
+                    {/* nav */}
+                    {navItems.map((n) => (
+                      <div key={n.label} style={{ padding: "8px 12px", margin: "1px 8px", borderRadius: 8, background: n.active ? "#1a1815" : "transparent", display: "flex", alignItems: "center", gap: 8 }}>
+                        <span style={{ width: 5, height: 5, borderRadius: "50%", background: n.active ? "#f0a020" : "#2a2722" }} />
+                        <span style={{ fontSize: 12, color: n.active ? "#f5f1e8" : "#6f6a5e", fontWeight: n.active ? 500 : 400 }}>{n.label}</span>
+                      </div>
+                    ))}
+                    {/* spacer + plan badge */}
+                    <div style={{ flex: 1 }} />
+                    <div style={{ margin: "0 8px", padding: "10px 12px", borderRadius: 8, border: "1px solid #2a2722", background: "#161410" }}>
+                      <div style={{ fontSize: 10, color: "#6f6a5e", fontFamily: "monospace", marginBottom: 4 }}>RESELLER PLAN</div>
+                      <div style={{ height: 4, borderRadius: 2, background: "#2a2722", overflow: "hidden" }}>
+                        <div style={{ width: "38%", height: "100%", background: "#f0a020", borderRadius: 2 }} />
+                      </div>
+                      <div style={{ fontSize: 10, color: "#b8b1a3", marginTop: 4 }}>190 / 500 items</div>
+                    </div>
+                  </div>
+
+                  {/* ── main area ── */}
+                  <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#0e0d0b", overflow: "hidden" }}>
+
+                    {/* header */}
+                    <div style={{ height: 52, borderBottom: "1px solid #2a2722", display: "flex", alignItems: "center", padding: "0 20px", gap: 12, flexShrink: 0 }}>
+                      <div style={{ flex: 1, background: "#1a1815", border: "1px solid #211e1a", borderRadius: 8, height: 28, display: "flex", alignItems: "center", padding: "0 10px", gap: 6 }}>
+                        <span style={{ fontSize: 11, color: "#6f6a5e" }}>🔍</span>
+                        <span style={{ fontSize: 11, color: "#6f6a5e" }}>Search stock…</span>
+                      </div>
+                      {/* bell */}
+                      <div style={{ width: 30, height: 30, borderRadius: 7, background: "#1a1815", display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
+                        <span style={{ fontSize: 13 }}>🔔</span>
+                        <span style={{ position: "absolute", top: 5, right: 5, width: 6, height: 6, borderRadius: "50%", background: "#f0a020", border: "1.5px solid #0e0d0b" }} />
+                      </div>
+                      {/* avatar */}
+                      <div style={{ width: 30, height: 30, borderRadius: "50%", background: "#161410", border: "1px solid #2a2722", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <span style={{ fontSize: 11, color: "#b8b1a3", fontWeight: 500 }}>JT</span>
+                      </div>
+                    </div>
+
+                    {/* content */}
+                    <div style={{ flex: 1, padding: "16px 20px", overflow: "hidden" }}>
+
+                      <div style={{ fontSize: 18, fontWeight: 600, color: "#f5f1e8", marginBottom: 12, letterSpacing: "-0.02em" }}>Overview</div>
+
+                      {/* dead money banner */}
+                      <div style={{ background: "rgba(240,160,32,0.07)", border: "1px solid rgba(240,160,32,0.3)", borderRadius: 12, padding: "10px 14px", display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                          <div style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(240,160,32,0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <span style={{ fontSize: 14 }}>⚠️</span>
+                          </div>
+                          <div>
+                            <div style={{ fontSize: 16, color: "#f0a020", fontFamily: "monospace", fontWeight: 600, lineHeight: 1 }}>£243.00 not listed</div>
+                            <div style={{ fontSize: 11, color: "#b8b1a3", marginTop: 3 }}>2 items bought but not earning — clear the pile</div>
+                          </div>
+                        </div>
+                        <div style={{ background: "#f0a020", color: "#0e0d0b", borderRadius: 8, padding: "5px 12px", fontSize: 11, fontWeight: 600, whiteSpace: "nowrap" }}>Clear the pile</div>
+                      </div>
+
+                      {/* stat cards */}
+                      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 8, marginBottom: 12 }}>
+                        {[
+                          { l: "Unlisted",     v: "2",       c: "#f0a020" },
+                          { l: "Listed",       v: "8",       c: "#f5f1e8" },
+                          { l: "Sold · Jul",   v: "3",       c: "#f5f1e8" },
+                          { l: "Profit · Jul", v: "£127.50", c: "#7fae4a" },
+                        ].map((s) => (
+                          <div key={s.l} style={{ background: "#161410", border: "1px solid #2a2722", borderRadius: 10, padding: "8px 10px" }}>
+                            <div style={{ fontSize: 10, color: "#6f6a5e", marginBottom: 3 }}>{s.l}</div>
+                            <div style={{ fontSize: 16, color: s.c, fontFamily: "monospace", fontWeight: 600 }}>{s.v}</div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* stage tabs + item list */}
+                      <div style={{ background: "#161410", border: "1px solid #2a2722", borderRadius: 12, overflow: "hidden" }}>
+                        {/* tabs */}
+                        <div style={{ display: "flex", alignItems: "center", gap: 2, padding: "6px 8px", borderBottom: "1px solid #211e1a" }}>
+                          {[["unlisted · 2", false], ["listed · 8", true], ["sold · 3", false]].map(([label, active]) => (
+                            <div key={String(label)} style={{ padding: "5px 12px", borderRadius: 7, fontSize: 11, fontWeight: active ? 500 : 400, color: active ? "#f5f1e8" : "#6f6a5e", background: active ? "#1a1815" : "transparent", whiteSpace: "nowrap" }}>
+                              {String(label)}
+                            </div>
+                          ))}
+                        </div>
+                        {/* rows */}
+                        {MOCK_ITEMS.map((it) => <MockItemRow key={it.name} item={it} />)}
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* stand neck */}
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <div style={{ width: 120, height: 20, background: "#1a1815" }} />
+            </div>
+            {/* stand base */}
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <div style={{ width: 220, height: 10, background: "#1a1815", borderRadius: "0 0 12px 12px" }} />
+            </div>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
 /* ---------- logo strip ---------- */
 
 function Strip() {
@@ -836,6 +1055,7 @@ export default function Page() {
     <main className="relative">
       <Nav />
       <Hero />
+      <DashboardMockup />
       <Strip />
       <Problem />
       <Features />
