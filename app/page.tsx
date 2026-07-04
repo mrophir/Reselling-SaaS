@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import { getTier, formatItemCap, type TierKey, type FeatureFlag } from "../lib/tiers";
 
 /* ---------- small helpers ---------- */
@@ -1206,12 +1207,14 @@ function Footer() {
           <span className="font-display text-paper">Stockpile</span>
         </div>
         <p>Inventory CRM for resellers. © {new Date().getFullYear()}</p>
-        <div className="flex gap-6">
+        <div className="flex gap-6 flex-wrap justify-center">
           <a href="#features" className="hover:text-paper transition-colors">Features</a>
           <a href="#vs" className="hover:text-paper transition-colors">vs Spreadsheet</a>
           <a href="#case-study" className="hover:text-paper transition-colors">Case study</a>
           <a href="#reviews" className="hover:text-paper transition-colors">Reviews</a>
           <a href="#cta" className="hover:text-paper transition-colors">Pricing</a>
+          <Link href="/privacy" className="hover:text-paper transition-colors">Privacy Policy</Link>
+          <Link href="/terms" className="hover:text-paper transition-colors">Terms of Service</Link>
         </div>
       </div>
     </footer>
