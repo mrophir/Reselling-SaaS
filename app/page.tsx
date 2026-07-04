@@ -40,6 +40,24 @@ function Counter({ to, prefix = "", duration = 1400 }: { to: number; prefix?: st
   return <span ref={ref}>{prefix}{val.toLocaleString()}</span>;
 }
 
+function useTypewriter(text: string, startDelay = 0, speed = 52) {
+  const [displayed, setDisplayed] = useState("");
+  const [done, setDone] = useState(false);
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+    let i = 0;
+    function tick() {
+      i++;
+      setDisplayed(text.slice(0, i));
+      if (i < text.length) timer = setTimeout(tick, speed);
+      else setDone(true);
+    }
+    timer = setTimeout(tick, startDelay);
+    return () => clearTimeout(timer);
+  }, []); // text/startDelay/speed are literals — safe to exclude
+  return { displayed, done };
+}
+
 /* ---------- nav ---------- */
 
 function Nav() {
@@ -89,6 +107,20 @@ function Nav() {
 /* ---------- hero ---------- */
 
 function Hero() {
+  const L1 = "Manage your stock.";
+  const L2 = "Own your profit.";
+  const L1_DELAY = 480;
+  const L1_SPEED = 52;
+  const L2_DELAY = L1_DELAY + L1.length * L1_SPEED + 340;
+  const L2_SPEED = 58;
+
+  const { displayed: t1, done: d1 } = useTypewriter(L1, L1_DELAY, L1_SPEED);
+  const { displayed: t2, done: d2 } = useTypewriter(L2, L2_DELAY, L2_SPEED);
+
+  // cursor sits on line 1 until line 2 starts typing
+  const cursorLine1 = !d1 || (d1 && t2.length === 0);
+  const cursorLine2 = d1 && t2.length > 0 && !d2;
+
   return (
     <section id="top" className="grain relative overflow-hidden pt-40 pb-28 px-6">
       <div className="orb absolute top-10 left-1/2 -translate-x-1/2 w-[800px] h-[500px] rounded-full bg-amber/[0.055] blur-3xl pointer-events-none" />
@@ -104,10 +136,25 @@ function Hero() {
           <span className="text-amber font-mono font-medium">10,000+ items tracked</span>
         </div>
 
-        {/* heading */}
-        <h1 className="rise font-display font-medium leading-[0.94] tracking-tight text-[clamp(3rem,7.5vw,5.8rem)]" style={{ animationDelay: "0.06s" }}>
-          Manage your stock.<br />
-          <span className="text-amber">Own your profit.</span>
+        {/* heading — typewriter */}
+        <h1 className="font-display font-medium leading-[0.94] tracking-tight text-[clamp(3rem,7.5vw,5.8rem)] min-h-[1.9em]">
+          <span>
+            {t1}
+            {cursorLine1 && (
+              <span className="cursor-blink inline-block w-[3px] h-[0.82em] bg-paper rounded-sm align-middle ml-1 translate-y-[-0.05em]" />
+            )}
+          </span>
+          {t2.length > 0 && (
+            <>
+              <br />
+              <span className="text-amber">
+                {t2}
+                {cursorLine2 && (
+                  <span className="cursor-blink inline-block w-[3px] h-[0.82em] bg-amber rounded-sm align-middle ml-1 translate-y-[-0.05em]" />
+                )}
+              </span>
+            </>
+          )}
         </h1>
 
         {/* subtext */}
