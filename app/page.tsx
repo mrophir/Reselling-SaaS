@@ -84,7 +84,7 @@ function useCyclingTypewriter(
       setDisplayed(phrase.slice(0, next));
       if (next < phrase.length) {
         go(() => type(pi, next), typeSpeed);
-      } else if (pi < phrases.length - 1) {
+      } else {
         go(() => erase(pi, next), pauseAfterType);
       }
     }
@@ -95,7 +95,7 @@ function useCyclingTypewriter(
       if (next > 0) {
         go(() => erase(pi, next), deleteSpeed);
       } else {
-        go(() => type(pi + 1, 0), pauseAfterDelete);
+        go(() => type((pi + 1) % phrases.length, 0), pauseAfterDelete);
       }
     }
 
@@ -196,22 +196,21 @@ function Hero() {
 
         {/* heading — typewriter */}
         <h1 className="font-display font-medium leading-[0.94] tracking-tight text-[clamp(3rem,7.5vw,5.8rem)] min-h-[1.9em]">
-          <span>
-            {t1}
-            {cursorLine1 && (
-              <span className="cursor-blink inline-block w-[3px] h-[0.82em] bg-paper rounded-sm align-middle ml-1 translate-y-[-0.05em]" />
-            )}
-          </span>
-          {t2.length > 0 && (
-            <>
-              <br />
-              <span className="text-amber">
-                {t2}
-                {cursorLine2 && (
-                  <span className="cursor-blink inline-block w-[3px] h-[0.82em] bg-amber rounded-sm align-middle ml-1 translate-y-[-0.05em]" />
-                )}
-              </span>
-            </>
+          {!t2started && (
+            <span>
+              {t1}
+              {cursorLine1 && (
+                <span className="cursor-blink inline-block w-[3px] h-[0.82em] bg-paper rounded-sm align-middle ml-1 translate-y-[-0.05em]" />
+              )}
+            </span>
+          )}
+          {t2started && (
+            <span className="text-amber">
+              {t2}
+              {cursorLine2 && (
+                <span className="cursor-blink inline-block w-[3px] h-[0.82em] bg-amber rounded-sm align-middle ml-1 translate-y-[-0.05em]" />
+              )}
+            </span>
           )}
         </h1>
 
