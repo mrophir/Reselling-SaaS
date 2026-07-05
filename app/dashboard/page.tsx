@@ -1930,7 +1930,8 @@ export default function DashboardPage() {
   useEffect(() => {
     try {
       const s = localStorage.getItem("stockpile-items");
-      setItems(s ? JSON.parse(s) : SEED_ITEMS);
+      const parsed: Item[] = s ? JSON.parse(s) : [];
+      setItems(parsed.length > 0 ? parsed : SEED_ITEMS);
       const r = localStorage.getItem("stockpile-sales");
       if (r) setSaleRecords(JSON.parse(r));
       const l = localStorage.getItem("stockpile-locations");
