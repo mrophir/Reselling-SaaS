@@ -207,10 +207,12 @@ function ModalShell({ onClose, children }: { onClose: () => void; children: Reac
 interface Toast { id: number; message: string; type: "success" | "info" | "warning"; }
 
 function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: (id: number) => void }) {
+  const onDismissRef = useRef(onDismiss);
+  useEffect(() => { onDismissRef.current = onDismiss; });
   useEffect(() => {
-    const t = setTimeout(() => onDismiss(toast.id), 3200);
+    const t = setTimeout(() => onDismissRef.current(toast.id), 3200);
     return () => clearTimeout(t);
-  }, [toast.id, onDismiss]);
+  }, [toast.id]);
 
   const style = {
     success: { border: "border-moss/30",  bg: "bg-moss/10",  dot: "var(--color-moss)"  },
@@ -1659,7 +1661,7 @@ function Archives({ saleRecords, onDeleteSale, onEditSale }: {
                     <div>
                       <div className="flex items-center gap-2">
                         <p className="font-medium">{mo.m}</p>
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber/15 text-amber border border-amber/25">LIVE</span>
+                        {mo.m === CURRENT_MONTH && <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber/15 text-amber border border-amber/25">LIVE</span>}
                       </div>
                       <p className="text-sm text-paper-dim mt-0.5">{mo.sold} items sold · {mo.margin}% margin</p>
                     </div>
@@ -1901,7 +1903,7 @@ export default function DashboardPage() {
   const userMenuRef                       = useRef<HTMLDivElement>(null);
 
   function clearNotifications(alertIds: number[]) {
-    setDismissedAlertIds(alertIds);
+    setDismissedAlertIds((prev) => [...new Set([...prev, ...alertIds])]);
     setSalesClearedAt(Date.now());
   }
 
