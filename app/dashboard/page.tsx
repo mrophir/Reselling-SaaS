@@ -1317,6 +1317,7 @@ function ProfitCalculator() {
   const [cst, setCst] = useState(5);
   const [prc, setPrc] = useState(30);
   const [postCost, setPostCost] = useState(3.2);
+  const [otherCosts, setOtherCosts] = useState(0);
   const [plat, setPlat] = useState<Plat>("ebay");
   const [ebayType, setEbayType] = useState<EbayType>("private");
   const [payer, setPayer] = useState<Payer>("buyer");
@@ -1330,7 +1331,7 @@ function ProfitCalculator() {
   else if (isEbay) { if (ebayType === "private") { fee = 0; feeLabel = "eBay private (£0, standard cats)"; } else { const po = prc > 10 ? 0.40 : 0; fee = prc * 0.128 + 0.30 + po; feeLabel = "eBay business (12.8% + 30p + 40p)"; } }
 
   const postDed = sellerPays ? postCost : 0;
-  const net = prc - fee - postDed - cst;
+  const net = prc - fee - postDed - cst - otherCosts;
   const margin = prc > 0 ? Math.round(net / prc * 100) : 0;
   const roi = cst > 0 ? net / cst : 0;
 
@@ -1366,6 +1367,10 @@ function ProfitCalculator() {
             {choosable && payer==="free" && <div className="flex items-center gap-3 mb-2"><label className="text-sm text-paper-dim whitespace-nowrap">Postage cost</label><input className={fieldCls} type="number" value={postCost} onChange={(e)=>setPostCost(+e.target.value)}/></div>}
             <p className="text-xs text-paper-faint">{note}</p>
           </div>
+          <div>
+            <label className="block text-sm text-paper-dim mb-1.5">Other costs <span className="text-paper-faint font-normal">(packaging, equipment, etc.)</span></label>
+            <input className={fieldCls} type="number" min="0" step="0.01" value={otherCosts || ""} placeholder="0.00" onChange={(e) => setOtherCosts(+e.target.value)} />
+          </div>
         </div>
         <div className="rounded-2xl border border-line bg-ink-card p-5 flex flex-col">
           <div className="space-y-3 text-sm">
@@ -1373,6 +1378,7 @@ function ProfitCalculator() {
             <div className="flex items-center justify-between text-paper-dim"><span>{feeLabel}</span><span className="font-mono text-rust">{gbp(-fee)}</span></div>
             {postDed > 0 && <div className="flex items-center justify-between text-paper-dim"><span>Postage</span><span className="font-mono text-rust">{gbp(-postDed)}</span></div>}
             <div className="flex items-center justify-between text-paper-dim"><span>Cost of item</span><span className="font-mono text-rust">{gbp(-cst)}</span></div>
+            {otherCosts > 0 && <div className="flex items-center justify-between text-paper-dim"><span>Other costs</span><span className="font-mono text-rust">{gbp(-otherCosts)}</span></div>}
           </div>
           <div className="mt-auto pt-5">
             <div className="rounded-xl bg-ink-soft px-4 py-4 flex items-center justify-between">
