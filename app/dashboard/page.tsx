@@ -614,7 +614,7 @@ function ItemRow({ item, onSell, onToggleListed, onEdit, onRemove, onUnsell, sto
 
         {/* assign to storage box — only for active items without a bin */}
         {item.stage !== "sold" && !item.bin && onAssignBin && storageLocations && storageLocations.length > 0 && (
-          <div className="relative" ref={binPickerRef}>
+          <div className="relative hidden sm:block" ref={binPickerRef}>
             <button
               onClick={() => setBinPickerOpen((o) => !o)}
               className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-md border border-dashed border-line text-paper-faint hover:border-amber/40 hover:text-amber hover:bg-amber/8 transition-all"
@@ -689,7 +689,7 @@ function ItemRow({ item, onSell, onToggleListed, onEdit, onRemove, onUnsell, sto
         {item.notes && (
           <button
             onClick={() => setNoteOpen((o) => !o)}
-            className={`flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-md border transition-all ${noteOpen ? "border-amber/40 bg-amber/10 text-amber" : "border-line-soft text-paper-faint hover:border-amber/30 hover:text-amber"}`}
+            className={`hidden sm:flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-md border transition-all ${noteOpen ? "border-amber/40 bg-amber/10 text-amber" : "border-line-soft text-paper-faint hover:border-amber/30 hover:text-amber"}`}
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
@@ -711,6 +711,7 @@ function ItemRow({ item, onSell, onToggleListed, onEdit, onRemove, onUnsell, sto
           </button>
         )}
 
+        <div className="hidden sm:block">
         {onRemove && (
           confirmDelete ? (
             <button
@@ -733,6 +734,7 @@ function ItemRow({ item, onSell, onToggleListed, onEdit, onRemove, onUnsell, sto
             </button>
           )
         )}
+        </div>
 
       </div>
     </div>
@@ -1425,7 +1427,7 @@ function NotificationPanel({ saleRecords, items, dismissedAlertIds, salesCleared
   const total = agingAlerts.length + recent.length;
 
   return (
-    <div className="rise absolute right-0 top-[calc(100%+8px)] w-[340px] rounded-2xl border border-line bg-ink-card shadow-2xl shadow-black/60 overflow-hidden z-50">
+    <div className="rise absolute right-0 top-[calc(100%+8px)] w-[340px] max-w-[calc(100vw-2rem)] rounded-2xl border border-line bg-ink-card shadow-2xl shadow-black/60 overflow-hidden z-50">
       <div className="px-4 py-3.5 border-b border-line flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="font-display font-medium text-sm">Notifications</span>

@@ -109,44 +109,103 @@ function useCyclingTypewriter(
 
 /* ---------- nav ---------- */
 
+const NAV_LINKS = [
+  { href: "#problem",    label: "The problem"   },
+  { href: "#features",  label: "Features"       },
+  { href: "#who",       label: "Who it's for"   },
+  { href: "#vs",        label: "vs Spreadsheet" },
+  { href: "#case-study",label: "Case study"     },
+  { href: "#cta",       label: "Pricing"        },
+];
+
 function Nav() {
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 12);
     window.addEventListener("scroll", fn, { passive: true });
     return () => window.removeEventListener("scroll", fn);
   }, []);
+
+  useEffect(() => {
+    const fn = (e: KeyboardEvent) => { if (e.key === "Escape") setMenuOpen(false); };
+    window.addEventListener("keydown", fn);
+    return () => window.removeEventListener("keydown", fn);
+  }, []);
+
   return (
-    <header className={`fixed top-0 inset-x-0 z-50 border-b transition-all duration-500 ${
-      scrolled ? "border-line/70 bg-ink/90 backdrop-blur-md shadow-lg shadow-black/25"
-               : "border-transparent bg-ink/30 backdrop-blur-sm"
-    }`}>
-      <div className="mx-auto max-w-6xl px-6 h-16 flex items-center justify-between">
-        <a href="#top" className="flex items-center gap-2.5 group">
-          <span className="relative grid place-items-center w-7 h-7 rounded-[6px] bg-amber overflow-hidden">
-            <span className="absolute bottom-0 inset-x-0 bg-ink/25" style={{ height: "38%" }} />
-            <span className="relative w-[3px] h-3.5 rounded-full bg-ink" />
-          </span>
-          <span className="font-display text-[17px] font-medium tracking-tight">Stockpile</span>
-        </a>
-        <nav className="hidden md:flex items-center gap-8 text-sm text-paper-dim">
-          <a href="#problem" className="hover:text-paper transition-colors">The problem</a>
-          <a href="#features" className="hover:text-paper transition-colors">Features</a>
-          <a href="#who" className="hover:text-paper transition-colors">Who it's for</a>
-          <a href="#vs" className="hover:text-paper transition-colors">vs Spreadsheet</a>
-          <a href="#case-study" className="hover:text-paper transition-colors">Case study</a>
-          <a href="#cta" className="hover:text-paper transition-colors">Pricing</a>
-        </nav>
-        <div className="flex items-center gap-2">
-          <a href="/dashboard" className="text-sm font-medium px-3 py-2 rounded-lg border border-line text-paper hover:border-paper-faint transition-all duration-200">
-            Dashboard
+    <>
+      <header className={`fixed top-0 inset-x-0 z-50 border-b transition-all duration-500 ${
+        scrolled || menuOpen
+          ? "border-line/70 bg-ink/95 backdrop-blur-md shadow-lg shadow-black/25"
+          : "border-transparent bg-ink/30 backdrop-blur-sm"
+      }`}>
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+          <a href="#top" className="flex items-center gap-2.5 shrink-0">
+            <span className="relative grid place-items-center w-7 h-7 rounded-[6px] bg-amber overflow-hidden">
+              <span className="absolute bottom-0 inset-x-0 bg-ink/25" style={{ height: "38%" }} />
+              <span className="relative w-[3px] h-3.5 rounded-full bg-ink" />
+            </span>
+            <span className="font-display text-[17px] font-medium tracking-tight">Stockpile</span>
           </a>
-          <a href="#cta" className="btn-shine text-sm font-medium px-3 py-2 rounded-lg bg-amber text-ink hover:bg-paper transition-colors">
-            Sign up free
-          </a>
+
+          <nav className="hidden md:flex items-center gap-8 text-sm text-paper-dim">
+            {NAV_LINKS.map((l) => (
+              <a key={l.href} href={l.href} className="hover:text-paper transition-colors">{l.label}</a>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-2">
+            {/* Dashboard — amber, always visible */}
+            <a href="/dashboard" className="btn-shine text-sm font-medium px-3 py-2 rounded-lg bg-amber text-ink hover:bg-paper transition-colors shrink-0">
+              Dashboard
+            </a>
+            {/* Sign up — desktop only */}
+            <a href="#cta" className="hidden md:block text-sm font-medium px-3 py-2 rounded-lg border border-line text-paper hover:border-paper-faint transition-colors">
+              Sign up free
+            </a>
+            {/* Hamburger — mobile only */}
+            <button
+              onClick={() => setMenuOpen((o) => !o)}
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              className="md:hidden grid place-items-center w-10 h-10 rounded-lg text-paper-dim hover:text-paper hover:bg-ink-card transition-colors"
+            >
+              {menuOpen ? (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              ) : (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+              )}
+            </button>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {/* Mobile slide-down menu */}
+      {menuOpen && (
+        <div className="fixed inset-0 z-40 md:hidden" onClick={() => setMenuOpen(false)}>
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+          <div className="absolute top-16 inset-x-0 bg-ink border-b border-line" onClick={(e) => e.stopPropagation()}>
+            <nav className="flex flex-col px-4">
+              {NAV_LINKS.map((l) => (
+                <a
+                  key={l.href} href={l.href}
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center py-4 text-[15px] text-paper-dim hover:text-paper border-b border-line-soft last:border-b-0 transition-colors"
+                >
+                  {l.label}
+                </a>
+              ))}
+            </nav>
+            <div className="px-4 py-4">
+              <a href="#cta" onClick={() => setMenuOpen(false)} className="block w-full text-center py-3.5 rounded-xl bg-amber text-ink font-medium text-sm hover:bg-paper transition-colors">
+                Sign up free — no card needed
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -1416,7 +1475,7 @@ function Reveal({ children, className = "", delay = 0 }: { children: React.React
 
 export default function Page() {
   return (
-    <main className="relative">
+    <main className="relative pb-20 md:pb-0">
       <Nav />
       <Hero />
       <Strip />
@@ -1429,6 +1488,18 @@ export default function Page() {
       <Reviews />
       <CTA />
       <Footer />
+
+      {/* Sticky mobile CTA bar */}
+      <div className="md:hidden fixed bottom-0 inset-x-0 z-40 px-4 py-3 bg-ink/95 backdrop-blur-md border-t border-line">
+        <div className="flex items-center gap-3">
+          <a href="/dashboard" className="btn-shine flex-1 text-center py-3 rounded-xl bg-amber text-ink font-medium text-sm hover:bg-paper transition-colors">
+            Open dashboard
+          </a>
+          <a href="#cta" className="flex-1 text-center py-3 rounded-xl border border-line text-paper text-sm font-medium hover:border-paper-faint transition-colors">
+            Sign up free
+          </a>
+        </div>
+      </div>
     </main>
   );
 }
