@@ -985,9 +985,6 @@ function Overview({
             <p className="text-sm text-paper-dim mt-1.5">{counts.unlisted} items bought but not earning — clear the pile to put them to work</p>
           </div>
         </div>
-        <button onClick={() => setStage("unlisted")} className="px-4 py-2.5 rounded-xl bg-amber text-ink font-medium text-sm hover:bg-paper transition-colors whitespace-nowrap">
-          Clear the pile
-        </button>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
