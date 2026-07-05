@@ -137,12 +137,11 @@ function Nav() {
           <a href="#case-study" className="hover:text-paper transition-colors">Case study</a>
           <a href="#cta" className="hover:text-paper transition-colors">Pricing</a>
         </nav>
-        <div className="flex items-center gap-3">
-
-          <a href="/dashboard" className="hidden sm:block text-sm font-medium px-4 py-2 rounded-lg border border-line text-paper hover:border-paper-faint hover:-translate-y-0.5 transition-all duration-200">
+        <div className="flex items-center gap-2">
+          <a href="/dashboard" className="text-sm font-medium px-3 py-2 rounded-lg border border-line text-paper hover:border-paper-faint transition-all duration-200">
             Dashboard
           </a>
-          <a href="#cta" className="btn-shine text-sm font-medium px-4 py-2 rounded-lg bg-amber text-ink hover:bg-paper transition-colors">
+          <a href="#cta" className="btn-shine text-sm font-medium px-3 py-2 rounded-lg bg-amber text-ink hover:bg-paper transition-colors">
             Sign up free
           </a>
         </div>
@@ -170,22 +169,23 @@ function Hero() {
   );
 
   return (
-    <section id="top" className="grain relative overflow-hidden pt-40 pb-28 px-6">
+    <section id="top" className="grain relative overflow-hidden pt-28 pb-16 md:pt-40 md:pb-28 px-6">
       <div className="orb absolute top-10 left-1/2 -translate-x-1/2 w-[800px] h-[500px] rounded-full bg-amber/[0.055] blur-3xl pointer-events-none" />
 
       <div className="relative mx-auto max-w-4xl text-center">
         {/* social proof pill */}
-        <div className="rise inline-flex items-center gap-3 rounded-full border border-line bg-ink-card/80 px-4 py-2 mb-10 text-xs">
+        <div className="rise inline-flex items-center gap-2 sm:gap-3 rounded-full border border-line bg-ink-card/80 px-3 sm:px-4 py-2 mb-8 md:mb-10 text-xs">
           <span className="flex items-center gap-1.5 text-paper-dim">
             <span className="w-1.5 h-1.5 rounded-full bg-moss shrink-0" style={{ animation: "blink 1.6s infinite" }} />
-            Trusted by resellers across the UK
+            <span className="hidden sm:inline">Trusted by resellers across the UK</span>
+            <span className="sm:hidden">Trusted by UK resellers</span>
           </span>
           <span className="w-px h-3 bg-line shrink-0" />
           <span className="text-amber font-mono font-medium">10,000+ items tracked</span>
         </div>
 
         {/* heading — typewriter */}
-        <h1 className="font-display font-medium leading-[0.94] tracking-tight text-[clamp(3rem,7.5vw,5.8rem)] min-h-[1.9em]">
+        <h1 className="font-display font-medium leading-[1.05] md:leading-[0.94] tracking-tight text-[clamp(2rem,7.5vw,5.8rem)] min-h-[2.2em] md:min-h-[1.9em]">
           <span className="text-amber">
             {t2}
             <span className="cursor-blink inline-block w-[3px] h-[0.82em] bg-amber rounded-sm align-middle ml-1 translate-y-[-0.05em]" />
@@ -193,37 +193,37 @@ function Hero() {
         </h1>
 
         {/* subtext */}
-        <p className="rise mt-8 text-lg text-paper-dim max-w-xl mx-auto leading-relaxed" style={{ animationDelay: "0.12s" }}>
-          A live view of everything you own, exactly where it's stored, and what you're actually making — from source to sold.
+        <p className="rise mt-6 md:mt-8 text-base md:text-lg text-paper-dim max-w-xl mx-auto leading-relaxed" style={{ animationDelay: "0.12s" }}>
+          A live view of everything you own, exactly where it&apos;s stored, and what you&apos;re actually making — from source to sold.
         </p>
 
         {/* CTAs */}
-        <div className="rise mt-10 flex items-center justify-center gap-4 flex-wrap" style={{ animationDelay: "0.17s" }}>
-          <a href="#cta" className="btn-shine inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-amber text-ink font-medium text-[15px] hover:bg-paper transition-colors">
-            Start managing free
+        <div className="rise mt-8 md:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3" style={{ animationDelay: "0.17s" }}>
+          <a href="/dashboard" className="btn-shine w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-amber text-ink font-medium text-[15px] hover:bg-paper transition-colors">
+            Open the dashboard
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
           </a>
-          <a href="#vs" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl border border-line text-paper hover:border-paper-faint hover:-translate-y-0.5 transition-all duration-200 text-[15px]">
+          <a href="#vs" className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl border border-line text-paper hover:border-paper-faint hover:-translate-y-0.5 transition-all duration-200 text-[15px]">
             Why not a spreadsheet?
           </a>
         </div>
 
         {/* built for */}
-        <p className="rise mt-6 text-sm" style={{ animationDelay: "0.22s" }}>
+        <p className="rise mt-5 text-sm" style={{ animationDelay: "0.22s" }}>
           <span className="text-paper-faint">Built for</span>
           <span className="text-paper-dim"> · Weekend sourcers · Full-time flippers · Scaling operators</span>
         </p>
 
         {/* stats row */}
-        <div className="rise mt-16 inline-grid grid-cols-3 gap-px bg-line rounded-2xl overflow-hidden border border-line shadow-xl shadow-black/30" style={{ animationDelay: "0.26s" }}>
+        <div className="rise mt-10 md:mt-16 inline-grid grid-cols-3 gap-px bg-line rounded-2xl overflow-hidden border border-line shadow-xl shadow-black/30" style={{ animationDelay: "0.26s" }}>
           {[
             { v: "£0",    l: "to get started" },
             { v: "5 min", l: "to first insight" },
             { v: "100%",  l: "profit visibility" },
           ].map((s) => (
-            <div key={s.l} className="bg-ink-card px-8 py-5 text-center">
-              <div className="font-mono text-2xl font-medium text-amber">{s.v}</div>
-              <div className="text-xs text-paper-faint mt-1.5">{s.l}</div>
+            <div key={s.l} className="bg-ink-card px-4 md:px-8 py-4 md:py-5 text-center">
+              <div className="font-mono text-lg md:text-2xl font-medium text-amber">{s.v}</div>
+              <div className="text-[10px] md:text-xs text-paper-faint mt-1">{s.l}</div>
             </div>
           ))}
         </div>
@@ -295,6 +295,113 @@ function MockItemRow({ item }: { item: typeof MOCK_ITEMS[number] }) {
   );
 }
 
+function PhoneMockup() {
+  return (
+    <div className="flex justify-center">
+      {/* phone shell */}
+      <div style={{ width: 288, background: "#181614", borderRadius: 46, padding: 10, boxShadow: "0 32px 72px rgba(0,0,0,0.85), 0 0 0 1px #2a2722, inset 0 0 0 1px #3a3530", position: "relative" }}>
+        {/* screen */}
+        <div style={{ background: "#0e0d0b", borderRadius: 38, overflow: "hidden", display: "flex", flexDirection: "column", height: 576, fontFamily: "Inter, system-ui, sans-serif" }}>
+          {/* dynamic island */}
+          <div style={{ display: "flex", justifyContent: "center", paddingTop: 10, paddingBottom: 6, flexShrink: 0 }}>
+            <div style={{ width: 92, height: 28, background: "#0a0908", borderRadius: 18 }} />
+          </div>
+          {/* app header */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "2px 16px 10px", flexShrink: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+              <span style={{ width: 26, height: 26, borderRadius: 7, background: "#f0a020", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <span style={{ width: 2.5, height: 13, borderRadius: 2, background: "#0e0d0b" }} />
+              </span>
+              <span style={{ fontSize: 17, fontWeight: 600, color: "#f5f1e8", letterSpacing: "-0.02em" }}>Stockpile</span>
+            </div>
+            <div style={{ display: "flex", gap: 8 }}>
+              <div style={{ position: "relative", width: 34, height: 34, borderRadius: 10, background: "#1a1815", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="#b8b1a3" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ width: 16, height: 16 }}><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                <span style={{ position: "absolute", top: 5, right: 5, width: 7, height: 7, borderRadius: "50%", background: "#f0a020", border: "1.5px solid #0e0d0b" }} />
+              </div>
+              <div style={{ width: 34, height: 34, borderRadius: 10, background: "#f0a020", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="#0e0d0b" strokeWidth="2.5" strokeLinecap="round" style={{ width: 16, height: 16 }}><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </div>
+            </div>
+          </div>
+          {/* content */}
+          <div style={{ flex: 1, padding: "0 12px", overflow: "hidden", display: "flex", flexDirection: "column", gap: 9 }}>
+            {/* alert banner */}
+            <div style={{ background: "rgba(240,160,32,0.08)", border: "1px solid rgba(240,160,32,0.28)", borderRadius: 12, padding: "10px 12px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
+              <div>
+                <div style={{ fontSize: 14, color: "#f0a020", fontFamily: "monospace", fontWeight: 700 }}>£243 not listed</div>
+                <div style={{ fontSize: 11, color: "#b8b1a3", marginTop: 2 }}>2 items sitting idle</div>
+              </div>
+              <div style={{ background: "#f0a020", color: "#0e0d0b", borderRadius: 7, padding: "5px 10px", fontSize: 11, fontWeight: 700 }}>Clear</div>
+            </div>
+            {/* 2×2 stat grid */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 7, flexShrink: 0 }}>
+              {[
+                { l: "Listed",   v: "8",      c: "#f5f1e8" },
+                { l: "Unlisted", v: "2",      c: "#f0a020" },
+                { l: "Sold",     v: "3",      c: "#f5f1e8" },
+                { l: "Profit",   v: "£127.50", c: "#7fae4a" },
+              ].map((s) => (
+                <div key={s.l} style={{ background: "#161410", border: "1px solid #2a2722", borderRadius: 10, padding: "8px 10px" }}>
+                  <div style={{ fontSize: 10, color: "#6f6a5e", marginBottom: 3 }}>{s.l}</div>
+                  <div style={{ fontSize: 15, color: s.c, fontFamily: "monospace", fontWeight: 600 }}>{s.v}</div>
+                </div>
+              ))}
+            </div>
+            {/* stage tabs */}
+            <div style={{ display: "flex", gap: 5, flexShrink: 0 }}>
+              {([["unlisted · 2", false], ["listed · 8", true], ["sold · 3", false]] as const).map(([label, active]) => (
+                <div key={label} style={{ padding: "5px 9px", borderRadius: 7, fontSize: 11, fontWeight: active ? 500 : 400, color: active ? "#f5f1e8" : "#6f6a5e", background: active ? "#211e1a" : "transparent", border: `1px solid ${active ? "#2a2722" : "transparent"}`, whiteSpace: "nowrap" }}>
+                  {label}
+                </div>
+              ))}
+            </div>
+            {/* item list */}
+            <div style={{ background: "#161410", border: "1px solid #2a2722", borderRadius: 12, overflow: "hidden", flexShrink: 0 }}>
+              {MOCK_ITEMS.slice(0, 5).map((it, i) => {
+                const dot = COND_DOT[it.cond] ?? "#6f6a5e";
+                return (
+                  <div key={it.name} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "9px 12px", borderTop: i === 0 ? "none" : "1px solid #211e1a" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
+                      <span style={{ width: 7, height: 7, borderRadius: "50%", background: dot, flexShrink: 0 }} />
+                      <span style={{ fontSize: 12, color: "#f5f1e8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 130 }}>{it.name}</span>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+                      <span style={{ background: it.stage === "listed" ? "rgba(127,174,74,0.1)" : "rgba(240,160,32,0.1)", color: it.stage === "listed" ? "#7fae4a" : "#f0a020", border: `1px solid ${it.stage === "listed" ? "rgba(127,174,74,0.25)" : "rgba(240,160,32,0.25)"}`, borderRadius: 5, padding: "2px 6px", fontSize: 9, fontWeight: 500 }}>
+                        {it.stage === "listed" ? "Listed" : "Unlisted"}
+                      </span>
+                      <span style={{ fontSize: 10, color: "#6f6a5e", fontFamily: "monospace" }}>£{it.paid}</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          {/* bottom nav */}
+          <div style={{ height: 62, borderTop: "1px solid #211e1a", display: "flex", alignItems: "center", justifyContent: "space-around", padding: "0 10px", flexShrink: 0, marginTop: 8 }}>
+            {[
+              { label: "Overview", active: true,  icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ width: 18, height: 18 }}><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg> },
+              { label: "Stock",    active: false, icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ width: 18, height: 18 }}><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/></svg> },
+              { label: "Storage",  active: false, icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ width: 18, height: 18 }}><rect x="3" y="4" width="8" height="7" rx="1"/><rect x="13" y="4" width="8" height="7" rx="1"/><rect x="3" y="13" width="8" height="7" rx="1"/><rect x="13" y="13" width="8" height="7" rx="1"/></svg> },
+              { label: "Calc",     active: false, icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ width: 18, height: 18 }}><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="14" x2="8" y2="18"/><line x1="16" y1="14" x2="16" y2="18"/></svg> },
+              { label: "Archives", active: false, icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ width: 18, height: 18 }}><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg> },
+            ].map((n) => (
+              <div key={n.label} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3, color: n.active ? "#f0a020" : "#6f6a5e" }}>
+                {n.icon}
+                <span style={{ fontSize: 9, fontWeight: n.active ? 600 : 400 }}>{n.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        {/* side buttons */}
+        <div style={{ position: "absolute", left: -3, top: 92, width: 3, height: 26, background: "#2a2722", borderRadius: "3px 0 0 3px" }} />
+        <div style={{ position: "absolute", left: -3, top: 126, width: 3, height: 26, background: "#2a2722", borderRadius: "3px 0 0 3px" }} />
+        <div style={{ position: "absolute", right: -3, top: 110, width: 3, height: 42, background: "#2a2722", borderRadius: "0 3px 3px 0" }} />
+      </div>
+    </div>
+  );
+}
+
 function DashboardMockup() {
   // inner canvas is 1120×610; we scale it into a 900px-wide screen area
   const INNER_W = 1120;
@@ -312,9 +419,9 @@ function DashboardMockup() {
   ];
 
   return (
-    <section className="px-6 py-16 overflow-hidden">
+    <section className="px-6 py-12 md:py-16 overflow-hidden">
       <div className="mx-auto max-w-6xl">
-        <div className="text-center mb-10">
+        <div className="text-center mb-8 md:mb-10">
           <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-[0.18em] text-amber mb-4">
             <span className="w-1.5 h-1.5 rounded-full bg-amber" />
             See it in action
@@ -324,9 +431,16 @@ function DashboardMockup() {
           </h2>
         </div>
 
-        {/* laptop frame */}
+        {/* Mobile: phone frame */}
+        <div className="md:hidden">
+          <Reveal>
+            <PhoneMockup />
+          </Reveal>
+        </div>
+
+        {/* Desktop: laptop frame */}
         <Reveal>
-          <div className="mx-auto" style={{ maxWidth: 980 }}>
+          <div className="hidden md:block mx-auto" style={{ maxWidth: 980 }}>
             {/* lid / screen */}
             <div
               className="rounded-2xl shadow-2xl shadow-black/70"
@@ -453,6 +567,7 @@ function DashboardMockup() {
             </div>
           </div>
         </Reveal>
+        </div>{/* end hidden md:block */}
       </div>
     </section>
   );
@@ -486,7 +601,7 @@ function Problem() {
     { k: "03", h: "You never really know your profit", b: "Fees, postage, sourcing cost, platform cuts. By the time you net it out in your head, the number's wrong. So you stop checking." },
   ];
   return (
-    <section id="problem" className="px-6 py-28">
+    <section id="problem" className="px-6 py-16 md:py-28">
       <div className="mx-auto max-w-6xl">
         <div className="text-center mb-14">
         <SectionEyebrow center>The reseller's tax</SectionEyebrow>
@@ -719,7 +834,7 @@ function Features() {
   const tab = FEATURE_TABS[active];
 
   return (
-    <section id="features" className="px-6 py-28 border-t border-line">
+    <section id="features" className="px-6 py-16 md:py-28 border-t border-line">
       <div className="mx-auto max-w-6xl">
         <div className="text-center mb-14">
           <SectionEyebrow center>What it does</SectionEyebrow>
@@ -786,7 +901,7 @@ function Who() {
     { h: "The scaling operator", b: "You've outgrown the spreadsheet, maybe added help, and need the numbers clean for tax. The monthly archives and aging flags keep the whole operation honest.", tag: "2,000+ items" },
   ];
   return (
-    <section id="who" className="px-6 py-28 border-t border-line">
+    <section id="who" className="px-6 py-16 md:py-28 border-t border-line">
       <div className="mx-auto max-w-6xl">
         <SectionEyebrow>Who it's built for</SectionEyebrow>
         <h2 className="font-display font-medium text-[clamp(2rem,4.5vw,3.2rem)] leading-[1.05] tracking-tight max-w-3xl mb-16">
@@ -825,7 +940,7 @@ function Versus() {
     { f: "Falling a week behind", sheet: "The whole sheet becomes untrustworthy", app: "Designed to stay useful when you're behind" },
   ];
   return (
-    <section id="vs" className="px-6 py-28 border-t border-line">
+    <section id="vs" className="px-6 py-16 md:py-28 border-t border-line">
       <div className="mx-auto max-w-6xl">
         <SectionEyebrow>Stockpile vs the spreadsheet</SectionEyebrow>
         <h2 className="font-display font-medium text-[clamp(2rem,4.5vw,3.2rem)] leading-[1.05] tracking-tight max-w-3xl mb-5">
@@ -835,19 +950,33 @@ function Versus() {
           A grid stores what you type and does nothing else. Stockpile is built for the messy, physical reality of a stockroom and it actively watches the gaps a spreadsheet can't.
         </p>
         <Reveal>
-          <div className="rounded-2xl border border-line overflow-hidden">
+          {/* Mobile: stacked cards showing Stockpile advantage */}
+          <div className="md:hidden space-y-3">
+            {rows.map((r) => (
+              <div key={r.f} className="rounded-xl border border-line bg-ink-card p-4">
+                <p className="text-sm font-medium text-paper mb-2">{r.f}</p>
+                <div className="flex items-start gap-2">
+                  <span className="text-moss shrink-0 mt-0.5 text-sm">✓</span>
+                  <p className="text-sm text-paper-dim leading-snug">{r.app}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop: full 3-col comparison table */}
+          <div className="hidden md:block rounded-2xl border border-line overflow-hidden">
             <div className="grid grid-cols-[1.1fr_1fr_1.1fr] bg-ink-soft border-b border-line text-sm font-medium">
-              <div className="p-4 md:p-5 text-paper-faint">The moment</div>
-              <div className="p-4 md:p-5 text-paper-faint border-x border-line">Spreadsheet</div>
-              <div className="p-4 md:p-5 text-amber flex items-center gap-2">Stockpile</div>
+              <div className="p-5 text-paper-faint">The moment</div>
+              <div className="p-5 text-paper-faint border-x border-line">Spreadsheet</div>
+              <div className="p-5 text-amber flex items-center gap-2">Stockpile</div>
             </div>
             {rows.map((r, i) => (
               <div key={r.f} className={`grid grid-cols-[1.1fr_1fr_1.1fr] text-[14px] ${i % 2 ? "bg-ink-card" : "bg-ink"}`}>
-                <div className="p-4 md:p-5 font-medium">{r.f}</div>
-                <div className="p-4 md:p-5 text-paper-faint border-x border-line flex items-start gap-2">
+                <div className="p-5 font-medium">{r.f}</div>
+                <div className="p-5 text-paper-faint border-x border-line flex items-start gap-2">
                   <span className="text-rust mt-0.5 shrink-0">✕</span>{r.sheet}
                 </div>
-                <div className="p-4 md:p-5 text-paper-dim flex items-start gap-2">
+                <div className="p-5 text-paper-dim flex items-start gap-2">
                   <span className="text-moss mt-0.5 shrink-0">✓</span>{r.app}
                 </div>
               </div>
@@ -877,7 +1006,7 @@ function CaseStudy() {
     { label: "Time finding a sold item", v: "< 30 seconds" },
   ];
   return (
-    <section id="case-study" className="px-6 py-28 border-t border-line">
+    <section id="case-study" className="px-6 py-16 md:py-28 border-t border-line">
       <div className="mx-auto max-w-6xl">
         <SectionEyebrow>Case study</SectionEyebrow>
         <h2 className="font-display font-medium text-[clamp(2rem,4.5vw,3.2rem)] leading-[1.05] tracking-tight max-w-3xl mb-5">
@@ -1054,7 +1183,7 @@ function Reviews() {
   const nextIdx = (idx + 1) % REVIEWS.length;
 
   return (
-    <section id="reviews" className="px-6 py-28 border-t border-line">
+    <section id="reviews" className="px-6 py-16 md:py-28 border-t border-line">
       <div className="mx-auto max-w-6xl">
         <SectionEyebrow center>What resellers say</SectionEyebrow>
         <h2 className="font-display font-medium text-[clamp(1.8rem,4vw,2.8rem)] leading-[1.08] tracking-tight text-center mb-16">
@@ -1141,7 +1270,7 @@ function CTA() {
   const pro = getTier("pro");
 
   return (
-    <section id="cta" className="px-6 py-28 border-t border-line">
+    <section id="cta" className="px-6 py-16 md:py-28 border-t border-line">
       <div className="mx-auto max-w-6xl">
         <div className="text-center mb-16">
           <SectionEyebrow center>Pricing</SectionEyebrow>
