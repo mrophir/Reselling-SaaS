@@ -1527,6 +1527,8 @@ export default function DashboardPage() {
   const [dismissedAlertIds, setDismissedAlertIds] = useState<number[]>([]);
   const [salesClearedAt, setSalesClearedAt]       = useState(0);
   const notifRef                          = useRef<HTMLDivElement>(null);
+  const [userMenuOpen, setUserMenuOpen]   = useState(false);
+  const userMenuRef                       = useRef<HTMLDivElement>(null);
 
   function clearNotifications(alertIds: number[]) {
     setDismissedAlertIds(alertIds);
@@ -1541,6 +1543,15 @@ export default function DashboardPage() {
     document.addEventListener("mousedown", handleOutside);
     return () => document.removeEventListener("mousedown", handleOutside);
   }, [notifOpen]);
+
+  useEffect(() => {
+    if (!userMenuOpen) return;
+    function handleOutside(e: MouseEvent) {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) setUserMenuOpen(false);
+    }
+    document.addEventListener("mousedown", handleOutside);
+    return () => document.removeEventListener("mousedown", handleOutside);
+  }, [userMenuOpen]);
 
   // Load persisted state from localStorage on first mount
   useEffect(() => {
@@ -1735,11 +1746,13 @@ export default function DashboardPage() {
       {/* main */}
       <div className="flex-1 min-w-0 flex flex-col">
         <header className="h-16 border-b border-line flex items-center gap-4 px-6 sticky top-0 bg-ink/85 backdrop-blur-md z-10">
-          <button onClick={() => setSidebarOpen(true)} className="md:hidden grid place-items-center w-9 h-9 rounded-lg text-paper-dim hover:text-paper hover:bg-ink-card transition-colors">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px]">
-              <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
-            </svg>
-          </button>
+          <a href="/" className="md:hidden flex items-center gap-2 shrink-0">
+            <span className="relative grid place-items-center w-7 h-7 rounded-[6px] bg-amber overflow-hidden shrink-0">
+              <span className="absolute bottom-0 inset-x-0 bg-ink/25" style={{ height: "38%" }} />
+              <span className="relative w-[3px] h-3.5 rounded-full bg-ink" />
+            </span>
+            <span className="font-display text-[15px] font-medium tracking-tight">Stockpile</span>
+          </a>
           <div className="flex items-center gap-2.5 flex-1 min-w-0 max-w-[420px]">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] text-paper-faint shrink-0"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <input
@@ -1785,7 +1798,42 @@ export default function DashboardPage() {
               />
             )}
           </div>
-          <div className="grid place-items-center w-9 h-9 rounded-full bg-ink-card border border-line text-xs font-medium text-paper-dim shrink-0">JD</div>
+          <div ref={userMenuRef} className="relative shrink-0">
+            <button
+              onClick={() => setUserMenuOpen((o) => !o)}
+              className="grid place-items-center w-9 h-9 rounded-full bg-ink-card border border-line text-xs font-medium text-paper-dim hover:text-paper hover:border-paper-faint transition-colors"
+            >
+              JD
+            </button>
+            {userMenuOpen && (
+              <div className="absolute right-0 top-[calc(100%+8px)] w-52 max-w-[calc(100vw-2rem)] rounded-xl border border-line bg-ink-card shadow-2xl shadow-black/60 overflow-hidden z-50">
+                <div className="px-4 py-3 border-b border-line">
+                  <p className="text-sm font-medium text-paper">Jack</p>
+                  <p className="text-xs text-paper-faint mt-0.5">jacktozer11@gmail.com</p>
+                </div>
+                <div className="py-1">
+                  <button
+                    onClick={() => { setUserMenuOpen(false); addToast("Settings coming soon", "info"); }}
+                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-paper-dim hover:text-paper hover:bg-ink-soft transition-colors"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 shrink-0">
+                      <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                    </svg>
+                    Settings
+                  </button>
+                  <button
+                    onClick={() => { window.location.href = "/"; }}
+                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-rust hover:bg-rust/10 transition-colors"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 shrink-0">
+                      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+                    </svg>
+                    Log out
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </header>
 
         <main className="flex-1 p-6 pb-24 md:pb-6 max-w-[1152px] w-full mx-auto">
