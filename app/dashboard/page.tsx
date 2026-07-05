@@ -818,7 +818,7 @@ function Overview({
         </div>
       </div>
 
-      <div className="rounded-2xl border border-line bg-ink-card overflow-hidden">
+      <div className="rounded-2xl border border-line bg-ink-card">
         <div className="flex items-center gap-1 p-2 border-b border-line overflow-x-auto">
           {stages.map((s) => (
             <button key={s} onClick={() => setStage(s)}
@@ -894,7 +894,7 @@ function Stock({ items, onSell, onToggleListed, onEdit, onRemove, onUnsell, quer
           </button>
         )}
       </div>
-      <div className="rounded-2xl border border-line bg-ink-card overflow-hidden">
+      <div className="rounded-2xl border border-line bg-ink-card">
         {shown.length > 0
           ? <div>{shown.map((it) => <ItemRow key={it.id} item={it} onSell={onSell} onToggleListed={onToggleListed} onEdit={onEdit} onRemove={onRemove} onUnsell={onUnsell} storageLocations={storageLocations} onAssignBin={onAssignBin} />)}</div>
           : q
