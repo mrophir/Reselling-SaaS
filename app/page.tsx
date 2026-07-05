@@ -158,9 +158,9 @@ function Nav() {
 function Hero() {
   const L1 = "Manage your stock.";
   const L2_PHRASES = [
-    "Own your profit.",
+    "stock management just got easier",
     "making resellers more profitable",
-    "Stock management just got easier",
+    "manage your stock, make more profit",
   ];
   const L1_DELAY = 480;
   const L1_SPEED = 52;
@@ -170,10 +170,10 @@ function Hero() {
   const { displayed: t2, started: t2started } = useCyclingTypewriter(
     L2_PHRASES,
     L2_DELAY,
-    55,
-    30,
-    1800,
-    400
+    80,
+    42,
+    3000,
+    600
   );
 
   const cursorLine1 = !d1 || !t2started;
