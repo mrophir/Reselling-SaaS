@@ -17,8 +17,27 @@ type Stage = "unlisted" | "listed" | "sold";
 interface Item {
   id: number; code: string; name: string; cond: CondKey;
   paid: number; stage: Stage; age?: number; createdAt?: number;
-  platform?: string; bin?: string; notes?: string;
+  platform?: string; bin?: string; notes?: string; size?: string;
 }
+
+const SIZE_GROUPS = [
+  {
+    label: "Children's Shoe Sizes",
+    sizes: ["1","1.5","2","2.5","3","3.5","4","4.5","5","5.5","6","6.5","7","7.5","8","8.5","9","9.5","10","10.5","11","11.5","12","12.5","13","13.5","14","14.5","15"],
+  },
+  {
+    label: "Children's Clothing",
+    sizes: ["0-3 Months","3-6 Months","6-9 Months","9-12 Months","12-18 Months","18-24 Months","2-3 Years","3-4 Years","4-5 Years","5-6 Years","6-7 Years","7-8 Years","8-9 Years","9-10 Years","10-11 Years","11-12 Years","12-13 Years","13-14 Years"],
+  },
+  {
+    label: "Adult Clothing",
+    sizes: ["XS","S","M","L","XL","2XL","3XL","4XL"],
+  },
+  {
+    label: "Adult Shoe Sizes (UK)",
+    sizes: ["3","3.5","4","4.5","5","5.5","6","6.5","7","7.5","8","8.5","9","9.5","10","10.5","11","11.5","12","12.5","13"],
+  },
+];
 
 interface SaleRecord {
   id: number;
@@ -201,7 +220,7 @@ function ToastContainer({ toasts, onDismiss }: { toasts: Toast[]; onDismiss: (id
 
 /* ---------- add stock modal ---------- */
 
-const EMPTY_FORM = { name: "", paid: "", cond: "good" as CondKey, bin: "", itemCode: "", notes: "" };
+const EMPTY_FORM = { name: "", paid: "", cond: "good" as CondKey, bin: "", itemCode: "", notes: "", size: "" };
 
 function AddStockModal({ onClose, onAdd, storageLocations }: {
   onClose: () => void;
@@ -222,7 +241,7 @@ function AddStockModal({ onClose, onAdd, storageLocations }: {
     if (isNaN(paid) || paid < 0) { setError("Enter a valid price paid."); return; }
     const id = Date.now();
     const code = form.itemCode.trim() || `IT-${String(id).slice(-4)}`;
-    onAdd({ id, code, name: form.name.trim(), cond: form.cond, paid, stage: "unlisted", age: 0, createdAt: Date.now(), bin: form.bin || undefined, notes: form.notes.trim() || undefined });
+    onAdd({ id, code, name: form.name.trim(), cond: form.cond, paid, stage: "unlisted", age: 0, createdAt: Date.now(), bin: form.bin || undefined, notes: form.notes.trim() || undefined, size: form.size || undefined });
     onClose();
   }
 
@@ -268,6 +287,17 @@ function AddStockModal({ onClose, onAdd, storageLocations }: {
               );
             })}
           </div>
+        </div>
+        <div>
+          <label className="block text-sm text-paper-dim mb-1.5">Size <span className="text-paper-faint">(optional)</span></label>
+          <select className={field} value={form.size} onChange={(e) => setForm((f) => ({ ...f, size: e.target.value }))}>
+            <option value="">No size</option>
+            {SIZE_GROUPS.map((group) => (
+              <optgroup key={group.label} label={group.label}>
+                {group.sizes.map((s) => <option key={s} value={s}>{s}</option>)}
+              </optgroup>
+            ))}
+          </select>
         </div>
         <div>
           <label className="block text-sm text-paper-dim mb-1.5">
@@ -377,7 +407,7 @@ function EditStockModal({ item, onClose, onSave, storageLocations }: {
 }) {
   const [form, setForm] = useState({
     name: item.name, paid: String(item.paid), cond: item.cond,
-    bin: item.bin ?? "", itemCode: item.code, notes: item.notes ?? "",
+    bin: item.bin ?? "", itemCode: item.code, notes: item.notes ?? "", size: item.size ?? "",
   });
   const [error, setError] = useState("");
   const nameRef = useRef<HTMLInputElement>(null);
@@ -389,7 +419,7 @@ function EditStockModal({ item, onClose, onSave, storageLocations }: {
     if (!form.name.trim()) { setError("Item name is required."); return; }
     const paid = parseFloat(form.paid);
     if (isNaN(paid) || paid < 0) { setError("Enter a valid price paid."); return; }
-    onSave({ ...item, name: form.name.trim(), paid, cond: form.cond, bin: form.bin || undefined, code: form.itemCode.trim() || item.code, notes: form.notes.trim() || undefined });
+    onSave({ ...item, name: form.name.trim(), paid, cond: form.cond, bin: form.bin || undefined, code: form.itemCode.trim() || item.code, notes: form.notes.trim() || undefined, size: form.size || undefined });
     onClose();
   }
 
@@ -432,6 +462,17 @@ function EditStockModal({ item, onClose, onSave, storageLocations }: {
               );
             })}
           </div>
+        </div>
+        <div>
+          <label className="block text-sm text-paper-dim mb-1.5">Size <span className="text-paper-faint">(optional)</span></label>
+          <select className={field} value={form.size} onChange={(e) => setForm((f) => ({ ...f, size: e.target.value }))}>
+            <option value="">No size</option>
+            {SIZE_GROUPS.map((group) => (
+              <optgroup key={group.label} label={group.label}>
+                {group.sizes.map((s) => <option key={s} value={s}>{s}</option>)}
+              </optgroup>
+            ))}
+          </select>
         </div>
         <div>
           <label className="block text-sm text-paper-dim mb-1.5">Storage location <span className="text-paper-faint">(optional)</span></label>
@@ -594,6 +635,9 @@ function ItemRow({ item, onSell, onToggleListed, onEdit, onRemove, onUnsell, sto
         <span className="w-2 h-2 rounded-full shrink-0" style={{ background: c.dot }} />
         <span className="text-sm font-medium truncate">{item.name}</span>
         <span className="shrink-0 text-[11px] px-2 py-0.5 rounded-md" style={{ background: c.bg, color: c.fg }}>{c.label}</span>
+        {item.size && (
+          <span className="shrink-0 text-[11px] px-2 py-0.5 rounded-md bg-ink-soft border border-line text-paper-faint font-mono">{item.size}</span>
+        )}
         {showAge && (
           <span className={`shrink-0 flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded border font-mono ${ageTier.cls}`}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
