@@ -923,10 +923,10 @@ function ItemRow({ item, onSell, onToggleListed, onEdit, onRemove, onUnsell, sto
         <div className="flex items-center gap-2">
           <button
             onClick={(e) => { e.stopPropagation(); confirmList(); }}
-            className="flex items-center gap-1.5 text-[11px] font-medium px-3 py-1.5 rounded-lg bg-moss/15 border border-moss/40 text-moss hover:bg-moss/25 transition-all"
+            className="flex items-center gap-1.5 text-[12px] font-semibold px-4 py-2 rounded-lg bg-moss text-ink border border-moss/60 hover:bg-moss/80 transition-all"
           >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><polyline points="20 6 9 17 4 12"/></svg>
-            Mark listed{pendingPlatforms.length > 0 ? ` on ${pendingPlatforms.join(", ")}` : ""}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Save{pendingPlatforms.length > 0 ? ` — ${pendingPlatforms.join(", ")}` : ""}
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); setListPickerOpen(false); setPendingPlatforms([]); }}
