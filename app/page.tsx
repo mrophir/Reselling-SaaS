@@ -157,9 +157,9 @@ function Nav() {
 
 function Hero() {
   const L2_PHRASES = [
-    "stock management just got easier",
-    "making resellers more profitable",
-    "manage your stock, make more profit",
+    "Stock Management Just Got Easier",
+    "Making Resellers More Profitable",
+    "Manage Your Stock, Make More Profit",
   ];
 
   const { displayed: t2, started: t2started } = useCyclingTypewriter(
