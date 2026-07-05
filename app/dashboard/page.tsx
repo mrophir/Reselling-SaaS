@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { ThemeToggle } from "../components/ThemeToggle";
 
 /* ---------- types & data ---------- */
 
@@ -1832,6 +1833,7 @@ export default function DashboardPage() {
               />
             )}
           </div>
+          <ThemeToggle />
           <div ref={userMenuRef} className="relative shrink-0">
             <button
               onClick={() => setUserMenuOpen((o) => !o)}

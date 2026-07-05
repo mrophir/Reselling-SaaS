@@ -18,6 +18,18 @@
   --font-mono: "JetBrains Mono", monospace;
 }
 
+/* ---- light mode overrides ---- */
+html.light {
+  --color-ink: #faf8f4;
+  --color-ink-soft: #f0ece3;
+  --color-ink-card: #e8e3d8;
+  --color-paper: #1a1816;
+  --color-paper-dim: #4a4540;
+  --color-paper-faint: #8a857a;
+  --color-line: #d4cfc6;
+  --color-line-soft: #dedad2;
+}
+
 html { scroll-behavior: smooth; }
 
 body {

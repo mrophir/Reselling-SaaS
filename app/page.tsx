@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { getTier, formatItemCap, type TierKey, type FeatureFlag } from "../lib/tiers";
+import { ThemeToggle } from "./components/ThemeToggle";
 
 /* ---------- small helpers ---------- */
 
@@ -165,6 +166,7 @@ function Nav() {
             <a href="#cta" className="hidden md:block text-sm font-medium px-3 py-2 rounded-lg border border-line text-paper hover:border-paper-faint transition-colors">
               Sign up free
             </a>
+            <ThemeToggle />
             {/* Hamburger — mobile only */}
             <button
               onClick={() => setMenuOpen((o) => !o)}
