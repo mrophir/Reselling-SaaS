@@ -20,15 +20,19 @@
 
 /* ---- light mode overrides ---- */
 html.light {
-  --color-ink: #faf8f4;
-  --color-ink-soft: #f0ece3;
-  --color-ink-card: #e8e3d8;
+  --color-ink: #f4f2ee;
+  --color-ink-soft: #eceae4;
+  --color-ink-card: #ffffff;
   --color-paper: #1a1816;
   --color-paper-dim: #4a4540;
-  --color-paper-faint: #8a857a;
-  --color-line: #d4cfc6;
-  --color-line-soft: #dedad2;
+  --color-paper-faint: #6e6a5e;
+  --color-line: #dcd9d0;
+  --color-line-soft: #e8e5de;
 }
+
+/* amber surfaces use --color-ink as text, but in light mode ink is now the
+   light page colour — force dark text so the button stays legible */
+html.light .bg-amber { color: #1a1816 !important; }
 
 html { scroll-behavior: smooth; }
 
