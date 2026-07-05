@@ -53,6 +53,10 @@ interface SaleRecord {
   profit: number;
   month: string;
   platform?: string;
+  adCost?: number;
+  packagingCost?: number;
+  equipmentCost?: number;
+  otherCost?: number;
 }
 
 const CURRENT_MONTH = new Date().toLocaleString("en-GB", { month: "long", year: "numeric" });
@@ -127,13 +131,19 @@ function exportMonthCSV(month: string, records: SaleRecord[], revenue: number, c
   const rows: string[][] = [
     [`Stockpile Export — ${month}`],
     [],
-    ["Item Name", "Cost Paid (£)", "Sold For (£)", "Profit (£)"],
-    ...records.map((r) => [r.itemName, r.paid.toFixed(2), r.soldFor.toFixed(2), r.profit.toFixed(2)]),
+    ["Item Name", "Cost Paid (£)", "Sold For (£)", "Advertising (£)", "Packaging (£)", "Equipment (£)", "Other (£)", "Net Profit (£)"],
+    ...records.map((r) => [
+      r.itemName, r.paid.toFixed(2), r.soldFor.toFixed(2),
+      (r.adCost ?? 0).toFixed(2), (r.packagingCost ?? 0).toFixed(2),
+      (r.equipmentCost ?? 0).toFixed(2), (r.otherCost ?? 0).toFixed(2),
+      r.profit.toFixed(2),
+    ]),
     [],
-    ["", "Revenue",      "", revenue.toFixed(2)],
-    ["", "Cost of goods","", cost.toFixed(2)],
-    ["", "Net profit",   "", profit.toFixed(2)],
-    ["", "Margin",       "", `${margin}%`],
+    ["", "Revenue",       "", revenue.toFixed(2)],
+    ["", "Stock cost",    "", cost.toFixed(2)],
+    ["", "Extra costs",   "", records.reduce((s, r) => s + (r.adCost ?? 0) + (r.packagingCost ?? 0) + (r.equipmentCost ?? 0) + (r.otherCost ?? 0), 0).toFixed(2)],
+    ["", "Net profit",    "", profit.toFixed(2)],
+    ["", "Margin",        "", `${margin}%`],
   ];
   const csv = rows.map((r) => r.map(esc).join(",")).join("\n");
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
@@ -510,24 +520,44 @@ function EditStockModal({ item, onClose, onSave, storageLocations }: {
 
 /* ---------- sell modal ---------- */
 
-function SellModal({ item, onClose, onConfirm }: { item: Item; onClose: () => void; onConfirm: (soldFor: number, platform: string) => void }) {
-  const [soldFor, setSoldFor]   = useState("");
-  const [platform, setPlatform] = useState("");
-  const [error, setError]       = useState("");
+type ExtraCosts = { adCost: number; packagingCost: number; equipmentCost: number; otherCost: number };
+
+function SellModal({ item, onClose, onConfirm }: {
+  item: Item;
+  onClose: () => void;
+  onConfirm: (soldFor: number, platform: string, costs: ExtraCosts) => void;
+}) {
+  const [soldFor, setSoldFor]             = useState("");
+  const [platform, setPlatform]           = useState("");
+  const [error, setError]                 = useState("");
+  const [costsOpen, setCostsOpen]         = useState(false);
+  const [adCost, setAdCost]               = useState("");
+  const [packagingCost, setPackagingCost] = useState("");
+  const [equipmentCost, setEquipmentCost] = useState("");
+  const [otherCost, setOtherCost]         = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   useEscClose(onClose);
 
   useEffect(() => { inputRef.current?.focus(); }, []);
 
-  const price = parseFloat(soldFor);
-  const profit = !isNaN(price) && price >= 0 ? price - item.paid : null;
+  const price      = parseFloat(soldFor);
+  const extraCosts: ExtraCosts = {
+    adCost:        parseFloat(adCost)        || 0,
+    packagingCost: parseFloat(packagingCost) || 0,
+    equipmentCost: parseFloat(equipmentCost) || 0,
+    otherCost:     parseFloat(otherCost)     || 0,
+  };
+  const totalExtra = extraCosts.adCost + extraCosts.packagingCost + extraCosts.equipmentCost + extraCosts.otherCost;
+  const profit     = !isNaN(price) && price >= 0 ? price - item.paid - totalExtra : null;
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
     if (isNaN(price) || price < 0) { setError("Enter a valid sold price."); return; }
-    onConfirm(price, platform);
+    onConfirm(price, platform, extraCosts);
     onClose();
   }
+
+  const costField = "w-full bg-ink border border-line rounded-xl pl-7 pr-3 py-2 text-sm text-paper outline-none focus:border-amber/60 transition-colors placeholder:text-paper-faint";
 
   return (
     <ModalShell onClose={onClose}>
@@ -577,17 +607,63 @@ function SellModal({ item, onClose, onConfirm }: { item: Item; onClose: () => vo
           </div>
         </div>
 
+        {/* extra costs — collapsible */}
+        <div>
+          <button
+            type="button"
+            onClick={() => setCostsOpen((o) => !o)}
+            className="flex items-center gap-1.5 text-xs font-medium text-paper-faint hover:text-paper transition-colors"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="w-3.5 h-3.5">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              {!costsOpen && <line x1="12" y1="5" x2="12" y2="19"/>}
+            </svg>
+            {costsOpen ? "Hide extra costs" : "Add extra costs"}
+            {totalExtra > 0 && !costsOpen && <span className="ml-1 font-mono text-rust">−{gbp(totalExtra)}</span>}
+          </button>
+          {costsOpen && (
+            <div className="mt-3 grid grid-cols-2 gap-3">
+              {([
+                ["Advertising", adCost, setAdCost],
+                ["Packaging", packagingCost, setPackagingCost],
+                ["Equipment", equipmentCost, setEquipmentCost],
+                ["Other", otherCost, setOtherCost],
+              ] as [string, string, (v: string) => void][]).map(([label, value, set]) => (
+                <div key={label}>
+                  <label className="block text-xs text-paper-faint mb-1">{label}</label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-paper-faint text-xs">£</span>
+                    <input type="number" min="0" step="0.01" placeholder="0.00" value={value} onChange={(e) => set(e.target.value)} className={costField} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* live profit preview */}
         {profit !== null && (
-          <div className="rounded-xl border px-4 py-3 flex items-center justify-between transition-colors"
+          <div className="rounded-xl border px-4 py-3 transition-colors"
             style={{
               borderColor: profit >= 0 ? "rgba(127,174,74,0.3)" : "rgba(216,96,47,0.3)",
               background:  profit >= 0 ? "rgba(127,174,74,0.06)" : "rgba(216,96,47,0.06)",
             }}>
-            <span className="text-sm text-paper-dim">Net profit</span>
-            <span className="font-mono text-xl font-medium" style={{ color: profit >= 0 ? "var(--color-moss)" : "var(--color-rust)" }}>
-              {gbp(profit)}
-            </span>
+            {totalExtra > 0 ? (
+              <div className="space-y-1 text-xs text-paper-dim">
+                <div className="flex justify-between"><span>Sold for</span><span className="font-mono">{gbp(price)}</span></div>
+                <div className="flex justify-between"><span>Stock cost</span><span className="font-mono text-rust">−{gbp(item.paid)}</span></div>
+                <div className="flex justify-between"><span>Extra costs</span><span className="font-mono text-rust">−{gbp(totalExtra)}</span></div>
+                <div className="border-t border-line-soft pt-1.5 flex items-center justify-between">
+                  <span className="text-sm text-paper-dim">Net profit</span>
+                  <span className="font-mono text-xl font-medium" style={{ color: profit >= 0 ? "var(--color-moss)" : "var(--color-rust)" }}>{gbp(profit)}</span>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-paper-dim">Net profit</span>
+                <span className="font-mono text-xl font-medium" style={{ color: profit >= 0 ? "var(--color-moss)" : "var(--color-rust)" }}>{gbp(profit)}</span>
+              </div>
+            )}
           </div>
         )}
 
@@ -1169,19 +1245,37 @@ function ProfitCalculator() {
 /* ---------- edit sale modal ---------- */
 
 function EditSaleModal({ record, onSave, onClose }: { record: SaleRecord; onSave: (r: SaleRecord) => void; onClose: () => void }) {
-  const [name, setName]       = useState(record.itemName);
-  const [paid, setPaid]       = useState(String(record.paid));
-  const [soldFor, setSoldFor] = useState(String(record.soldFor));
+  const [name, setName]                   = useState(record.itemName);
+  const [paid, setPaid]                   = useState(String(record.paid));
+  const [soldFor, setSoldFor]             = useState(String(record.soldFor));
+  const [adCost, setAdCost]               = useState(String(record.adCost ?? ""));
+  const [packagingCost, setPackagingCost] = useState(String(record.packagingCost ?? ""));
+  const [equipmentCost, setEquipmentCost] = useState(String(record.equipmentCost ?? ""));
+  const [otherCost, setOtherCost]         = useState(String(record.otherCost ?? ""));
   useEscClose(onClose);
 
-  const profit = (parseFloat(soldFor) || 0) - (parseFloat(paid) || 0);
+  const totalExtra = (parseFloat(adCost) || 0) + (parseFloat(packagingCost) || 0) + (parseFloat(equipmentCost) || 0) + (parseFloat(otherCost) || 0);
+  const profit = (parseFloat(soldFor) || 0) - (parseFloat(paid) || 0) - totalExtra;
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim()) return;
-    onSave({ ...record, itemName: name.trim(), paid: parseFloat(paid) || 0, soldFor: parseFloat(soldFor) || 0, profit });
+    onSave({
+      ...record,
+      itemName: name.trim(),
+      paid: parseFloat(paid) || 0,
+      soldFor: parseFloat(soldFor) || 0,
+      profit,
+      adCost:        parseFloat(adCost)        || undefined,
+      packagingCost: parseFloat(packagingCost) || undefined,
+      equipmentCost: parseFloat(equipmentCost) || undefined,
+      otherCost:     parseFloat(otherCost)     || undefined,
+    });
     onClose();
   }
+
+  const inputCls = "w-full bg-ink-soft border border-line-soft rounded-xl px-3 py-2.5 text-sm text-paper placeholder:text-paper-faint focus:outline-none focus:border-amber/50";
+  const costCls  = "w-full bg-ink-soft border border-line-soft rounded-xl pl-6 pr-2 py-2 text-sm text-paper placeholder:text-paper-faint focus:outline-none focus:border-amber/50";
 
   return (
     <ModalShell onClose={onClose}>
@@ -1192,30 +1286,42 @@ function EditSaleModal({ record, onSave, onClose }: { record: SaleRecord; onSave
       <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
         <div>
           <label className="block text-xs text-paper-faint mb-1.5">Item name</label>
-          <input
-            value={name} onChange={(e) => setName(e.target.value)}
-            className="w-full bg-ink-soft border border-line-soft rounded-xl px-3 py-2.5 text-sm text-paper placeholder:text-paper-faint focus:outline-none focus:border-amber/50"
-            required
-          />
+          <input value={name} onChange={(e) => setName(e.target.value)} className={inputCls} required />
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="block text-xs text-paper-faint mb-1.5">Cost paid (£)</label>
-            <input
-              type="number" min="0" step="0.01" value={paid} onChange={(e) => setPaid(e.target.value)}
-              className="w-full bg-ink-soft border border-line-soft rounded-xl px-3 py-2.5 text-sm text-paper placeholder:text-paper-faint focus:outline-none focus:border-amber/50"
-            />
+            <input type="number" min="0" step="0.01" value={paid} onChange={(e) => setPaid(e.target.value)} className={inputCls} />
           </div>
           <div>
             <label className="block text-xs text-paper-faint mb-1.5">Sold for (£)</label>
-            <input
-              type="number" min="0" step="0.01" value={soldFor} onChange={(e) => setSoldFor(e.target.value)}
-              className="w-full bg-ink-soft border border-line-soft rounded-xl px-3 py-2.5 text-sm text-paper placeholder:text-paper-faint focus:outline-none focus:border-amber/50"
-            />
+            <input type="number" min="0" step="0.01" value={soldFor} onChange={(e) => setSoldFor(e.target.value)} className={inputCls} />
           </div>
         </div>
+
+        {/* extra costs */}
+        <div>
+          <p className="text-xs text-paper-faint mb-2">Extra costs (optional)</p>
+          <div className="grid grid-cols-2 gap-3">
+            {([
+              ["Advertising", adCost, setAdCost],
+              ["Packaging", packagingCost, setPackagingCost],
+              ["Equipment", equipmentCost, setEquipmentCost],
+              ["Other", otherCost, setOtherCost],
+            ] as [string, string, (v: string) => void][]).map(([label, value, set]) => (
+              <div key={label}>
+                <label className="block text-xs text-paper-faint mb-1">{label}</label>
+                <div className="relative">
+                  <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-paper-faint text-xs">£</span>
+                  <input type="number" min="0" step="0.01" placeholder="0.00" value={value} onChange={(e) => set(e.target.value)} className={costCls} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         <div className="rounded-xl bg-ink-soft border border-line-soft px-3 py-2.5 flex items-center justify-between text-sm">
-          <span className="text-paper-faint">Profit</span>
+          <span className="text-paper-faint">Net profit</span>
           <span className="font-mono font-medium" style={{ color: profit >= 0 ? "var(--color-moss)" : "var(--color-rust)" }}>
             {profit >= 0 ? "+" : ""}{gbp(profit)}
           </span>
@@ -1247,11 +1353,12 @@ function Archives({ saleRecords, onDeleteSale, onEditSale }: {
   }, {});
 
   const months = Object.entries(byMonth).map(([m, records]) => {
-    const revenue = records.reduce((s, r) => s + r.soldFor, 0);
-    const cost    = records.reduce((s, r) => s + r.paid, 0);
-    const profit  = records.reduce((s, r) => s + r.profit, 0);
-    const margin  = revenue > 0 ? Math.round(profit / revenue * 100) : 0;
-    return { m, sold: records.length, revenue, cost, profit, margin, records };
+    const revenue    = records.reduce((s, r) => s + r.soldFor, 0);
+    const cost       = records.reduce((s, r) => s + r.paid, 0);
+    const extraCosts = records.reduce((s, r) => s + (r.adCost ?? 0) + (r.packagingCost ?? 0) + (r.equipmentCost ?? 0) + (r.otherCost ?? 0), 0);
+    const profit     = records.reduce((s, r) => s + r.profit, 0);
+    const margin     = revenue > 0 ? Math.round(profit / revenue * 100) : 0;
+    return { m, sold: records.length, revenue, cost, extraCosts, profit, margin, records };
   });
 
   function exportAll() {
@@ -1264,8 +1371,13 @@ function Archives({ saleRecords, onDeleteSale, onEditSale }: {
     const rows: string[][] = [
       ["Stockpile — Full Export"],
       [],
-      ["Month", "Item Name", "Cost Paid (£)", "Sold For (£)", "Profit (£)"],
-      ...saleRecords.map((r) => [r.month, r.itemName, r.paid.toFixed(2), r.soldFor.toFixed(2), r.profit.toFixed(2)]),
+      ["Month", "Item Name", "Cost Paid (£)", "Sold For (£)", "Advertising (£)", "Packaging (£)", "Equipment (£)", "Other (£)", "Net Profit (£)"],
+      ...saleRecords.map((r) => [
+        r.month, r.itemName, r.paid.toFixed(2), r.soldFor.toFixed(2),
+        (r.adCost ?? 0).toFixed(2), (r.packagingCost ?? 0).toFixed(2),
+        (r.equipmentCost ?? 0).toFixed(2), (r.otherCost ?? 0).toFixed(2),
+        r.profit.toFixed(2),
+      ]),
       [],
       ["Monthly summary"],
       ["Month", "Items Sold", "Revenue (£)", "Cost (£)", "Net Profit (£)", "Margin"],
@@ -1359,15 +1471,21 @@ function Archives({ saleRecords, onDeleteSale, onEditSale }: {
                 {isOpen && (
                   <div className="px-5 pb-5 border-t border-amber/10">
                     {/* P&L breakdown */}
-                    <div className="mt-4 grid grid-cols-3 gap-4 text-sm">
+                    <div className={`mt-4 grid gap-4 text-sm ${mo.extraCosts > 0 ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-3"}`}>
                       <div>
                         <p className="text-xs text-paper-faint mb-1">Revenue</p>
                         <p className="font-mono text-paper">{gbp(mo.revenue)}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-paper-faint mb-1">Cost of goods</p>
+                        <p className="text-xs text-paper-faint mb-1">Stock cost</p>
                         <p className="font-mono text-rust">{gbp(mo.cost)}</p>
                       </div>
+                      {mo.extraCosts > 0 && (
+                        <div>
+                          <p className="text-xs text-paper-faint mb-1">Extra costs</p>
+                          <p className="font-mono text-rust">{gbp(mo.extraCosts)}</p>
+                        </div>
+                      )}
                       <div>
                         <p className="text-xs text-paper-faint mb-1">Net profit</p>
                         <p className="font-mono text-moss">{gbp(mo.profit)}</p>
@@ -1667,11 +1785,19 @@ export default function DashboardPage() {
     addToast(next === "listed" ? `${item.name} marked as listed` : `${item.name} moved back to unlisted`);
   }
 
-  function confirmSale(item: Item, soldFor: number, platform: string) {
-    const profit = soldFor - item.paid;
+  function confirmSale(item: Item, soldFor: number, platform: string, costs: ExtraCosts) {
+    const totalExtra = costs.adCost + costs.packagingCost + costs.equipmentCost + costs.otherCost;
+    const profit = soldFor - item.paid - totalExtra;
     setItems((prev) => prev.map((i) => i.id === item.id ? { ...i, stage: "sold" as Stage } : i));
     setSaleRecords((prev) => [
-      { id: Date.now(), itemId: item.id, itemName: item.name, paid: item.paid, soldFor, profit, month: CURRENT_MONTH, platform: platform || undefined },
+      {
+        id: Date.now(), itemId: item.id, itemName: item.name, paid: item.paid, soldFor, profit,
+        month: CURRENT_MONTH, platform: platform || undefined,
+        adCost: costs.adCost || undefined,
+        packagingCost: costs.packagingCost || undefined,
+        equipmentCost: costs.equipmentCost || undefined,
+        otherCost: costs.otherCost || undefined,
+      },
       ...prev,
     ]);
     addToast(`${item.name} sold for ${gbp(soldFor)} · ${profit >= 0 ? "+" : ""}${gbp(profit)}`);
@@ -1722,7 +1848,7 @@ export default function DashboardPage() {
         <SellModal
           item={sellTarget}
           onClose={() => setSellTarget(null)}
-          onConfirm={(price, platform) => confirmSale(sellTarget, price, platform)}
+          onConfirm={(price, platform, costs) => confirmSale(sellTarget, price, platform, costs)}
         />
       )}
 
