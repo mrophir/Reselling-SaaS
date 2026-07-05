@@ -38,9 +38,10 @@ html.light aside { background-color: var(--color-ink-soft) !important; }
    look like a yellow blotch — neutralise it in light mode */
 html.light .bg-amber\/\[0\.07\] { background-color: #f5f4f0 !important; }
 
-/* amber surfaces use --color-ink as text, but in light mode ink is now the
-   light page colour — force dark text so the button stays legible */
+/* amber buttons use text-ink (light in light-mode) — force dark text at rest */
 html.light .bg-amber { color: #1a1816 !important; }
+/* on hover the same buttons flip to bg-paper (#1a1816 dark) — restore light text */
+html.light .hover\:bg-paper:hover { color: #eeecea !important; }
 
 html { scroll-behavior: smooth; }
 
