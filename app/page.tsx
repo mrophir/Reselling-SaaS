@@ -1474,7 +1474,7 @@ function Reveal({ children, className = "", delay = 0 }: { children: React.React
 
 export default function Page() {
   return (
-    <main className="relative pb-20 md:pb-0">
+    <main className="relative">
       <Nav />
       <Hero />
       <Strip />
@@ -1488,17 +1488,6 @@ export default function Page() {
       <CTA />
       <Footer />
 
-      {/* Sticky mobile CTA bar */}
-      <div className="md:hidden fixed bottom-0 inset-x-0 z-40 px-4 py-3 bg-ink/95 backdrop-blur-md border-t border-line">
-        <div className="flex items-center gap-3">
-          <a href="/dashboard" className="btn-shine flex-1 text-center py-3 rounded-xl bg-amber text-ink font-medium text-sm hover:bg-paper transition-colors">
-            Open dashboard
-          </a>
-          <a href="#cta" className="flex-1 text-center py-3 rounded-xl border border-line text-paper text-sm font-medium hover:border-paper-faint transition-colors">
-            Sign up free
-          </a>
-        </div>
-      </div>
     </main>
   );
 }
