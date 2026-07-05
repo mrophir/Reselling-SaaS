@@ -156,28 +156,20 @@ function Nav() {
 /* ---------- hero ---------- */
 
 function Hero() {
-  const L1 = "Manage your stock.";
   const L2_PHRASES = [
     "stock management just got easier",
     "making resellers more profitable",
     "manage your stock, make more profit",
   ];
-  const L1_DELAY = 480;
-  const L1_SPEED = 52;
-  const L2_DELAY = L1_DELAY + L1.length * L1_SPEED + 340;
 
-  const { displayed: t1, done: d1 } = useTypewriter(L1, L1_DELAY, L1_SPEED);
   const { displayed: t2, started: t2started } = useCyclingTypewriter(
     L2_PHRASES,
-    L2_DELAY,
+    480,
     80,
     42,
     3000,
     600
   );
-
-  const cursorLine1 = !d1 || !t2started;
-  const cursorLine2 = t2started;
 
   return (
     <section id="top" className="grain relative overflow-hidden pt-40 pb-28 px-6">
@@ -196,22 +188,10 @@ function Hero() {
 
         {/* heading — typewriter */}
         <h1 className="font-display font-medium leading-[0.94] tracking-tight text-[clamp(3rem,7.5vw,5.8rem)] min-h-[1.9em]">
-          {!t2started && (
-            <span>
-              {t1}
-              {cursorLine1 && (
-                <span className="cursor-blink inline-block w-[3px] h-[0.82em] bg-paper rounded-sm align-middle ml-1 translate-y-[-0.05em]" />
-              )}
-            </span>
-          )}
-          {t2started && (
-            <span className="text-amber">
-              {t2}
-              {cursorLine2 && (
-                <span className="cursor-blink inline-block w-[3px] h-[0.82em] bg-amber rounded-sm align-middle ml-1 translate-y-[-0.05em]" />
-              )}
-            </span>
-          )}
+          <span className="text-amber">
+            {t2}
+            <span className="cursor-blink inline-block w-[3px] h-[0.82em] bg-amber rounded-sm align-middle ml-1 translate-y-[-0.05em]" />
+          </span>
         </h1>
 
         {/* subtext */}
