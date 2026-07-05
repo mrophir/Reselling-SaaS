@@ -19,7 +19,7 @@ type Stage = "unlisted" | "listed" | "sold";
 interface Item {
   id: number; code: string; name: string; cond: CondKey;
   paid: number; stage: Stage; age?: number; createdAt?: number;
-  platform?: string; bin?: string; notes?: string; size?: string;
+  platform?: string[]; bin?: string; notes?: string; size?: string;
 }
 
 const SIZE_GROUPS = [
@@ -62,14 +62,15 @@ interface SaleRecord {
 
 const CURRENT_MONTH = new Date().toLocaleString("en-GB", { month: "long", year: "numeric" });
 const SALE_PLATFORMS = ["Vinted", "eBay", "Depop", "Facebook Marketplace", "Other"] as const;
+const LISTING_PLATFORMS = ["Vinted", "eBay", "Depop", "Facebook", "Other"] as const;
 
 const SEED_ITEMS: Item[] = [
   { id: 1, code: "IT-0231", name: "Carhartt beanie",       cond: "excellent", paid: 2,  stage: "unlisted", age: 4  },
   { id: 2, code: "IT-0229", name: "Levi 501 — vintage",    cond: "fair",      paid: 5,  stage: "unlisted", age: 94 },
   { id: 3, code: "IT-0228", name: "Nike fleece hoodie",    cond: "good",      paid: 4,  stage: "unlisted", age: 12 },
-  { id: 4, code: "IT-0225", name: "The North Face puffer", cond: "good",      paid: 12, stage: "listed",   platform: "Vinted", bin: "A1" },
-  { id: 5, code: "IT-0224", name: "Adidas track top",      cond: "excellent", paid: 3,  stage: "listed",   platform: "eBay",   bin: "A2" },
-  { id: 6, code: "IT-0221", name: "Ralph Lauren shirt",    cond: "good",      paid: 4,  stage: "listed",   platform: "Depop",  bin: "B1" },
+  { id: 4, code: "IT-0225", name: "The North Face puffer", cond: "good",      paid: 12, stage: "listed",   platform: ["Vinted"], bin: "A1" },
+  { id: 5, code: "IT-0224", name: "Adidas track top",      cond: "excellent", paid: 3,  stage: "listed",   platform: ["eBay"],   bin: "A2" },
+  { id: 6, code: "IT-0221", name: "Ralph Lauren shirt",    cond: "good",      paid: 4,  stage: "listed",   platform: ["Depop", "Vinted"],  bin: "B1" },
 ];
 
 type NavKey = "overview" | "stock" | "storage" | "calculator" | "archives";
@@ -682,7 +683,7 @@ function SellModal({ item, onClose, onConfirm }: {
 /* ---------- item row ---------- */
 
 function ItemRow({ item, onSell, onToggleListed, onEdit, onRemove, onUnsell, storageLocations, onAssignBin, selectMode, isSelected, onToggleSelect }: {
-  item: Item; onSell: (item: Item) => void; onToggleListed: (item: Item) => void;
+  item: Item; onSell: (item: Item) => void; onToggleListed: (item: Item, platforms?: string[]) => void;
   onEdit?: (item: Item) => void; onRemove?: (id: number) => void; onUnsell?: (id: number) => void;
   storageLocations?: string[]; onAssignBin?: (id: number, bin: string) => void;
   selectMode?: boolean; isSelected?: boolean; onToggleSelect?: (id: number) => void;
@@ -697,9 +698,11 @@ function ItemRow({ item, onSell, onToggleListed, onEdit, onRemove, onUnsell, sto
     : ageDays <= 30
     ? { cls: "bg-amber/15 text-amber border-amber/20", label: "Ageing" }
     : { cls: "bg-rust/15 text-rust border-rust/20", label: "Old" };
-  const [noteOpen, setNoteOpen] = useState(false);
+  const [noteOpen, setNoteOpen]           = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [binPickerOpen, setBinPickerOpen] = useState(false);
+  const [listPickerOpen, setListPickerOpen]       = useState(false);
+  const [pendingPlatforms, setPendingPlatforms]   = useState<string[]>([]);
   const binPickerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -711,17 +714,37 @@ function ItemRow({ item, onSell, onToggleListed, onEdit, onRemove, onUnsell, sto
     return () => document.removeEventListener("mousedown", handleOutside);
   }, [binPickerOpen]);
 
+  function confirmList() {
+    onToggleListed(item, pendingPlatforms.length > 0 ? pendingPlatforms : undefined);
+    setListPickerOpen(false);
+    setPendingPlatforms([]);
+  }
+  function togglePending(p: string) {
+    setPendingPlatforms((prev) => prev.includes(p) ? prev.filter((x) => x !== p) : [...prev, p]);
+  }
+
+  const platformTags = item.platform?.map((p) => (
+    <span key={p} className="text-[10px] font-medium px-1.5 py-0.5 rounded-md bg-moss/12 text-moss border border-moss/20">{p}</span>
+  ));
+
   const statusBadge = (
     <>
       {item.stage === "unlisted" && (
-        <button onClick={() => onToggleListed(item)} className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-md bg-amber/12 text-amber border border-amber/25 hover:bg-moss/12 hover:text-moss hover:border-moss/25 transition-all duration-200 group">
-          <span className="w-1.5 h-1.5 rounded-full bg-amber group-hover:bg-moss transition-colors duration-200" />
-          <span className="group-hover:hidden">Not listed</span>
-          <span className="hidden group-hover:inline">Mark listed</span>
-        </button>
+        listPickerOpen ? (
+          <span className="flex items-center gap-1 text-[11px] font-medium px-2 py-1 rounded-md bg-moss/12 text-moss border border-moss/25">
+            Pick platforms
+            <button onClick={(e) => { e.stopPropagation(); setListPickerOpen(false); setPendingPlatforms([]); }} className="ml-0.5 opacity-60 hover:opacity-100">✕</button>
+          </span>
+        ) : (
+          <button onClick={(e) => { e.stopPropagation(); setListPickerOpen(true); }} className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-md bg-amber/12 text-amber border border-amber/25 hover:bg-moss/12 hover:text-moss hover:border-moss/25 transition-all duration-200 group">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber group-hover:bg-moss transition-colors duration-200" />
+            <span className="group-hover:hidden">Not listed</span>
+            <span className="hidden group-hover:inline">Mark listed</span>
+          </button>
+        )
       )}
       {item.stage === "listed" && (
-        <button onClick={() => onToggleListed(item)} className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-md bg-moss/12 text-moss border border-moss/25 hover:bg-amber/12 hover:text-amber hover:border-amber/25 transition-all duration-200 group">
+        <button onClick={(e) => { e.stopPropagation(); onToggleListed(item); }} className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-md bg-moss/12 text-moss border border-moss/25 hover:bg-amber/12 hover:text-amber hover:border-amber/25 transition-all duration-200 group">
           <span className="w-1.5 h-1.5 rounded-full bg-moss group-hover:bg-amber transition-colors duration-200" />
           <span className="group-hover:hidden">Listed</span>
           <span className="hidden group-hover:inline">Unlist</span>
@@ -779,6 +802,7 @@ function ItemRow({ item, onSell, onToggleListed, onEdit, onRemove, onUnsell, sto
             {item.size && <span className="px-1.5 py-0.5 rounded border border-line font-mono">{item.size}</span>}
             {item.bin && <span className="px-1.5 py-0.5 rounded border border-amber/25 bg-amber/10 text-amber/80 font-mono">{item.bin}</span>}
             <span className="shrink-0 text-[11px] px-1.5 py-0.5 rounded-md" style={{ background: c.bg, color: c.fg }}>{c.label}</span>
+            {item.stage === "listed" && platformTags}
           </div>
           {!selectMode && (
             <div className="flex items-center gap-1.5 shrink-0">
@@ -811,7 +835,7 @@ function ItemRow({ item, onSell, onToggleListed, onEdit, onRemove, onUnsell, sto
         </div>
         <div className="flex items-center gap-3 shrink-0 text-xs text-paper-faint">
           {item.stage === "listed" ? (
-            <><span className="text-paper-dim">{item.platform}</span><span>Bin {item.bin}</span></>
+            <><div className="flex items-center gap-1 flex-wrap">{platformTags ?? <span className="text-paper-faint">Not specified</span>}</div>{item.bin && <span>Bin {item.bin}</span>}</>
           ) : item.stage !== "sold" && item.bin ? (
             <><span>paid £{item.paid}</span><span className="px-1.5 py-0.5 rounded border border-amber/25 bg-amber/10 text-amber/80 font-mono">{item.bin}</span></>
           ) : (
@@ -875,6 +899,44 @@ function ItemRow({ item, onSell, onToggleListed, onEdit, onRemove, onUnsell, sto
         <p className="text-xs text-paper-dim bg-ink-soft border border-line-soft rounded-lg px-3 py-2 leading-relaxed">{item.notes}</p>
       </div>
     )}
+    {listPickerOpen && (
+      <div className="px-4 pb-4 border-t border-line-soft">
+        <p className="text-[10px] font-mono uppercase tracking-wider text-paper-faint pt-3 pb-2">Where are you listing?</p>
+        <div className="flex flex-wrap gap-2 mb-3">
+          {LISTING_PLATFORMS.map((p) => (
+            <button
+              key={p}
+              onClick={(e) => { e.stopPropagation(); togglePending(p); }}
+              className={`flex items-center gap-1.5 text-[11px] font-medium px-3 py-1.5 rounded-lg border transition-all ${
+                pendingPlatforms.includes(p)
+                  ? "bg-moss/15 border-moss/40 text-moss"
+                  : "bg-ink border-line-soft text-paper-faint hover:border-moss/30 hover:text-moss"
+              }`}
+            >
+              {pendingPlatforms.includes(p) && (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><polyline points="20 6 9 17 4 12"/></svg>
+              )}
+              {p}
+            </button>
+          ))}
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={(e) => { e.stopPropagation(); confirmList(); }}
+            className="flex items-center gap-1.5 text-[11px] font-medium px-3 py-1.5 rounded-lg bg-moss/15 border border-moss/40 text-moss hover:bg-moss/25 transition-all"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><polyline points="20 6 9 17 4 12"/></svg>
+            Mark listed{pendingPlatforms.length > 0 ? ` on ${pendingPlatforms.join(", ")}` : ""}
+          </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); setListPickerOpen(false); setPendingPlatforms([]); }}
+            className="text-[11px] font-medium px-3 py-1.5 rounded-lg border border-line-soft text-paper-faint hover:text-paper transition-all"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    )}
   </div>
   );
 }
@@ -885,7 +947,7 @@ function Overview({
   items, stage, setStage, onSell, onToggleListed, onUnsell, onEdit, liveProfit, liveSold, query, storageLocations, onAssignBin,
 }: {
   items: Item[]; stage: Stage; setStage: (s: Stage) => void;
-  onSell: (item: Item) => void; onToggleListed: (item: Item) => void; onUnsell: (id: number) => void;
+  onSell: (item: Item) => void; onToggleListed: (item: Item, platforms?: string[]) => void; onUnsell: (id: number) => void;
   onEdit: (item: Item) => void;
   liveProfit: number; liveSold: number; query: string;
   storageLocations: string[]; onAssignBin: (id: number, bin: string) => void;
@@ -979,7 +1041,7 @@ function Overview({
 }
 
 function Stock({ items, onSell, onToggleListed, onEdit, onRemove, onUnsell, query, storageLocations, onAssignBin, currentTier, onBulkList, onBulkUnlist, onBulkRemove, onBulkAssignBin }: {
-  items: Item[]; onSell: (item: Item) => void; onToggleListed: (item: Item) => void;
+  items: Item[]; onSell: (item: Item) => void; onToggleListed: (item: Item, platforms?: string[]) => void;
   onEdit: (item: Item) => void; onRemove: (id: number) => void; onUnsell: (id: number) => void; query: string;
   storageLocations: string[]; onAssignBin: (id: number, bin: string) => void;
   currentTier: TierKey;
@@ -1022,7 +1084,7 @@ function Stock({ items, onSell, onToggleListed, onEdit, onRemove, onUnsell, quer
       ["Item Code", "Name", "Condition", "Size", "Paid (£)", "Status", "Platform", "Storage Bin", "Notes"],
       ...items.map((i) => [
         i.code, i.name, COND[i.cond].label, i.size ?? "", i.paid.toFixed(2),
-        i.stage, i.platform ?? "", i.bin ?? "", i.notes ?? "",
+        i.stage, i.platform?.join(", ") ?? "", i.bin ?? "", i.notes ?? "",
       ]),
     ];
     const csv = rows.map((r) => r.map(esc).join(",")).join("\n");
@@ -1956,9 +2018,11 @@ export default function DashboardPage() {
     return () => window.removeEventListener("stockpile:upsell-bulk", handleUpsell);
   }, []);
 
-  function toggleListed(item: Item) {
+  function toggleListed(item: Item, platforms?: string[]) {
     const next: Stage = item.stage === "unlisted" ? "listed" : "unlisted";
-    setItems((prev) => prev.map((i) => i.id === item.id ? { ...i, stage: next } : i));
+    setItems((prev) => prev.map((i) =>
+      i.id === item.id ? { ...i, stage: next, platform: next === "listed" ? (platforms ?? i.platform) : [] } : i
+    ));
     addToast(next === "listed" ? `${item.name} marked as listed` : `${item.name} moved back to unlisted`);
   }
 
