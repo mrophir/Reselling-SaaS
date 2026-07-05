@@ -138,9 +138,7 @@ function Nav() {
           <a href="#cta" className="hover:text-paper transition-colors">Pricing</a>
         </nav>
         <div className="flex items-center gap-3">
-          <a href="#" className="hidden sm:block text-sm text-paper-dim hover:text-paper transition-colors px-3 py-2">
-            Log in
-          </a>
+
           <a href="/dashboard" className="hidden sm:block text-sm font-medium px-4 py-2 rounded-lg border border-line text-paper hover:border-paper-faint hover:-translate-y-0.5 transition-all duration-200">
             Dashboard
           </a>
