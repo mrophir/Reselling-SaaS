@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { ThemeToggle } from "../components/ThemeToggle";
+import { hasFeature, type TierKey } from "../../lib/tiers";
 
 /* ---------- types & data ---------- */
 
@@ -680,10 +681,11 @@ function SellModal({ item, onClose, onConfirm }: {
 
 /* ---------- item row ---------- */
 
-function ItemRow({ item, onSell, onToggleListed, onEdit, onRemove, onUnsell, storageLocations, onAssignBin }: {
+function ItemRow({ item, onSell, onToggleListed, onEdit, onRemove, onUnsell, storageLocations, onAssignBin, selectMode, isSelected, onToggleSelect }: {
   item: Item; onSell: (item: Item) => void; onToggleListed: (item: Item) => void;
   onEdit?: (item: Item) => void; onRemove?: (id: number) => void; onUnsell?: (id: number) => void;
   storageLocations?: string[]; onAssignBin?: (id: number, bin: string) => void;
+  selectMode?: boolean; isSelected?: boolean; onToggleSelect?: (id: number) => void;
 }) {
   const c = COND[item.cond];
   const ageDays = item.createdAt
@@ -744,42 +746,58 @@ function ItemRow({ item, onSell, onToggleListed, onEdit, onRemove, onUnsell, sto
     </button>
   );
 
+  const checkBox = selectMode && (
+    <span
+      className="shrink-0 grid place-items-center w-5 h-5 rounded border-2 transition-colors"
+      style={{ background: isSelected ? "var(--color-amber)" : "transparent", borderColor: isSelected ? "var(--color-amber)" : "var(--color-line)" }}
+    >
+      {isSelected && <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3" style={{ color: "var(--color-ink)" }}><polyline points="20 6 9 17 4 12"/></svg>}
+    </span>
+  );
+
   return (
-    <div className="border-t border-line-soft first:border-t-0">
+    <div
+      className={`border-t border-line-soft first:border-t-0 transition-colors ${selectMode ? "cursor-pointer" : ""} ${isSelected ? "bg-amber/[0.05]" : ""}`}
+      onClick={selectMode ? () => onToggleSelect?.(item.id) : undefined}
+    >
 
       {/* ── Mobile layout (two-line card) ── */}
       <div className="sm:hidden px-4 py-3 hover:bg-ink-soft/40 transition-colors">
         {/* Line 1: name + status badge */}
         <div className="flex items-center justify-between gap-2 mb-2">
           <div className="flex items-center gap-2 min-w-0">
+            {checkBox}
             <span className="w-2 h-2 rounded-full shrink-0" style={{ background: c.dot }} />
             <span className="text-sm font-medium truncate">{item.name}</span>
           </div>
-          <div className="shrink-0">{statusBadge}</div>
+          {!selectMode && <div className="shrink-0">{statusBadge}</div>}
         </div>
         {/* Line 2: meta + actions */}
-        <div className="flex items-center justify-between gap-2 pl-4">
+        <div className={`flex items-center justify-between gap-2 ${selectMode ? "pl-4" : "pl-4"}`}>
           <div className="flex items-center gap-2 text-xs text-paper-faint flex-wrap">
             <span>£{item.paid}</span>
             {item.size && <span className="px-1.5 py-0.5 rounded border border-line font-mono">{item.size}</span>}
             {item.bin && <span className="px-1.5 py-0.5 rounded border border-amber/25 bg-amber/10 text-amber/80 font-mono">{item.bin}</span>}
             <span className="shrink-0 text-[11px] px-1.5 py-0.5 rounded-md" style={{ background: c.bg, color: c.fg }}>{c.label}</span>
           </div>
-          <div className="flex items-center gap-1.5 shrink-0">
-            {item.stage !== "sold" && (
-              <button onClick={() => onSell(item)} className="flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-md border border-line-soft text-paper-faint hover:border-moss/40 hover:text-moss hover:bg-moss/8 transition-all">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><polyline points="20 6 9 17 4 12"/></svg>
-                Sold
-              </button>
-            )}
-            {editBtn}
-          </div>
+          {!selectMode && (
+            <div className="flex items-center gap-1.5 shrink-0">
+              {item.stage !== "sold" && (
+                <button onClick={(e) => { e.stopPropagation(); onSell(item); }} className="flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-md border border-line-soft text-paper-faint hover:border-moss/40 hover:text-moss hover:bg-moss/8 transition-all">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><polyline points="20 6 9 17 4 12"/></svg>
+                  Sold
+                </button>
+              )}
+              {editBtn}
+            </div>
+          )}
         </div>
       </div>
 
       {/* ── Desktop layout (single row) ── */}
       <div className="hidden sm:flex items-center justify-between gap-3 px-4 py-3.5 hover:bg-ink-soft/40 transition-colors">
         <div className="flex items-center gap-3 min-w-0">
+          {checkBox}
           <span className="w-2 h-2 rounded-full shrink-0" style={{ background: c.dot }} />
           <span className="text-sm font-medium truncate">{item.name}</span>
           <span className="shrink-0 text-[11px] px-2 py-0.5 rounded-md" style={{ background: c.bg, color: c.fg }}>{c.label}</span>
@@ -799,6 +817,7 @@ function ItemRow({ item, onSell, onToggleListed, onEdit, onRemove, onUnsell, sto
           ) : (
             <span>paid £{item.paid}</span>
           )}
+          {selectMode ? null : (<>
           <span className="font-mono">{item.code}</span>
           {item.stage !== "sold" && !item.bin && onAssignBin && storageLocations && storageLocations.length > 0 && (
             <div className="relative" ref={binPickerRef}>
@@ -821,13 +840,13 @@ function ItemRow({ item, onSell, onToggleListed, onEdit, onRemove, onUnsell, sto
           )}
           {statusBadge}
           {item.stage !== "sold" && (
-            <button onClick={() => onSell(item)} className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-md border border-line-soft text-paper-faint hover:border-moss/40 hover:text-moss hover:bg-moss/8 transition-all">
+            <button onClick={(e) => { e.stopPropagation(); onSell(item); }} className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-md border border-line-soft text-paper-faint hover:border-moss/40 hover:text-moss hover:bg-moss/8 transition-all">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><polyline points="20 6 9 17 4 12"/></svg>
               Mark sold
             </button>
           )}
           {item.notes && (
-            <button onClick={() => setNoteOpen((o) => !o)} className={`flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-md border transition-all ${noteOpen ? "border-amber/40 bg-amber/10 text-amber" : "border-line-soft text-paper-faint hover:border-amber/30 hover:text-amber"}`}>
+            <button onClick={(e) => { e.stopPropagation(); setNoteOpen((o) => !o); }} className={`flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-md border transition-all ${noteOpen ? "border-amber/40 bg-amber/10 text-amber" : "border-line-soft text-paper-faint hover:border-amber/30 hover:text-amber"}`}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
               </svg>
@@ -837,9 +856,9 @@ function ItemRow({ item, onSell, onToggleListed, onEdit, onRemove, onUnsell, sto
           {editBtn}
           {onRemove && (
             confirmDelete ? (
-              <button onClick={() => onRemove(item.id)} className="flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-md bg-rust/15 text-rust border border-rust/30 hover:bg-rust/25 transition-all" onBlur={() => setConfirmDelete(false)}>Confirm?</button>
+              <button onClick={(e) => { e.stopPropagation(); onRemove(item.id); }} className="flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-md bg-rust/15 text-rust border border-rust/30 hover:bg-rust/25 transition-all" onBlur={() => setConfirmDelete(false)}>Confirm?</button>
             ) : (
-              <button onClick={() => setConfirmDelete(true)} title="Delete item" className="grid place-items-center w-7 h-7 rounded-md text-paper-faint hover:text-rust hover:bg-rust/10 transition-colors">
+              <button onClick={(e) => { e.stopPropagation(); setConfirmDelete(true); }} title="Delete item" className="grid place-items-center w-7 h-7 rounded-md text-paper-faint hover:text-rust hover:bg-rust/10 transition-colors">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
                   <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
                   <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
@@ -847,6 +866,7 @@ function ItemRow({ item, onSell, onToggleListed, onEdit, onRemove, onUnsell, sto
               </button>
             )
           )}
+          </>)}
         </div>
       </div>
 
@@ -958,11 +978,37 @@ function Overview({
   );
 }
 
-function Stock({ items, onSell, onToggleListed, onEdit, onRemove, onUnsell, query, storageLocations, onAssignBin }: {
+function Stock({ items, onSell, onToggleListed, onEdit, onRemove, onUnsell, query, storageLocations, onAssignBin, currentTier, onBulkList, onBulkUnlist, onBulkRemove, onBulkAssignBin }: {
   items: Item[]; onSell: (item: Item) => void; onToggleListed: (item: Item) => void;
   onEdit: (item: Item) => void; onRemove: (id: number) => void; onUnsell: (id: number) => void; query: string;
   storageLocations: string[]; onAssignBin: (id: number, bin: string) => void;
+  currentTier: TierKey;
+  onBulkList: (ids: number[]) => void; onBulkUnlist: (ids: number[]) => void;
+  onBulkRemove: (ids: number[]) => void; onBulkAssignBin: (ids: number[], bin: string) => void;
 }) {
+  const [selectMode, setSelectMode]           = useState(false);
+  const [selectedIds, setSelectedIds]         = useState<Set<number>>(new Set());
+  const [confirmBulkDelete, setConfirmBulkDelete] = useState(false);
+  const [actionBinOpen, setActionBinOpen]     = useState(false);
+  const actionBinRef                          = useRef<HTMLDivElement>(null);
+  const canBulk = hasFeature(currentTier, "bulk_actions");
+
+  useEffect(() => {
+    if (!actionBinOpen) return;
+    function handle(e: MouseEvent) {
+      if (actionBinRef.current && !actionBinRef.current.contains(e.target as Node)) setActionBinOpen(false);
+    }
+    document.addEventListener("mousedown", handle);
+    return () => document.removeEventListener("mousedown", handle);
+  }, [actionBinOpen]);
+
+  function exitSelect() { setSelectMode(false); setSelectedIds(new Set()); setConfirmBulkDelete(false); setActionBinOpen(false); }
+  function toggleId(id: number) { setSelectedIds((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; }); }
+  function toggleAll() {
+    if (selectedIds.size === shown.length) { setSelectedIds(new Set()); }
+    else { setSelectedIds(new Set(shown.map((i) => i.id))); }
+  }
+
   const q = query.toLowerCase().trim();
   const shown = q
     ? items.filter((i) => i.name.toLowerCase().includes(q) || i.code.toLowerCase().includes(q) || (i.bin?.toLowerCase().includes(q) ?? false))
@@ -991,31 +1037,131 @@ function Stock({ items, onSell, onToggleListed, onEdit, onRemove, onUnsell, quer
     URL.revokeObjectURL(url);
   }
 
+  const allSelected = shown.length > 0 && selectedIds.size === shown.length;
+
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
+    <div className="pb-4">
+      <div className="flex items-center justify-between mb-6 gap-3 flex-wrap">
         <div>
           <h1 className="font-display text-2xl font-medium">Stock</h1>
           <p className="text-paper-dim text-sm mt-1">
-            {q ? `${shown.length} result${shown.length !== 1 ? "s" : ""} for "${query}"` : "Every item across all three stages"}
+            {selectMode
+              ? `${selectedIds.size} of ${shown.length} selected`
+              : q ? `${shown.length} result${shown.length !== 1 ? "s" : ""} for "${query}"` : "Every item across all three stages"}
           </p>
         </div>
-        {items.length > 0 && (
-          <button
-            onClick={exportStock}
-            className="flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg border border-line text-paper-dim hover:text-paper hover:border-paper-faint transition-colors shrink-0"
-          >
-            <IconDownload /> Export CSV
-          </button>
-        )}
+        <div className="flex items-center gap-2 shrink-0">
+          {selectMode ? (
+            <>
+              <button onClick={toggleAll} className="text-xs font-medium px-3 py-2 rounded-lg border border-line text-paper-dim hover:text-paper hover:border-paper-faint transition-colors">
+                {allSelected ? "Deselect all" : "Select all"}
+              </button>
+              <button onClick={exitSelect} className="text-xs font-medium px-3 py-2 rounded-lg border border-line text-paper-dim hover:text-paper hover:border-paper-faint transition-colors">
+                Cancel
+              </button>
+            </>
+          ) : (
+            <>
+              {items.length > 0 && (
+                <button onClick={exportStock} className="flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg border border-line text-paper-dim hover:text-paper hover:border-paper-faint transition-colors">
+                  <IconDownload /> Export CSV
+                </button>
+              )}
+              <button
+                onClick={() => { if (canBulk) { setSelectMode(true); } else { /* upsell handled in parent via toast */ window.dispatchEvent(new CustomEvent("stockpile:upsell-bulk")); } }}
+                title={canBulk ? "Select items for bulk actions" : "Pro feature — upgrade to use bulk actions"}
+                className={`flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-lg border transition-colors ${canBulk ? "border-line text-paper-dim hover:text-paper hover:border-paper-faint" : "border-line text-paper-faint cursor-default opacity-60"}`}
+              >
+                {!canBulk && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+                    <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                )}
+                Select
+              </button>
+            </>
+          )}
+        </div>
       </div>
+
       <div className="rounded-2xl border border-line bg-ink-card">
         {shown.length > 0
-          ? <div>{shown.map((it) => <ItemRow key={it.id} item={it} onSell={onSell} onToggleListed={onToggleListed} onEdit={onEdit} onRemove={onRemove} onUnsell={onUnsell} storageLocations={storageLocations} onAssignBin={onAssignBin} />)}</div>
+          ? <div>{shown.map((it) => (
+              <ItemRow
+                key={it.id} item={it}
+                onSell={onSell} onToggleListed={onToggleListed} onEdit={onEdit}
+                onRemove={onRemove} onUnsell={onUnsell}
+                storageLocations={storageLocations} onAssignBin={onAssignBin}
+                selectMode={selectMode} isSelected={selectedIds.has(it.id)} onToggleSelect={toggleId}
+              />
+            ))}</div>
           : q
             ? <p className="px-4 py-8 text-center text-sm text-paper-faint">No results for &ldquo;{query}&rdquo; — try a different name, code, or bin.</p>
             : <p className="px-4 py-8 text-center text-sm text-paper-faint">No stock yet — hit Add stock to get started.</p>}
       </div>
+
+      {/* ── Bulk action bar ── */}
+      {selectMode && selectedIds.size > 0 && (
+        <div className="fixed inset-x-0 bottom-16 md:bottom-0 z-40 bg-ink/95 backdrop-blur-md border-t border-line shadow-2xl shadow-black/30">
+          <div className="max-w-[1152px] mx-auto px-4 py-3 flex items-center gap-3 flex-wrap sm:flex-nowrap">
+            <span className="text-sm font-medium text-paper mr-auto shrink-0">{selectedIds.size} item{selectedIds.size !== 1 ? "s" : ""} selected</span>
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                onClick={() => { onBulkList([...selectedIds]); exitSelect(); }}
+                className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-moss/15 text-moss border border-moss/30 hover:bg-moss/25 transition-colors"
+              >
+                Mark listed
+              </button>
+              <button
+                onClick={() => { onBulkUnlist([...selectedIds]); exitSelect(); }}
+                className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-amber/15 text-amber border border-amber/30 hover:bg-amber/25 transition-colors"
+              >
+                Mark unlisted
+              </button>
+              {storageLocations.length > 0 && (
+                <div className="relative" ref={actionBinRef}>
+                  <button
+                    onClick={() => setActionBinOpen((o) => !o)}
+                    className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-ink-card border border-line text-paper-dim hover:text-paper hover:border-paper-faint transition-colors"
+                  >
+                    Assign bin
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  {actionBinOpen && (
+                    <div className="absolute bottom-[calc(100%+6px)] left-0 bg-ink-card border border-line rounded-xl shadow-2xl shadow-black/50 min-w-[160px] overflow-hidden z-50">
+                      <p className="px-3 pt-2.5 pb-1 text-[10px] font-mono uppercase tracking-wider text-paper-faint">Pick a location</p>
+                      {storageLocations.map((loc) => (
+                        <button key={loc} onClick={() => { onBulkAssignBin([...selectedIds], loc); exitSelect(); }}
+                          className="w-full px-3 py-2 text-left text-sm text-paper-dim hover:bg-ink-soft hover:text-paper transition-colors">
+                          {loc}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+              {confirmBulkDelete ? (
+                <button
+                  autoFocus
+                  onBlur={() => setConfirmBulkDelete(false)}
+                  onClick={() => { onBulkRemove([...selectedIds]); exitSelect(); }}
+                  className="text-xs font-medium px-3 py-1.5 rounded-lg bg-rust/20 text-rust border border-rust/40 hover:bg-rust/30 transition-colors"
+                >
+                  Delete {selectedIds.size}? Confirm
+                </button>
+              ) : (
+                <button
+                  onClick={() => setConfirmBulkDelete(true)}
+                  className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-ink-card border border-line text-rust hover:bg-rust/10 hover:border-rust/30 transition-colors"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+                  Delete
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -1668,6 +1814,8 @@ function NotificationPanel({ saleRecords, items, dismissedAlertIds, salesCleared
 /* ---------- page ---------- */
 
 export default function DashboardPage() {
+  const currentTier: TierKey = "starter"; // swap for real auth tier when Supabase is wired up
+
   const [navKey, setNavKey]       = useState<NavKey>("overview");
   const [stage, setStage]         = useState<Stage>("unlisted");
   const [addModalOpen, setAddModalOpen]     = useState(false);
@@ -1778,6 +1926,29 @@ export default function DashboardPage() {
     setItems((prev) => prev.map((i) => i.id === id ? { ...i, bin } : i));
     if (target) addToast(`${target.name} added to ${bin}`, "info");
   }
+
+  function bulkList(ids: number[]) {
+    setItems((prev) => prev.map((i) => ids.includes(i.id) ? { ...i, stage: "listed" as Stage } : i));
+    addToast(`${ids.length} item${ids.length !== 1 ? "s" : ""} marked listed`);
+  }
+  function bulkUnlist(ids: number[]) {
+    setItems((prev) => prev.map((i) => ids.includes(i.id) ? { ...i, stage: "unlisted" as Stage } : i));
+    addToast(`${ids.length} item${ids.length !== 1 ? "s" : ""} marked unlisted`, "info");
+  }
+  function bulkRemove(ids: number[]) {
+    setItems((prev) => prev.filter((i) => !ids.includes(i.id)));
+    addToast(`${ids.length} item${ids.length !== 1 ? "s" : ""} removed`, "info");
+  }
+  function bulkAssignBin(ids: number[], bin: string) {
+    setItems((prev) => prev.map((i) => ids.includes(i.id) ? { ...i, bin } : i));
+    addToast(`${ids.length} item${ids.length !== 1 ? "s" : ""} moved to ${bin}`, "info");
+  }
+
+  useEffect(() => {
+    function handleUpsell() { addToast("Bulk actions are a Pro feature — upgrade to unlock", "info"); }
+    window.addEventListener("stockpile:upsell-bulk", handleUpsell);
+    return () => window.removeEventListener("stockpile:upsell-bulk", handleUpsell);
+  }, []);
 
   function toggleListed(item: Item) {
     const next: Stage = item.stage === "unlisted" ? "listed" : "unlisted";
@@ -2000,7 +2171,7 @@ export default function DashboardPage() {
 
         <main className="flex-1 p-6 pb-24 md:pb-6 max-w-[1152px] w-full mx-auto">
           {navKey === "overview"   && <Overview items={items} stage={stage} setStage={setStage} onSell={setSellTarget} onToggleListed={toggleListed} onEdit={setEditTarget} onUnsell={unsellItem} liveProfit={liveProfit} liveSold={liveSold} query={query} storageLocations={storageLocations} onAssignBin={assignBin} />}
-          {navKey === "stock"      && <Stock items={items} onSell={setSellTarget} onToggleListed={toggleListed} onEdit={setEditTarget} onRemove={removeItem} onUnsell={unsellItem} query={query} storageLocations={storageLocations} onAssignBin={assignBin} />}
+          {navKey === "stock"      && <Stock items={items} onSell={setSellTarget} onToggleListed={toggleListed} onEdit={setEditTarget} onRemove={removeItem} onUnsell={unsellItem} query={query} storageLocations={storageLocations} onAssignBin={assignBin} currentTier={currentTier} onBulkList={bulkList} onBulkUnlist={bulkUnlist} onBulkRemove={bulkRemove} onBulkAssignBin={bulkAssignBin} />}
           {navKey === "storage"    && <StorageMap items={items} storageLocations={storageLocations} onAddStorage={() => setStorageModalOpen(true)} onRemoveItem={unassignFromStorage} />}
           {navKey === "calculator" && <ProfitCalculator />}
           {navKey === "archives"   && <Archives saleRecords={saleRecords} onDeleteSale={deleteSale} onEditSale={editSale} />}
