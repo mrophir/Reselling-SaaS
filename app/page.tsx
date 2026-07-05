@@ -45,18 +45,66 @@ function useTypewriter(text: string, startDelay = 0, speed = 52) {
   const [displayed, setDisplayed] = useState("");
   const [done, setDone] = useState(false);
   useEffect(() => {
-    let timer: ReturnType<typeof setTimeout>;
-    let i = 0;
-    function tick() {
-      i++;
+    let cancelled = false;
+    function go(fn: () => void, delay: number) {
+      setTimeout(() => { if (!cancelled) fn(); }, delay);
+    }
+    function tick(i: number) {
       setDisplayed(text.slice(0, i));
-      if (i < text.length) timer = setTimeout(tick, speed);
+      if (i < text.length) go(() => tick(i + 1), speed);
       else setDone(true);
     }
-    timer = setTimeout(tick, startDelay);
-    return () => clearTimeout(timer);
+    go(() => tick(1), startDelay);
+    return () => { cancelled = true; };
   }, []); // text/startDelay/speed are literals — safe to exclude
   return { displayed, done };
+}
+
+function useCyclingTypewriter(
+  phrases: string[],
+  startDelay = 0,
+  typeSpeed = 55,
+  deleteSpeed = 30,
+  pauseAfterType = 1800,
+  pauseAfterDelete = 400
+) {
+  const [displayed, setDisplayed] = useState("");
+  const [started, setStarted] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    function go(fn: () => void, delay: number) {
+      setTimeout(() => { if (!cancelled) fn(); }, delay);
+    }
+
+    function type(pi: number, ci: number) {
+      const phrase = phrases[pi];
+      const next = ci + 1;
+      setDisplayed(phrase.slice(0, next));
+      if (next < phrase.length) {
+        go(() => type(pi, next), typeSpeed);
+      } else if (pi < phrases.length - 1) {
+        go(() => erase(pi, next), pauseAfterType);
+      }
+    }
+
+    function erase(pi: number, ci: number) {
+      const next = ci - 1;
+      setDisplayed(phrases[pi].slice(0, next));
+      if (next > 0) {
+        go(() => erase(pi, next), deleteSpeed);
+      } else {
+        go(() => type(pi + 1, 0), pauseAfterDelete);
+      }
+    }
+
+    go(() => { setStarted(true); type(0, 0); }, startDelay);
+
+    return () => { cancelled = true; };
+  }, []); // phrases/speeds are literals — safe to exclude
+
+  return { displayed, started };
 }
 
 /* ---------- nav ---------- */
@@ -109,18 +157,27 @@ function Nav() {
 
 function Hero() {
   const L1 = "Manage your stock.";
-  const L2 = "Own your profit.";
+  const L2_PHRASES = [
+    "Own your profit.",
+    "making resellers more profitable",
+    "Stock management just got easier",
+  ];
   const L1_DELAY = 480;
   const L1_SPEED = 52;
   const L2_DELAY = L1_DELAY + L1.length * L1_SPEED + 340;
-  const L2_SPEED = 58;
 
   const { displayed: t1, done: d1 } = useTypewriter(L1, L1_DELAY, L1_SPEED);
-  const { displayed: t2, done: d2 } = useTypewriter(L2, L2_DELAY, L2_SPEED);
+  const { displayed: t2, started: t2started } = useCyclingTypewriter(
+    L2_PHRASES,
+    L2_DELAY,
+    55,
+    30,
+    1800,
+    400
+  );
 
-  // cursor sits on line 1 until line 2 starts typing
-  const cursorLine1 = !d1 || (d1 && t2.length === 0);
-  const cursorLine2 = d1 && t2.length > 0 && !d2;
+  const cursorLine1 = !d1 || !t2started;
+  const cursorLine2 = t2started;
 
   return (
     <section id="top" className="grain relative overflow-hidden pt-40 pb-28 px-6">
