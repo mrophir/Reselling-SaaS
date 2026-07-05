@@ -30,6 +30,10 @@ const SIZE_GROUPS = [
     sizes: ["0-3 Months","3-6 Months","6-9 Months","9-12 Months","12-18 Months","18-24 Months","2-3 Years","3-4 Years","4-5 Years","5-6 Years","6-7 Years","7-8 Years","8-9 Years","9-10 Years","10-11 Years","11-12 Years","12-13 Years","13-14 Years"],
   },
   {
+    label: "Ladies' Clothing (UK)",
+    sizes: ["4","6","8","10","12","14","16","18","20","22","24","26"],
+  },
+  {
     label: "Adult Clothing",
     sizes: ["XS","S","M","L","XL","2XL","3XL","4XL"],
   },
