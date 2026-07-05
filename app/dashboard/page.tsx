@@ -54,7 +54,7 @@ interface SaleRecord {
   platform?: string;
 }
 
-const CURRENT_MONTH = "July 2026";
+const CURRENT_MONTH = new Date().toLocaleString("en-GB", { month: "long", year: "numeric" });
 const SALE_PLATFORMS = ["Vinted", "eBay", "Depop", "Facebook Marketplace", "Other"] as const;
 
 const SEED_ITEMS: Item[] = [
@@ -785,10 +785,11 @@ function ItemRow({ item, onSell, onToggleListed, onEdit, onRemove, onUnsell, sto
 /* ---------- sections ---------- */
 
 function Overview({
-  items, stage, setStage, onSell, onToggleListed, onUnsell, liveProfit, liveSold, query, storageLocations, onAssignBin,
+  items, stage, setStage, onSell, onToggleListed, onUnsell, onEdit, liveProfit, liveSold, query, storageLocations, onAssignBin,
 }: {
   items: Item[]; stage: Stage; setStage: (s: Stage) => void;
   onSell: (item: Item) => void; onToggleListed: (item: Item) => void; onUnsell: (id: number) => void;
+  onEdit: (item: Item) => void;
   liveProfit: number; liveSold: number; query: string;
   storageLocations: string[]; onAssignBin: (id: number, bin: string) => void;
 }) {
@@ -809,7 +810,7 @@ function Overview({
     <div>
       <div className="mb-6">
         <h1 className="font-display text-2xl font-medium">Overview</h1>
-        <p className="text-paper-dim text-sm mt-1">Wednesday, 1 July · here&apos;s where your stock stands</p>
+        <p className="text-paper-dim text-sm mt-1">{new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" })} · here&apos;s where your stock stands</p>
       </div>
 
       <div className="rounded-2xl border border-amber/30 bg-amber/[0.07] p-5 mb-6 flex items-center justify-between gap-4 flex-wrap">
@@ -870,7 +871,7 @@ function Overview({
         </div>
         <div>
           {shown.length > 0
-            ? shown.map((it) => <ItemRow key={it.id} item={it} onSell={onSell} onToggleListed={onToggleListed} onUnsell={onUnsell} storageLocations={storageLocations} onAssignBin={onAssignBin} />)
+            ? shown.map((it) => <ItemRow key={it.id} item={it} onSell={onSell} onToggleListed={onToggleListed} onEdit={onEdit} onUnsell={onUnsell} storageLocations={storageLocations} onAssignBin={onAssignBin} />)
             : q
               ? <p className="px-4 py-8 text-center text-sm text-paper-faint">No results for &ldquo;{query}&rdquo; in this stage.</p>
               : <p className="px-4 py-8 text-center text-sm text-paper-faint">No items in this stage yet.</p>}
@@ -895,9 +896,9 @@ function Stock({ items, onSell, onToggleListed, onEdit, onRemove, onUnsell, quer
     const rows: string[][] = [
       ["Stockpile — Stock Export"],
       [],
-      ["Item Code", "Name", "Condition", "Paid (£)", "Status", "Platform", "Storage Bin", "Notes"],
+      ["Item Code", "Name", "Condition", "Size", "Paid (£)", "Status", "Platform", "Storage Bin", "Notes"],
       ...items.map((i) => [
-        i.code, i.name, COND[i.cond].label, i.paid.toFixed(2),
+        i.code, i.name, COND[i.cond].label, i.size ?? "", i.paid.toFixed(2),
         i.stage, i.platform ?? "", i.bin ?? "", i.notes ?? "",
       ]),
     ];
@@ -1183,8 +1184,11 @@ function EditSaleModal({ record, onSave, onClose }: { record: SaleRecord; onSave
 
   return (
     <ModalShell onClose={onClose}>
-      <h2 className="font-display text-lg font-medium mb-5">Edit sale record</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="flex items-center justify-between px-6 py-5 border-b border-line">
+        <h2 className="font-display text-lg font-medium">Edit sale record</h2>
+        <button onClick={onClose} className="grid place-items-center w-8 h-8 rounded-lg text-paper-faint hover:text-paper hover:bg-ink-soft transition-colors"><IconClose /></button>
+      </div>
+      <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
         <div>
           <label className="block text-xs text-paper-faint mb-1.5">Item name</label>
           <input
@@ -1547,7 +1551,6 @@ function NotificationPanel({ saleRecords, items, dismissedAlertIds, salesCleared
 export default function DashboardPage() {
   const [navKey, setNavKey]       = useState<NavKey>("overview");
   const [stage, setStage]         = useState<Stage>("unlisted");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [addModalOpen, setAddModalOpen]     = useState(false);
   const [storageModalOpen, setStorageModalOpen] = useState(false);
   const [sellTarget, setSellTarget]         = useState<Item | null>(null);
@@ -1722,12 +1725,8 @@ export default function DashboardPage() {
         />
       )}
 
-      {sidebarOpen && (
-        <div className="fixed inset-0 bg-black/50 z-30 md:hidden" onClick={() => setSidebarOpen(false)} />
-      )}
-
       {/* sidebar */}
-      <aside className={`fixed md:sticky top-0 h-screen w-[230px] shrink-0 border-r border-line bg-ink-soft/40 flex flex-col z-40 transition-transform duration-200 ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}>
+      <aside className="hidden md:flex fixed md:sticky top-0 h-screen w-[230px] shrink-0 border-r border-line bg-ink-soft/40 flex-col z-40">
         <div className="h-16 flex items-center gap-2.5 px-4 border-b border-line">
           <a href="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
             <span className="relative grid place-items-center w-7 h-7 rounded-[6px] bg-amber overflow-hidden shrink-0">
@@ -1739,7 +1738,7 @@ export default function DashboardPage() {
         </div>
         <nav className="flex-1 p-3 flex flex-col gap-1">
           {NAV.map((n) => (
-            <button key={n.key} onClick={() => { setNavKey(n.key); setSidebarOpen(false); }}
+            <button key={n.key} onClick={() => setNavKey(n.key)}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-left w-full transition-colors ${n.key === navKey ? "bg-amber/12 text-amber" : "text-paper-dim hover:text-paper hover:bg-ink-card"}`}>
               {n.icon}<span>{n.label}</span>
             </button>
@@ -1872,7 +1871,7 @@ export default function DashboardPage() {
         </header>
 
         <main className="flex-1 p-6 pb-24 md:pb-6 max-w-[1152px] w-full mx-auto">
-          {navKey === "overview"   && <Overview items={items} stage={stage} setStage={setStage} onSell={setSellTarget} onToggleListed={toggleListed} onUnsell={unsellItem} liveProfit={liveProfit} liveSold={liveSold} query={query} storageLocations={storageLocations} onAssignBin={assignBin} />}
+          {navKey === "overview"   && <Overview items={items} stage={stage} setStage={setStage} onSell={setSellTarget} onToggleListed={toggleListed} onEdit={setEditTarget} onUnsell={unsellItem} liveProfit={liveProfit} liveSold={liveSold} query={query} storageLocations={storageLocations} onAssignBin={assignBin} />}
           {navKey === "stock"      && <Stock items={items} onSell={setSellTarget} onToggleListed={toggleListed} onEdit={setEditTarget} onRemove={removeItem} onUnsell={unsellItem} query={query} storageLocations={storageLocations} onAssignBin={assignBin} />}
           {navKey === "storage"    && <StorageMap items={items} storageLocations={storageLocations} onAddStorage={() => setStorageModalOpen(true)} onRemoveItem={unassignFromStorage} />}
           {navKey === "calculator" && <ProfitCalculator />}
