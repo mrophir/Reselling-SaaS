@@ -632,160 +632,147 @@ function ItemRow({ item, onSell, onToggleListed, onEdit, onRemove, onUnsell, sto
     return () => document.removeEventListener("mousedown", handleOutside);
   }, [binPickerOpen]);
 
+  const statusBadge = (
+    <>
+      {item.stage === "unlisted" && (
+        <button onClick={() => onToggleListed(item)} className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-md bg-amber/12 text-amber border border-amber/25 hover:bg-moss/12 hover:text-moss hover:border-moss/25 transition-all duration-200 group">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber group-hover:bg-moss transition-colors duration-200" />
+          <span className="group-hover:hidden">Not listed</span>
+          <span className="hidden group-hover:inline">Mark listed</span>
+        </button>
+      )}
+      {item.stage === "listed" && (
+        <button onClick={() => onToggleListed(item)} className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-md bg-moss/12 text-moss border border-moss/25 hover:bg-amber/12 hover:text-amber hover:border-amber/25 transition-all duration-200 group">
+          <span className="w-1.5 h-1.5 rounded-full bg-moss group-hover:bg-amber transition-colors duration-200" />
+          <span className="group-hover:hidden">Listed</span>
+          <span className="hidden group-hover:inline">Unlist</span>
+        </button>
+      )}
+      {item.stage === "sold" && (
+        <button onClick={() => onUnsell?.(item.id)} className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-md bg-paper-faint/10 text-paper-faint border border-line hover:bg-rust/10 hover:text-rust hover:border-rust/30 transition-all duration-200 group">
+          <span className="w-1.5 h-1.5 rounded-full bg-paper-faint group-hover:bg-rust transition-colors duration-200" />
+          <span className="group-hover:hidden">Sold</span>
+          <span className="hidden group-hover:inline">Mark unsold</span>
+        </button>
+      )}
+    </>
+  );
+
+  const editBtn = onEdit && (
+    <button onClick={() => onEdit(item)} title="Edit item" className="grid place-items-center w-7 h-7 rounded-md text-paper-faint hover:text-paper hover:bg-ink-soft transition-colors">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+      </svg>
+    </button>
+  );
+
   return (
     <div className="border-t border-line-soft first:border-t-0">
-    <div className="flex items-center justify-between gap-3 px-4 py-3.5 hover:bg-ink-soft/40 transition-colors">
-      <div className="flex items-center gap-3 min-w-0">
-        <span className="w-2 h-2 rounded-full shrink-0" style={{ background: c.dot }} />
-        <span className="text-sm font-medium truncate">{item.name}</span>
-        <span className="shrink-0 text-[11px] px-2 py-0.5 rounded-md" style={{ background: c.bg, color: c.fg }}>{c.label}</span>
-        {item.size && (
-          <span className="shrink-0 text-[11px] px-2 py-0.5 rounded-md bg-ink-soft border border-line text-paper-faint font-mono">{item.size}</span>
-        )}
-        {showAge && (
-          <span className={`shrink-0 flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded border font-mono ${ageTier.cls}`}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
-            {ageDays}d
-          </span>
-        )}
-      </div>
 
-      <div className="flex items-center gap-3 shrink-0 text-xs text-paper-faint">
-        {item.stage === "listed" ? (
-          <><span className="text-paper-dim">{item.platform}</span><span>Bin {item.bin}</span></>
-        ) : item.stage !== "sold" && item.bin ? (
-          <><span>paid £{item.paid}</span><span className="px-1.5 py-0.5 rounded border border-amber/25 bg-amber/10 text-amber/80 font-mono">{item.bin}</span></>
-        ) : (
-          <span>paid £{item.paid}</span>
-        )}
-        <span className="hidden sm:block font-mono">{item.code}</span>
-
-        {/* assign to storage box — only for active items without a bin */}
-        {item.stage !== "sold" && !item.bin && onAssignBin && storageLocations && storageLocations.length > 0 && (
-          <div className="relative hidden sm:block" ref={binPickerRef}>
-            <button
-              onClick={() => setBinPickerOpen((o) => !o)}
-              className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-md border border-dashed border-line text-paper-faint hover:border-amber/40 hover:text-amber hover:bg-amber/8 transition-all"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><rect x="3" y="4" width="8" height="7" rx="1"/><rect x="13" y="4" width="8" height="7" rx="1"/><rect x="3" y="13" width="8" height="7" rx="1"/><rect x="13" y="13" width="8" height="7" rx="1"/></svg>
-              Add to box
-            </button>
-            {binPickerOpen && (
-              <div className="absolute right-0 top-[calc(100%+4px)] z-20 bg-ink-card border border-line rounded-xl shadow-xl shadow-black/50 min-w-[140px] overflow-hidden">
-                <p className="px-3 pt-2.5 pb-1 text-[10px] font-mono uppercase tracking-wider text-paper-faint">Pick a location</p>
-                {storageLocations.map((loc) => (
-                  <button
-                    key={loc}
-                    onClick={() => { onAssignBin(item.id, loc); setBinPickerOpen(false); }}
-                    className="w-full px-3 py-2 text-left text-sm text-paper-dim hover:bg-ink-soft hover:text-paper transition-colors flex items-center gap-2"
-                  >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3 text-amber shrink-0"><rect x="3" y="4" width="8" height="7" rx="1"/><rect x="13" y="4" width="8" height="7" rx="1"/><rect x="3" y="13" width="8" height="7" rx="1"/><rect x="13" y="13" width="8" height="7" rx="1"/></svg>
-                    {loc}
-                  </button>
-                ))}
-              </div>
-            )}
+      {/* ── Mobile layout (two-line card) ── */}
+      <div className="sm:hidden px-4 py-3 hover:bg-ink-soft/40 transition-colors">
+        {/* Line 1: name + status badge */}
+        <div className="flex items-center justify-between gap-2 mb-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="w-2 h-2 rounded-full shrink-0" style={{ background: c.dot }} />
+            <span className="text-sm font-medium truncate">{item.name}</span>
           </div>
-        )}
-
-
-        {/* status badge — clickable to toggle listed state */}
-        {item.stage === "unlisted" && (
-          <button
-            onClick={() => onToggleListed(item)}
-            className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-md bg-amber/12 text-amber border border-amber/25 hover:bg-moss/12 hover:text-moss hover:border-moss/25 transition-all duration-200 group"
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-amber group-hover:bg-moss transition-colors duration-200" />
-            <span className="group-hover:hidden">Not listed</span>
-            <span className="hidden group-hover:inline">Mark listed</span>
-          </button>
-        )}
-        {item.stage === "listed" && (
-          <button
-            onClick={() => onToggleListed(item)}
-            className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-md bg-moss/12 text-moss border border-moss/25 hover:bg-amber/12 hover:text-amber hover:border-amber/25 transition-all duration-200 group"
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-moss group-hover:bg-amber transition-colors duration-200" />
-            <span className="group-hover:hidden">Listed</span>
-            <span className="hidden group-hover:inline">Unlist</span>
-          </button>
-        )}
-        {item.stage === "sold" && (
-          <button
-            onClick={() => onUnsell?.(item.id)}
-            className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-md bg-paper-faint/10 text-paper-faint border border-line hover:bg-rust/10 hover:text-rust hover:border-rust/30 transition-all duration-200 group"
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-paper-faint group-hover:bg-rust transition-colors duration-200" />
-            <span className="group-hover:hidden">Sold</span>
-            <span className="hidden group-hover:inline">Mark unsold</span>
-          </button>
-        )}
-
-        {/* mark sold toggle — only on active items */}
-        {item.stage !== "sold" && (
-          <button
-            onClick={() => onSell(item)}
-            className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-md border border-line-soft text-paper-faint hover:border-moss/40 hover:text-moss hover:bg-moss/8 transition-all"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3">
-              <polyline points="20 6 9 17 4 12"/>
-            </svg>
-            Mark sold
-          </button>
-        )}
-
-        {item.notes && (
-          <button
-            onClick={() => setNoteOpen((o) => !o)}
-            className={`hidden sm:flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-md border transition-all ${noteOpen ? "border-amber/40 bg-amber/10 text-amber" : "border-line-soft text-paper-faint hover:border-amber/30 hover:text-amber"}`}
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
-            </svg>
-            {noteOpen ? "Hide note" : "See note"}
-          </button>
-        )}
-
-        {onEdit && (
-          <button
-            onClick={() => onEdit(item)}
-            title="Edit item"
-            className="grid place-items-center w-7 h-7 rounded-md text-paper-faint hover:text-paper hover:bg-ink-soft transition-colors"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
-              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-            </svg>
-          </button>
-        )}
-
-        <div className="hidden sm:block">
-        {onRemove && (
-          confirmDelete ? (
-            <button
-              onClick={() => onRemove(item.id)}
-              className="flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-md bg-rust/15 text-rust border border-rust/30 hover:bg-rust/25 transition-all"
-              onBlur={() => setConfirmDelete(false)}
-            >
-              Confirm?
-            </button>
-          ) : (
-            <button
-              onClick={() => setConfirmDelete(true)}
-              title="Delete item"
-              className="grid place-items-center w-7 h-7 rounded-md text-paper-faint hover:text-rust hover:bg-rust/10 transition-colors"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
-                <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-              </svg>
-            </button>
-          )
-        )}
+          <div className="shrink-0">{statusBadge}</div>
         </div>
-
+        {/* Line 2: meta + actions */}
+        <div className="flex items-center justify-between gap-2 pl-4">
+          <div className="flex items-center gap-2 text-xs text-paper-faint flex-wrap">
+            <span>£{item.paid}</span>
+            {item.size && <span className="px-1.5 py-0.5 rounded border border-line font-mono">{item.size}</span>}
+            {item.bin && <span className="px-1.5 py-0.5 rounded border border-amber/25 bg-amber/10 text-amber/80 font-mono">{item.bin}</span>}
+            <span className="shrink-0 text-[11px] px-1.5 py-0.5 rounded-md" style={{ background: c.bg, color: c.fg }}>{c.label}</span>
+          </div>
+          <div className="flex items-center gap-1.5 shrink-0">
+            {item.stage !== "sold" && (
+              <button onClick={() => onSell(item)} className="flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-md border border-line-soft text-paper-faint hover:border-moss/40 hover:text-moss hover:bg-moss/8 transition-all">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><polyline points="20 6 9 17 4 12"/></svg>
+                Sold
+              </button>
+            )}
+            {editBtn}
+          </div>
+        </div>
       </div>
-    </div>
+
+      {/* ── Desktop layout (single row) ── */}
+      <div className="hidden sm:flex items-center justify-between gap-3 px-4 py-3.5 hover:bg-ink-soft/40 transition-colors">
+        <div className="flex items-center gap-3 min-w-0">
+          <span className="w-2 h-2 rounded-full shrink-0" style={{ background: c.dot }} />
+          <span className="text-sm font-medium truncate">{item.name}</span>
+          <span className="shrink-0 text-[11px] px-2 py-0.5 rounded-md" style={{ background: c.bg, color: c.fg }}>{c.label}</span>
+          {item.size && <span className="shrink-0 text-[11px] px-2 py-0.5 rounded-md bg-ink-soft border border-line text-paper-faint font-mono">{item.size}</span>}
+          {showAge && (
+            <span className={`shrink-0 flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded border font-mono ${ageTier.cls}`}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
+              {ageDays}d
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-3 shrink-0 text-xs text-paper-faint">
+          {item.stage === "listed" ? (
+            <><span className="text-paper-dim">{item.platform}</span><span>Bin {item.bin}</span></>
+          ) : item.stage !== "sold" && item.bin ? (
+            <><span>paid £{item.paid}</span><span className="px-1.5 py-0.5 rounded border border-amber/25 bg-amber/10 text-amber/80 font-mono">{item.bin}</span></>
+          ) : (
+            <span>paid £{item.paid}</span>
+          )}
+          <span className="font-mono">{item.code}</span>
+          {item.stage !== "sold" && !item.bin && onAssignBin && storageLocations && storageLocations.length > 0 && (
+            <div className="relative" ref={binPickerRef}>
+              <button onClick={() => setBinPickerOpen((o) => !o)} className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-md border border-dashed border-line text-paper-faint hover:border-amber/40 hover:text-amber hover:bg-amber/8 transition-all">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><rect x="3" y="4" width="8" height="7" rx="1"/><rect x="13" y="4" width="8" height="7" rx="1"/><rect x="3" y="13" width="8" height="7" rx="1"/><rect x="13" y="13" width="8" height="7" rx="1"/></svg>
+                Add to box
+              </button>
+              {binPickerOpen && (
+                <div className="absolute right-0 top-[calc(100%+4px)] z-20 bg-ink-card border border-line rounded-xl shadow-xl shadow-black/50 min-w-[140px] overflow-hidden">
+                  <p className="px-3 pt-2.5 pb-1 text-[10px] font-mono uppercase tracking-wider text-paper-faint">Pick a location</p>
+                  {storageLocations.map((loc) => (
+                    <button key={loc} onClick={() => { onAssignBin(item.id, loc); setBinPickerOpen(false); }} className="w-full px-3 py-2 text-left text-sm text-paper-dim hover:bg-ink-soft hover:text-paper transition-colors flex items-center gap-2">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3 text-amber shrink-0"><rect x="3" y="4" width="8" height="7" rx="1"/><rect x="13" y="4" width="8" height="7" rx="1"/><rect x="3" y="13" width="8" height="7" rx="1"/><rect x="13" y="13" width="8" height="7" rx="1"/></svg>
+                      {loc}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+          {statusBadge}
+          {item.stage !== "sold" && (
+            <button onClick={() => onSell(item)} className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-md border border-line-soft text-paper-faint hover:border-moss/40 hover:text-moss hover:bg-moss/8 transition-all">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><polyline points="20 6 9 17 4 12"/></svg>
+              Mark sold
+            </button>
+          )}
+          {item.notes && (
+            <button onClick={() => setNoteOpen((o) => !o)} className={`flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-md border transition-all ${noteOpen ? "border-amber/40 bg-amber/10 text-amber" : "border-line-soft text-paper-faint hover:border-amber/30 hover:text-amber"}`}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+              </svg>
+              {noteOpen ? "Hide note" : "See note"}
+            </button>
+          )}
+          {editBtn}
+          {onRemove && (
+            confirmDelete ? (
+              <button onClick={() => onRemove(item.id)} className="flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-md bg-rust/15 text-rust border border-rust/30 hover:bg-rust/25 transition-all" onBlur={() => setConfirmDelete(false)}>Confirm?</button>
+            ) : (
+              <button onClick={() => setConfirmDelete(true)} title="Delete item" className="grid place-items-center w-7 h-7 rounded-md text-paper-faint hover:text-rust hover:bg-rust/10 transition-colors">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+                  <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                  <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                </svg>
+              </button>
+            )
+          )}
+        </div>
+      </div>
+
     {noteOpen && item.notes && (
       <div className="px-4 pb-3">
         <p className="text-xs text-paper-dim bg-ink-soft border border-line-soft rounded-lg px-3 py-2 leading-relaxed">{item.notes}</p>
