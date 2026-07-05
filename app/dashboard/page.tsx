@@ -157,9 +157,9 @@ function IconClose() {
 
 function ModalShell({ onClose, children }: { onClose: () => void; children: React.ReactNode }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-md rounded-2xl border border-line bg-ink-card shadow-2xl shadow-black/60 overflow-hidden">
+      <div className="relative w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl border border-line bg-ink-card shadow-2xl shadow-black/60 max-h-[90vh] overflow-y-auto">
         {children}
       </div>
     </div>
@@ -1715,6 +1715,23 @@ export default function DashboardPage() {
         </div>
       </aside>
 
+      {/* mobile bottom tab bar */}
+      <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-ink/95 backdrop-blur-md border-t border-line flex items-stretch">
+        {NAV.map((n) => {
+          const shortLabel: Record<NavKey, string> = { overview: "Overview", stock: "Stock", storage: "Storage", calculator: "Calc", archives: "Archives" };
+          return (
+            <button
+              key={n.key}
+              onClick={() => setNavKey(n.key)}
+              className={`flex-1 flex flex-col items-center justify-center py-2 gap-1 text-[10px] font-medium transition-colors ${n.key === navKey ? "text-amber" : "text-paper-faint"}`}
+            >
+              {n.icon}
+              <span>{shortLabel[n.key]}</span>
+            </button>
+          );
+        })}
+      </nav>
+
       {/* main */}
       <div className="flex-1 min-w-0 flex flex-col">
         <header className="h-16 border-b border-line flex items-center gap-4 px-6 sticky top-0 bg-ink/85 backdrop-blur-md z-10">
@@ -1771,7 +1788,7 @@ export default function DashboardPage() {
           <div className="grid place-items-center w-9 h-9 rounded-full bg-ink-card border border-line text-xs font-medium text-paper-dim shrink-0">JD</div>
         </header>
 
-        <main className="flex-1 p-6 max-w-[1152px] w-full mx-auto">
+        <main className="flex-1 p-6 pb-24 md:pb-6 max-w-[1152px] w-full mx-auto">
           {navKey === "overview"   && <Overview items={items} stage={stage} setStage={setStage} onSell={setSellTarget} onToggleListed={toggleListed} onUnsell={unsellItem} liveProfit={liveProfit} liveSold={liveSold} query={query} storageLocations={storageLocations} onAssignBin={assignBin} />}
           {navKey === "stock"      && <Stock items={items} onSell={setSellTarget} onToggleListed={toggleListed} onEdit={setEditTarget} onRemove={removeItem} onUnsell={unsellItem} query={query} storageLocations={storageLocations} onAssignBin={assignBin} />}
           {navKey === "storage"    && <StorageMap items={items} storageLocations={storageLocations} onAddStorage={() => setStorageModalOpen(true)} onRemoveItem={unassignFromStorage} />}
