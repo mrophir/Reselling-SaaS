@@ -558,9 +558,10 @@ function SellModal({ item, onClose, onConfirm }: { item: Item; onClose: () => vo
 
 /* ---------- item row ---------- */
 
-function ItemRow({ item, onSell, onToggleListed, onEdit, onRemove, onUnsell }: {
+function ItemRow({ item, onSell, onToggleListed, onEdit, onRemove, onUnsell, storageLocations, onAssignBin }: {
   item: Item; onSell: (item: Item) => void; onToggleListed: (item: Item) => void;
   onEdit?: (item: Item) => void; onRemove?: (id: number) => void; onUnsell?: (id: number) => void;
+  storageLocations?: string[]; onAssignBin?: (id: number, bin: string) => void;
 }) {
   const c = COND[item.cond];
   const ageDays = item.createdAt
@@ -574,6 +575,17 @@ function ItemRow({ item, onSell, onToggleListed, onEdit, onRemove, onUnsell }: {
     : { cls: "bg-rust/15 text-rust border-rust/20", label: "Old" };
   const [noteOpen, setNoteOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [binPickerOpen, setBinPickerOpen] = useState(false);
+  const binPickerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!binPickerOpen) return;
+    function handleOutside(e: MouseEvent) {
+      if (binPickerRef.current && !binPickerRef.current.contains(e.target as Node)) setBinPickerOpen(false);
+    }
+    document.addEventListener("mousedown", handleOutside);
+    return () => document.removeEventListener("mousedown", handleOutside);
+  }, [binPickerOpen]);
 
   return (
     <div className="border-t border-line-soft first:border-t-0">
@@ -593,10 +605,41 @@ function ItemRow({ item, onSell, onToggleListed, onEdit, onRemove, onUnsell }: {
       <div className="flex items-center gap-3 shrink-0 text-xs text-paper-faint">
         {item.stage === "listed" ? (
           <><span className="text-paper-dim">{item.platform}</span><span>Bin {item.bin}</span></>
+        ) : item.stage !== "sold" && item.bin ? (
+          <><span>paid £{item.paid}</span><span className="px-1.5 py-0.5 rounded border border-amber/25 bg-amber/10 text-amber/80 font-mono">{item.bin}</span></>
         ) : (
           <span>paid £{item.paid}</span>
         )}
         <span className="hidden sm:block font-mono">{item.code}</span>
+
+        {/* assign to storage box — only for active items without a bin */}
+        {item.stage !== "sold" && !item.bin && onAssignBin && storageLocations && storageLocations.length > 0 && (
+          <div className="relative" ref={binPickerRef}>
+            <button
+              onClick={() => setBinPickerOpen((o) => !o)}
+              className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-md border border-dashed border-line text-paper-faint hover:border-amber/40 hover:text-amber hover:bg-amber/8 transition-all"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><rect x="3" y="4" width="8" height="7" rx="1"/><rect x="13" y="4" width="8" height="7" rx="1"/><rect x="3" y="13" width="8" height="7" rx="1"/><rect x="13" y="13" width="8" height="7" rx="1"/></svg>
+              Add to box
+            </button>
+            {binPickerOpen && (
+              <div className="absolute right-0 top-[calc(100%+4px)] z-20 bg-ink-card border border-line rounded-xl shadow-xl shadow-black/50 min-w-[140px] overflow-hidden">
+                <p className="px-3 pt-2.5 pb-1 text-[10px] font-mono uppercase tracking-wider text-paper-faint">Pick a location</p>
+                {storageLocations.map((loc) => (
+                  <button
+                    key={loc}
+                    onClick={() => { onAssignBin(item.id, loc); setBinPickerOpen(false); }}
+                    className="w-full px-3 py-2 text-left text-sm text-paper-dim hover:bg-ink-soft hover:text-paper transition-colors flex items-center gap-2"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3 text-amber shrink-0"><rect x="3" y="4" width="8" height="7" rx="1"/><rect x="13" y="4" width="8" height="7" rx="1"/><rect x="3" y="13" width="8" height="7" rx="1"/><rect x="13" y="13" width="8" height="7" rx="1"/></svg>
+                    {loc}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
 
         {/* status badge — clickable to toggle listed state */}
         {item.stage === "unlisted" && (
@@ -705,11 +748,12 @@ function ItemRow({ item, onSell, onToggleListed, onEdit, onRemove, onUnsell }: {
 /* ---------- sections ---------- */
 
 function Overview({
-  items, stage, setStage, onSell, onToggleListed, onUnsell, liveProfit, liveSold, query,
+  items, stage, setStage, onSell, onToggleListed, onUnsell, liveProfit, liveSold, query, storageLocations, onAssignBin,
 }: {
   items: Item[]; stage: Stage; setStage: (s: Stage) => void;
   onSell: (item: Item) => void; onToggleListed: (item: Item) => void; onUnsell: (id: number) => void;
   liveProfit: number; liveSold: number; query: string;
+  storageLocations: string[]; onAssignBin: (id: number, bin: string) => void;
 }) {
   const q = query.toLowerCase().trim();
   const matchQ = (i: Item) => !q || i.name.toLowerCase().includes(q) || i.code.toLowerCase().includes(q) || (i.bin?.toLowerCase().includes(q) ?? false);
@@ -789,7 +833,7 @@ function Overview({
         </div>
         <div>
           {shown.length > 0
-            ? shown.map((it) => <ItemRow key={it.id} item={it} onSell={onSell} onToggleListed={onToggleListed} onUnsell={onUnsell} />)
+            ? shown.map((it) => <ItemRow key={it.id} item={it} onSell={onSell} onToggleListed={onToggleListed} onUnsell={onUnsell} storageLocations={storageLocations} onAssignBin={onAssignBin} />)
             : q
               ? <p className="px-4 py-8 text-center text-sm text-paper-faint">No results for &ldquo;{query}&rdquo; in this stage.</p>
               : <p className="px-4 py-8 text-center text-sm text-paper-faint">No items in this stage yet.</p>}
@@ -799,9 +843,10 @@ function Overview({
   );
 }
 
-function Stock({ items, onSell, onToggleListed, onEdit, onRemove, onUnsell, query }: {
+function Stock({ items, onSell, onToggleListed, onEdit, onRemove, onUnsell, query, storageLocations, onAssignBin }: {
   items: Item[]; onSell: (item: Item) => void; onToggleListed: (item: Item) => void;
   onEdit: (item: Item) => void; onRemove: (id: number) => void; onUnsell: (id: number) => void; query: string;
+  storageLocations: string[]; onAssignBin: (id: number, bin: string) => void;
 }) {
   const q = query.toLowerCase().trim();
   const shown = q
@@ -851,7 +896,7 @@ function Stock({ items, onSell, onToggleListed, onEdit, onRemove, onUnsell, quer
       </div>
       <div className="rounded-2xl border border-line bg-ink-card overflow-hidden">
         {shown.length > 0
-          ? <div>{shown.map((it) => <ItemRow key={it.id} item={it} onSell={onSell} onToggleListed={onToggleListed} onEdit={onEdit} onRemove={onRemove} onUnsell={onUnsell} />)}</div>
+          ? <div>{shown.map((it) => <ItemRow key={it.id} item={it} onSell={onSell} onToggleListed={onToggleListed} onEdit={onEdit} onRemove={onRemove} onUnsell={onUnsell} storageLocations={storageLocations} onAssignBin={onAssignBin} />)}</div>
           : q
             ? <p className="px-4 py-8 text-center text-sm text-paper-faint">No results for &ldquo;{query}&rdquo; — try a different name, code, or bin.</p>
             : <p className="px-4 py-8 text-center text-sm text-paper-faint">No stock yet — hit Add stock to get started.</p>}
@@ -1558,6 +1603,12 @@ export default function DashboardPage() {
     if (target) addToast(`${target.name} removed from storage`);
   }
 
+  function assignBin(id: number, bin: string) {
+    const target = items.find((i) => i.id === id);
+    setItems((prev) => prev.map((i) => i.id === id ? { ...i, bin } : i));
+    if (target) addToast(`${target.name} added to ${bin}`, "info");
+  }
+
   function toggleListed(item: Item) {
     const next: Stage = item.stage === "unlisted" ? "listed" : "unlisted";
     setItems((prev) => prev.map((i) => i.id === item.id ? { ...i, stage: next } : i));
@@ -1719,8 +1770,8 @@ export default function DashboardPage() {
         </header>
 
         <main className="flex-1 p-6 max-w-[1152px] w-full mx-auto">
-          {navKey === "overview"   && <Overview items={items} stage={stage} setStage={setStage} onSell={setSellTarget} onToggleListed={toggleListed} onUnsell={unsellItem} liveProfit={liveProfit} liveSold={liveSold} query={query} />}
-          {navKey === "stock"      && <Stock items={items} onSell={setSellTarget} onToggleListed={toggleListed} onEdit={setEditTarget} onRemove={removeItem} onUnsell={unsellItem} query={query} />}
+          {navKey === "overview"   && <Overview items={items} stage={stage} setStage={setStage} onSell={setSellTarget} onToggleListed={toggleListed} onUnsell={unsellItem} liveProfit={liveProfit} liveSold={liveSold} query={query} storageLocations={storageLocations} onAssignBin={assignBin} />}
+          {navKey === "stock"      && <Stock items={items} onSell={setSellTarget} onToggleListed={toggleListed} onEdit={setEditTarget} onRemove={removeItem} onUnsell={unsellItem} query={query} storageLocations={storageLocations} onAssignBin={assignBin} />}
           {navKey === "storage"    && <StorageMap items={items} storageLocations={storageLocations} onAddStorage={() => setStorageModalOpen(true)} onRemoveItem={unassignFromStorage} />}
           {navKey === "calculator" && <ProfitCalculator />}
           {navKey === "archives"   && <Archives saleRecords={saleRecords} onDeleteSale={deleteSale} onEditSale={editSale} />}
