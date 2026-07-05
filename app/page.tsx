@@ -627,7 +627,6 @@ function DashboardMockup() {
           </div>
         </Reveal>
         </div>{/* end hidden md:block */}
-      </div>
     </section>
   );
 }
