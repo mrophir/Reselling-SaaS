@@ -73,7 +73,7 @@ const SEED_ITEMS: Item[] = [
   { id: 6, code: "IT-0221", name: "Ralph Lauren shirt",    cond: "good",      paid: 4,  stage: "listed",   platform: ["Depop", "Vinted"],  bin: "B1" },
 ];
 
-type NavKey = "overview" | "stock" | "storage" | "calculator" | "archives" | "extension";
+type NavKey = "overview" | "stock" | "storage" | "calculator" | "archives";
 
 const NAV: { key: NavKey; label: string; icon: React.ReactNode }[] = [
   {
@@ -119,15 +119,6 @@ const NAV: { key: NavKey; label: string; icon: React.ReactNode }[] = [
         <rect x="3" y="4" width="18" height="4" rx="1"/>
         <path d="M5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8"/>
         <line x1="10" y1="12" x2="14" y2="12"/>
-      </svg>
-    ),
-  },
-  {
-    key: "extension", label: "Vinted extension",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] shrink-0">
-        <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
-        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
       </svg>
     ),
   },
@@ -1887,112 +1878,6 @@ function NotificationPanel({ saleRecords, items, dismissedAlertIds, salesCleared
   );
 }
 
-/* ---------- extension download ---------- */
-
-function ExtensionDownload({ currentTier }: { currentTier: TierKey }) {
-  const isPro = currentTier === "pro";
-
-  return (
-    <div>
-      <div className="mb-6">
-        <h1 className="font-display text-2xl font-medium">Vinted extension</h1>
-        <p className="text-paper-dim text-sm mt-1">Auto-refresh Vinted search pages and basket items while you browse</p>
-      </div>
-
-      {!isPro && (
-        <div className="rounded-2xl border border-amber/30 bg-amber/[0.07] px-6 py-5 mb-6 flex items-center gap-4 flex-wrap">
-          <span className="grid place-items-center w-10 h-10 rounded-xl bg-amber/15 text-amber shrink-0">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          </span>
-          <div className="flex-1 min-w-0">
-            <p className="font-medium text-sm">Pro feature</p>
-            <p className="text-paper-dim text-sm mt-0.5">Upgrade to Pro for £19.99/mo to unlock the extension download and everything else.</p>
-          </div>
-          <button className="px-4 py-2.5 rounded-xl bg-amber text-ink font-medium text-sm hover:brightness-110 transition-all whitespace-nowrap shrink-0">
-            Upgrade to Pro
-          </button>
-        </div>
-      )}
-
-      <div className={`rounded-2xl border border-line bg-ink-card overflow-hidden ${!isPro ? "opacity-50 pointer-events-none select-none" : ""}`}>
-        <div className="grid md:grid-cols-2">
-
-          {/* left — features + download */}
-          <div className="px-8 py-10 flex flex-col">
-            <div className="flex items-center gap-2.5 mb-5">
-              <span className="grid place-items-center w-9 h-9 rounded-xl bg-ink-soft border border-line text-paper-faint">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-4.5 h-4.5">
-                  <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
-                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                </svg>
-              </span>
-              <div>
-                <p className="font-medium text-sm">Vinted Reseller Toolkit</p>
-                <p className="text-[11px] text-paper-faint">Chrome extension · v1.0.0</p>
-              </div>
-            </div>
-
-            <p className="text-sm text-paper-dim leading-relaxed mb-6">
-              Runs in the background while you browse Vinted. Auto-refreshes search pages so you never miss a new listing, sends a desktop alert when fresh items appear, and adds a basket button to every item card.
-            </p>
-
-            <ul className="space-y-3 mb-8">
-              {[
-                ["Auto-refresh", "Reloads catalog/search pages every 10–60 s or a custom interval."],
-                ["Stop on cursor move", "Refresh pauses the instant you move your mouse — inspect items without pages reloading under you."],
-                ["New listing alerts", "Desktop notification + toolbar badge when fresh items appear after a refresh."],
-                ["One-click basket", "Every item card gets a + Basket button. Review your shortlist in the extension popup."],
-              ].map(([title, desc]) => (
-                <li key={title} className="flex gap-2.5 text-sm">
-                  <span className="mt-0.5 w-4 h-4 shrink-0 rounded-full bg-moss/15 border border-moss/25 grid place-items-center">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-2.5 h-2.5 text-moss"><polyline points="20 6 9 17 4 12"/></svg>
-                  </span>
-                  <span className="text-paper-dim"><span className="text-paper font-medium">{title}</span> — {desc}</span>
-                </li>
-              ))}
-            </ul>
-
-            <a
-              href="/vinted-reseller-extension.zip"
-              download
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber text-ink font-semibold text-sm hover:brightness-110 transition-all w-fit"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
-              </svg>
-              Download extension
-            </a>
-            <p className="text-xs text-paper-faint mt-2.5">Chrome only · no extra setup required</p>
-          </div>
-
-          {/* right — install steps */}
-          <div className="border-t md:border-t-0 md:border-l border-line bg-ink-soft/40 px-8 py-10">
-            <p className="text-xs font-mono uppercase tracking-widest text-paper-faint mb-6">How to install</p>
-            <ol className="space-y-5">
-              {[
-                { n: "1", title: "Download the zip", body: "Click Download extension and save the file anywhere on your computer." },
-                { n: "2", title: "Unzip it", body: "Double-click the downloaded file to extract the vinted-reseller folder." },
-                { n: "3", title: "Open Chrome extensions", body: <>Type <span className="font-mono text-[11px] text-amber bg-amber/10 px-1.5 py-0.5 rounded">chrome://extensions</span> in your address bar and enable <strong>Developer mode</strong> (top-right toggle).</> },
-                { n: "4", title: "Load unpacked", body: "Click Load unpacked and select the extracted vinted-reseller folder." },
-                { n: "5", title: "Start browsing", body: "Click the extension icon, turn on auto-refresh, and open any Vinted search or catalog page." },
-              ].map(({ n, title, body }) => (
-                <li key={n} className="flex gap-3">
-                  <span className="w-6 h-6 shrink-0 rounded-full border border-line text-paper-faint grid place-items-center text-xs font-mono">{n}</span>
-                  <div>
-                    <p className="text-sm font-medium text-paper mb-0.5">{title}</p>
-                    <p className="text-sm text-paper-dim leading-relaxed">{body}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-          </div>
-
-        </div>
-      </div>
-    </div>
-  );
-}
-
 /* ---------- page ---------- */
 
 export default function DashboardPage() {
@@ -2246,7 +2131,7 @@ export default function DashboardPage() {
       {/* mobile bottom tab bar */}
       <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-ink/95 backdrop-blur-md border-t border-line flex items-stretch">
         {NAV.map((n) => {
-          const shortLabel: Record<NavKey, string> = { overview: "Overview", stock: "Stock", storage: "Storage", calculator: "Calc", archives: "Archives", extension: "Extension" };
+          const shortLabel: Record<NavKey, string> = { overview: "Overview", stock: "Stock", storage: "Storage", calculator: "Calc", archives: "Archives" };
           return (
             <button
               key={n.key}
@@ -2360,7 +2245,6 @@ export default function DashboardPage() {
           {navKey === "storage"    && <StorageMap items={items} storageLocations={storageLocations} onAddStorage={() => setStorageModalOpen(true)} onRemoveItem={unassignFromStorage} />}
           {navKey === "calculator" && <ProfitCalculator />}
           {navKey === "archives"   && <Archives saleRecords={saleRecords} onDeleteSale={deleteSale} onEditSale={editSale} />}
-          {navKey === "extension"  && <ExtensionDownload currentTier={currentTier} />}
         </main>
       </div>
     </div>
