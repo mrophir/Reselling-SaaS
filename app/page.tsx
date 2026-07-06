@@ -1306,6 +1306,114 @@ function Reviews() {
   );
 }
 
+/* ---------- chrome extension ---------- */
+
+function ExtensionSection() {
+  return (
+    <section id="extension" className="px-6 py-16 md:py-28 border-t border-line">
+      <div className="mx-auto max-w-6xl">
+        <div className="rounded-3xl border border-line bg-ink-card overflow-hidden">
+          <div className="grid md:grid-cols-2 gap-0">
+
+            {/* left — copy */}
+            <div className="px-8 py-10 md:px-12 md:py-14 flex flex-col justify-center">
+              <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-amber mb-5 w-fit">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                  <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                </svg>
+                Chrome Extension — Free
+              </div>
+              <h2 className="font-display font-medium text-[clamp(1.8rem,3.5vw,2.6rem)] leading-[1.1] tracking-tight mb-4">
+                Browse Vinted.<br />Save items instantly.
+              </h2>
+              <p className="text-paper-dim leading-relaxed mb-8 max-w-md">
+                The Vinted Reseller Toolkit runs in the background while you browse. Auto-refresh search pages so you never miss a new listing, get desktop alerts when fresh items appear, and basket anything interesting with one click.
+              </p>
+
+              {/* feature pills */}
+              <ul className="space-y-3 mb-10">
+                {[
+                  ["Auto-refresh", "Reloads catalog/search pages on your chosen interval — 10s, 15s, 30s, or custom."],
+                  ["Stop when you move", "The moment you move your cursor, refresh pauses. No page reloading under your hands."],
+                  ["New listing alerts", "Desktop notification + badge the instant fresh items appear after a refresh."],
+                  ["One-click basket", "Every item card gets a + Basket button. Review your shortlist in the extension popup."],
+                ].map(([title, desc]) => (
+                  <li key={title} className="flex gap-3">
+                    <span className="mt-1 w-4 h-4 shrink-0 rounded-full bg-moss/15 border border-moss/30 grid place-items-center">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-2.5 h-2.5 text-moss"><polyline points="20 6 9 17 4 12"/></svg>
+                    </span>
+                    <span className="text-sm text-paper-dim"><span className="text-paper font-medium">{title}</span> — {desc}</span>
+                  </li>
+                ))}
+              </ul>
+
+              {/* download button + install steps */}
+              <div>
+                <a
+                  href="/vinted-reseller-extension.zip"
+                  download
+                  className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-amber text-ink font-semibold text-sm hover:brightness-110 transition-all btn-shine"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+                  </svg>
+                  Download extension
+                </a>
+                <p className="text-xs text-paper-faint mt-3">Free · Chrome only · no account needed</p>
+              </div>
+            </div>
+
+            {/* right — install steps */}
+            <div className="border-t md:border-t-0 md:border-l border-line bg-ink-soft/40 px-8 py-10 md:px-12 md:py-14 flex flex-col justify-center">
+              <p className="text-xs font-mono uppercase tracking-widest text-paper-faint mb-6">How to install</p>
+              <ol className="space-y-6">
+                {[
+                  {
+                    n: "1",
+                    title: "Download the zip",
+                    body: "Click the button and save the zip file anywhere on your computer.",
+                  },
+                  {
+                    n: "2",
+                    title: "Unzip it",
+                    body: "Double-click the downloaded file to extract the vinted-reseller folder.",
+                  },
+                  {
+                    n: "3",
+                    title: "Open Chrome extensions",
+                    body: (
+                      <>Type <span className="font-mono text-amber text-xs bg-amber/10 px-1.5 py-0.5 rounded">chrome://extensions</span> in your address bar and turn on <strong>Developer mode</strong> (top right toggle).</>
+                    ),
+                  },
+                  {
+                    n: "4",
+                    title: "Load unpacked",
+                    body: "Click Load unpacked and select the extracted vinted-reseller folder. Done.",
+                  },
+                  {
+                    n: "5",
+                    title: "Open Vinted and browse",
+                    body: "Click the extension icon in your toolbar, turn on auto-refresh, and open any Vinted search or catalog page.",
+                  },
+                ].map(({ n, title, body }) => (
+                  <li key={n} className="flex gap-4">
+                    <span className="w-7 h-7 shrink-0 rounded-full border border-amber/30 bg-amber/10 grid place-items-center text-xs font-mono font-medium text-amber">{n}</span>
+                    <div>
+                      <p className="text-sm font-medium text-paper mb-0.5">{title}</p>
+                      <p className="text-sm text-paper-dim leading-relaxed">{body}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* ---------- pricing / cta ---------- */
 
 const FEATURE_LABELS: Record<FeatureFlag, string> = {
@@ -1487,6 +1595,7 @@ export default function Page() {
       <Versus />
       <CaseStudy />
       <Reviews />
+      <ExtensionSection />
       <CTA />
       <Footer />
 
