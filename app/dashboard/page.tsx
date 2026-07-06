@@ -131,7 +131,7 @@ const gbp = (n: number) => (n < 0 ? "−£" : "£") + Math.abs(n).toFixed(2);
 function exportMonthCSV(month: string, records: SaleRecord[], revenue: number, cost: number, profit: number, margin: number) {
   const esc = (s: string | number) => `"${String(s).replace(/"/g, '""')}"`;
   const rows: string[][] = [
-    [`Stockpile Export — ${month}`],
+    [`Sellganise Export — ${month}`],
     [],
     ["Item Name", "Cost Paid (£)", "Sold For (£)", "Advertising (£)", "Packaging (£)", "Equipment (£)", "Other (£)", "Net Profit (£)"],
     ...records.map((r) => [
@@ -152,7 +152,7 @@ function exportMonthCSV(month: string, records: SaleRecord[], revenue: number, c
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `stockpile-${month.toLowerCase().replace(/\s+/g, "-")}.csv`;
+  a.download = `sellganise-${month.toLowerCase().replace(/\s+/g, "-")}.csv`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -1078,7 +1078,7 @@ function Stock({ items, onSell, onToggleListed, onEdit, onRemove, onUnsell, quer
   function exportStock() {
     const esc = (s: string | number) => `"${String(s).replace(/"/g, '""')}"`;
     const rows: string[][] = [
-      ["Stockpile — Stock Export"],
+      ["Sellganise — Stock Export"],
       [],
       ["Item Code", "Name", "Condition", "Size", "Paid (£)", "Status", "Platform", "Storage Bin", "Notes"],
       ...items.map((i) => [
@@ -1091,7 +1091,7 @@ function Stock({ items, onSell, onToggleListed, onEdit, onRemove, onUnsell, quer
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "stockpile-stock.csv";
+    a.download = "sellganise-stock.csv";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -1129,7 +1129,7 @@ function Stock({ items, onSell, onToggleListed, onEdit, onRemove, onUnsell, quer
                 </button>
               )}
               <button
-                onClick={() => { if (canBulk) { setSelectMode(true); } else { /* upsell handled in parent via toast */ window.dispatchEvent(new CustomEvent("stockpile:upsell-bulk")); } }}
+                onClick={() => { if (canBulk) { setSelectMode(true); } else { /* upsell handled in parent via toast */ window.dispatchEvent(new CustomEvent("sellganise:upsell-bulk")); } }}
                 title={canBulk ? "Select items for bulk actions" : "Pro feature — upgrade to use bulk actions"}
                 className={`flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-lg border transition-colors ${canBulk ? "border-line text-paper-dim hover:text-paper hover:border-paper-faint" : "border-line text-paper-faint cursor-default opacity-60"}`}
               >
@@ -1582,7 +1582,7 @@ function Archives({ saleRecords, onDeleteSale, onEditSale }: {
     const totalMargin  = totalRevenue > 0 ? Math.round(totalProfit / totalRevenue * 100) : 0;
 
     const rows: string[][] = [
-      ["Stockpile — Full Export"],
+      ["Sellganise — Full Export"],
       [],
       ["Month", "Item Name", "Cost Paid (£)", "Sold For (£)", "Advertising (£)", "Packaging (£)", "Equipment (£)", "Other (£)", "Net Profit (£)"],
       ...saleRecords.map((r) => [
@@ -1604,7 +1604,7 @@ function Archives({ saleRecords, onDeleteSale, onEditSale }: {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "stockpile-all-months.csv";
+    a.download = "sellganise-all-months.csv";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -1928,12 +1928,12 @@ export default function DashboardPage() {
   // Load persisted state from localStorage on first mount
   useEffect(() => {
     try {
-      const s = localStorage.getItem("stockpile-items");
+      const s = localStorage.getItem("sellganise-items");
       const parsed: Item[] = s ? JSON.parse(s) : [];
       setItems(parsed.length > 0 ? parsed : SEED_ITEMS);
-      const r = localStorage.getItem("stockpile-sales");
+      const r = localStorage.getItem("sellganise-sales");
       if (r) setSaleRecords(JSON.parse(r));
-      const l = localStorage.getItem("stockpile-locations");
+      const l = localStorage.getItem("sellganise-locations");
       if (l) setStorageLocations(JSON.parse(l));
     } catch {}
     setHydrated(true);
@@ -1942,17 +1942,17 @@ export default function DashboardPage() {
   // Persist items whenever they change (after initial load)
   useEffect(() => {
     if (!hydrated) return;
-    localStorage.setItem("stockpile-items", JSON.stringify(items));
+    localStorage.setItem("sellganise-items", JSON.stringify(items));
   }, [items, hydrated]);
 
   useEffect(() => {
     if (!hydrated) return;
-    localStorage.setItem("stockpile-sales", JSON.stringify(saleRecords));
+    localStorage.setItem("sellganise-sales", JSON.stringify(saleRecords));
   }, [saleRecords, hydrated]);
 
   useEffect(() => {
     if (!hydrated) return;
-    localStorage.setItem("stockpile-locations", JSON.stringify(storageLocations));
+    localStorage.setItem("sellganise-locations", JSON.stringify(storageLocations));
   }, [storageLocations, hydrated]);
 
   function editItem(updated: Item) {
@@ -2014,8 +2014,8 @@ export default function DashboardPage() {
 
   useEffect(() => {
     function handleUpsell() { addToast("Bulk actions are a Pro feature — upgrade to unlock", "info"); }
-    window.addEventListener("stockpile:upsell-bulk", handleUpsell);
-    return () => window.removeEventListener("stockpile:upsell-bulk", handleUpsell);
+    window.addEventListener("sellganise:upsell-bulk", handleUpsell);
+    return () => window.removeEventListener("sellganise:upsell-bulk", handleUpsell);
   }, []);
 
   function toggleListed(item: Item, platforms?: string[]) {
@@ -2101,7 +2101,7 @@ export default function DashboardPage() {
               <span className="absolute bottom-0 inset-x-0 bg-ink/25" style={{ height: "38%" }} />
               <span className="relative w-[3px] h-3.5 rounded-full bg-ink" />
             </span>
-            <span className="font-display text-[16px] font-medium">Stockpile</span>
+            <span className="font-display text-[16px] font-medium">Sellganise</span>
           </a>
         </div>
         <nav className="flex-1 p-3 flex flex-col gap-1">
@@ -2153,7 +2153,7 @@ export default function DashboardPage() {
               <span className="absolute bottom-0 inset-x-0 bg-ink/25" style={{ height: "38%" }} />
               <span className="relative w-[3px] h-3.5 rounded-full bg-ink" />
             </span>
-            <span className="font-display text-[15px] font-medium tracking-tight">Stockpile</span>
+            <span className="font-display text-[15px] font-medium tracking-tight">Sellganise</span>
           </a>
           <div className="flex items-center gap-2.5 flex-1 min-w-0 max-w-[420px]">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] text-paper-faint shrink-0"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>

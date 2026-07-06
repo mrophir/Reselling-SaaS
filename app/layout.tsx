@@ -8,7 +8,7 @@ import "@fontsource/jetbrains-mono/500.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Stockpile — never lose track of stock you've paid for",
+  title: "Sellganise — never lose track of stock you've paid for",
   description: "Inventory CRM for mid-to-high-volume resellers. Surfaces the stock sitting unlisted, so no money rots in a box.",
 };
 

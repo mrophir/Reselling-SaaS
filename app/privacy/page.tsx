@@ -8,7 +8,7 @@ function LegalNav() {
           <span className="absolute bottom-0 inset-x-0 bg-ink/25" style={{ height: "38%" }} />
           <span className="relative w-[3px] h-3.5 rounded-full bg-ink" />
         </span>
-        <span className="font-display text-[17px] font-medium tracking-tight">Stockpile</span>
+        <span className="font-display text-[17px] font-medium tracking-tight">Sellganise</span>
       </Link>
       <div className="flex items-center gap-5 text-sm text-paper-faint">
         <Link href="/terms" className="hover:text-paper transition-colors">Terms of Service</Link>
@@ -51,20 +51,20 @@ export default function PrivacyPage() {
           <h1 className="font-display text-4xl font-medium tracking-tight mb-3">Privacy Policy</h1>
           <p className="text-paper-faint text-sm">Last updated: 4 July 2026</p>
           <p className="mt-4 text-paper-dim leading-relaxed">
-            This policy explains what personal data Stockpile collects, why we collect it, how we use and protect it, and what your rights are under UK data protection law. We are committed to handling your data responsibly.
+            This policy explains what personal data Sellganise collects, why we collect it, how we use and protect it, and what your rights are under UK data protection law. We are committed to handling your data responsibly.
           </p>
         </div>
 
         <Section title="1. Who we are">
           <p>
-            Stockpile ("we", "us", "our") is operated by <strong className="text-paper">Stockpile Ltd</strong>, a company registered in England and Wales. We are the data controller for personal data collected through stockpile.app and our associated services.
+            Sellganise ("we", "us", "our") is operated by <strong className="text-paper">Sellganise Ltd</strong>, a company registered in England and Wales. We are the data controller for personal data collected through sellganise.com and our associated services.
           </p>
           <p>
             We are registered with the Information Commissioner's Office (ICO). Our registration reference and registered office details are available on request.
           </p>
           <p>
             For all data protection queries, contact us at:{" "}
-            <a href="mailto:privacy@stockpile.app" className="text-amber hover:underline">privacy@stockpile.app</a>
+            <a href="mailto:privacy@sellganise.com" className="text-amber hover:underline">privacy@sellganise.com</a>
           </p>
         </Section>
 
@@ -86,7 +86,7 @@ export default function PrivacyPage() {
           <p>We use your data only for the following purposes:</p>
           <ul className="list-none space-y-2 mt-2">
             {[
-              "Provide, maintain, and improve the Stockpile service",
+              "Provide, maintain, and improve the Sellganise service",
               "Process subscription payments and send billing confirmations",
               "Send essential service notifications (security alerts, planned maintenance)",
               "Respond to support requests and enquiries",
@@ -132,7 +132,7 @@ export default function PrivacyPage() {
           </div>
           <p className="mt-4 text-sm">
             You may request deletion of your account at any time via your account settings or by emailing{" "}
-            <a href="mailto:privacy@stockpile.app" className="text-amber hover:underline">privacy@stockpile.app</a>.
+            <a href="mailto:privacy@sellganise.com" className="text-amber hover:underline">privacy@sellganise.com</a>.
             Billing records are retained for legal compliance and cannot be deleted early.
           </p>
         </Section>
@@ -142,7 +142,7 @@ export default function PrivacyPage() {
           <div className="space-y-3 mt-3">
             {[
               { name: "Stripe, Inc.", role: "Payment processing", detail: "Processes subscription payments. Stripe is PCI-DSS Level 1 certified. Data may be transferred to the United States under Standard Contractual Clauses. Stripe's privacy policy: stripe.com/gb/privacy" },
-              { name: "Vercel, Inc.", role: "Website hosting", detail: "Hosts the Stockpile web application. Vercel is GDPR-compliant and processes data within the EU/UK where possible." },
+              { name: "Vercel, Inc.", role: "Website hosting", detail: "Hosts the Sellganise web application. Vercel is GDPR-compliant and processes data within the EU/UK where possible." },
               { name: "Supabase, Inc.", role: "Database hosting", detail: "Stores your account, inventory, and sale data. Supabase is SOC 2 Type II certified." },
             ].map((p) => (
               <div key={p.name} className="p-4 rounded-xl bg-ink-card border border-line">
@@ -176,7 +176,7 @@ export default function PrivacyPage() {
           </div>
           <p className="mt-4">
             To exercise any right, email{" "}
-            <a href="mailto:privacy@stockpile.app" className="text-amber hover:underline">privacy@stockpile.app</a>{" "}
+            <a href="mailto:privacy@sellganise.com" className="text-amber hover:underline">privacy@sellganise.com</a>{" "}
             with "Data Rights Request" in the subject line. We may ask you to verify your identity before proceeding.
           </p>
         </Section>
@@ -212,8 +212,8 @@ export default function PrivacyPage() {
 
         <Section title="10. Children's privacy">
           <p>
-            Stockpile is intended for adults aged 18 and over. We do not knowingly collect personal data from anyone under 13. If you believe we have inadvertently collected data from a child, contact us at{" "}
-            <a href="mailto:privacy@stockpile.app" className="text-amber hover:underline">privacy@stockpile.app</a>{" "}
+            Sellganise is intended for adults aged 18 and over. We do not knowingly collect personal data from anyone under 13. If you believe we have inadvertently collected data from a child, contact us at{" "}
+            <a href="mailto:privacy@sellganise.com" className="text-amber hover:underline">privacy@sellganise.com</a>{" "}
             and we will delete it promptly.
           </p>
         </Section>
@@ -227,7 +227,7 @@ export default function PrivacyPage() {
         <Section title="12. How to complain">
           <p>
             If you are unhappy with how we handle your personal data, please contact us first at{" "}
-            <a href="mailto:privacy@stockpile.app" className="text-amber hover:underline">privacy@stockpile.app</a>{" "}
+            <a href="mailto:privacy@sellganise.com" className="text-amber hover:underline">privacy@sellganise.com</a>{" "}
             and we will do our best to resolve the issue.
           </p>
           <p>
@@ -242,10 +242,10 @@ export default function PrivacyPage() {
         </Section>
 
         <div className="mt-12 pt-8 border-t border-line flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between text-sm text-paper-faint">
-          <p>© {new Date().getFullYear()} Stockpile Ltd. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Sellganise Ltd. All rights reserved.</p>
           <div className="flex gap-5">
             <Link href="/terms" className="hover:text-paper transition-colors">Terms of Service</Link>
-            <a href="mailto:privacy@stockpile.app" className="hover:text-paper transition-colors">privacy@stockpile.app</a>
+            <a href="mailto:privacy@sellganise.com" className="hover:text-paper transition-colors">privacy@sellganise.com</a>
           </div>
         </div>
       </main>

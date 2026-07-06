@@ -8,7 +8,7 @@ function LegalNav() {
           <span className="absolute bottom-0 inset-x-0 bg-ink/25" style={{ height: "38%" }} />
           <span className="relative w-[3px] h-3.5 rounded-full bg-ink" />
         </span>
-        <span className="font-display text-[17px] font-medium tracking-tight">Stockpile</span>
+        <span className="font-display text-[17px] font-medium tracking-tight">Sellganise</span>
       </Link>
       <div className="flex items-center gap-5 text-sm text-paper-faint">
         <Link href="/privacy" className="hover:text-paper transition-colors">Privacy Policy</Link>
@@ -42,16 +42,16 @@ export default function TermsPage() {
           <h1 className="font-display text-4xl font-medium tracking-tight mb-3">Terms of Service</h1>
           <p className="text-paper-faint text-sm">Last updated: 4 July 2026</p>
           <p className="mt-4 text-paper-dim leading-relaxed">
-            Please read these Terms of Service carefully before using Stockpile. By creating an account or using the Service, you agree to be bound by these Terms. If you do not agree, do not use the Service.
+            Please read these Terms of Service carefully before using Sellganise. By creating an account or using the Service, you agree to be bound by these Terms. If you do not agree, do not use the Service.
           </p>
           <div className="mt-5 p-4 rounded-xl bg-amber/[0.06] border border-amber/25 text-sm text-paper-dim">
-            <span className="text-amber font-medium">Quick summary (not a substitute for reading the full terms):</span> Stockpile is a paid inventory tool for resellers. You own your data. We own the software. Pay on time, use it lawfully, and we'll keep the service running. Cancel anytime.
+            <span className="text-amber font-medium">Quick summary (not a substitute for reading the full terms):</span> Sellganise is a paid inventory tool for resellers. You own your data. We own the software. Pay on time, use it lawfully, and we'll keep the service running. Cancel anytime.
           </div>
         </div>
 
         <Section title="1. Agreement to these Terms">
           <p>
-            These Terms of Service ("Terms") constitute a legally binding agreement between you ("you", "user") and <strong className="text-paper">Stockpile Ltd</strong> ("Stockpile", "we", "us"), a company registered in England and Wales, governing your access to and use of the Stockpile web application and related services (collectively, "the Service").
+            These Terms of Service ("Terms") constitute a legally binding agreement between you ("you", "user") and <strong className="text-paper">Sellganise Ltd</strong> ("Sellganise", "we", "us"), a company registered in England and Wales, governing your access to and use of the Sellganise web application and related services (collectively, "the Service").
           </p>
           <p>
             By registering for an account, accessing, or using the Service, you confirm that you have read, understood, and agree to these Terms and our{" "}
@@ -61,7 +61,7 @@ export default function TermsPage() {
 
         <Section title="2. Description of the Service">
           <p>
-            Stockpile is a web-based inventory management and profit-tracking application designed for resellers. It allows you to log stock items, track their status through a sales pipeline, manage physical storage locations, record sales, and analyse your financial performance across platforms such as Vinted, eBay, Depop, and Facebook Marketplace.
+            Sellganise is a web-based inventory management and profit-tracking application designed for resellers. It allows you to log stock items, track their status through a sales pipeline, manage physical storage locations, record sales, and analyse your financial performance across platforms such as Vinted, eBay, Depop, and Facebook Marketplace.
           </p>
           <p>
             We may add, modify, or discontinue features of the Service at any time. We will provide reasonable notice of material changes where practicable. The Service is not intended as a substitute for professional accounting, tax, or financial advice.
@@ -96,7 +96,7 @@ export default function TermsPage() {
               "Provide accurate, current, and complete registration information",
               "Maintain and promptly update your account information",
               "Keep your password confidential and not share it with any third party",
-              "Notify us immediately at support@stockpile.app of any suspected unauthorised access",
+              "Notify us immediately at support@sellganise.com of any suspected unauthorised access",
               "Accept responsibility for all activity that occurs under your account",
             ].map((item) => (
               <li key={item} className="flex items-start gap-2.5 text-sm">
@@ -175,7 +175,7 @@ export default function TermsPage() {
             <strong className="text-paper">You retain full ownership of all data you input into the Service</strong> — your inventory records, sale records, notes, and any other content you create. We claim no ownership rights over your data.
           </p>
           <p>
-            You grant Stockpile a limited, non-exclusive, royalty-free licence to host, store, process, and display your data solely to the extent necessary to provide and operate the Service. This licence ends when you delete your data or close your account.
+            You grant Sellganise a limited, non-exclusive, royalty-free licence to host, store, process, and display your data solely to the extent necessary to provide and operate the Service. This licence ends when you delete your data or close your account.
           </p>
           <p>
             On account termination (by either party), you may request a full export of your data within 30 days of termination. We will provide it in CSV or JSON format. After 30 days, your data will be deleted in accordance with our Privacy Policy, except where legal retention obligations apply.
@@ -187,7 +187,7 @@ export default function TermsPage() {
 
         <Section title="8. Intellectual property">
           <p>
-            All software, design, trademarks, trade names, logos, and content that form part of the Stockpile Service (excluding your data) are owned by or licensed to Stockpile Ltd and are protected by intellectual property laws.
+            All software, design, trademarks, trade names, logos, and content that form part of the Sellganise Service (excluding your data) are owned by or licensed to Sellganise Ltd and are protected by intellectual property laws.
           </p>
           <p>You may not:</p>
           <ul className="list-none space-y-2 mt-2">
@@ -250,7 +250,7 @@ export default function TermsPage() {
 
         <Section title="12. Indemnification">
           <p>
-            You agree to indemnify, defend, and hold harmless Stockpile Ltd and its officers, directors, employees, and agents from and against any claims, liabilities, damages, losses, and expenses (including reasonable legal fees) arising out of or in connection with:
+            You agree to indemnify, defend, and hold harmless Sellganise Ltd and its officers, directors, employees, and agents from and against any claims, liabilities, damages, losses, and expenses (including reasonable legal fees) arising out of or in connection with:
           </p>
           <ul className="list-none space-y-1.5 mt-3">
             {[
@@ -270,7 +270,7 @@ export default function TermsPage() {
         <Section title="13. Termination">
           <p>
             <strong className="text-paper">By you:</strong> You may close your account at any time via account settings or by emailing{" "}
-            <a href="mailto:support@stockpile.app" className="text-amber hover:underline">support@stockpile.app</a>.
+            <a href="mailto:support@sellganise.com" className="text-amber hover:underline">support@sellganise.com</a>.
             Closing your account cancels any active subscription at the end of the current billing period.
           </p>
           <p>
@@ -290,7 +290,7 @@ export default function TermsPage() {
           </p>
           <p>
             Before commencing legal proceedings, we encourage you to contact us at{" "}
-            <a href="mailto:legal@stockpile.app" className="text-amber hover:underline">legal@stockpile.app</a>{" "}
+            <a href="mailto:legal@sellganise.com" className="text-amber hover:underline">legal@sellganise.com</a>{" "}
             to attempt to resolve the dispute informally.
           </p>
         </Section>
@@ -323,7 +323,7 @@ export default function TermsPage() {
         </Section>
 
         <Section title="17. General">
-          <p><strong className="text-paper">Entire agreement.</strong> These Terms, together with our Privacy Policy, constitute the entire agreement between you and Stockpile regarding the Service and supersede all prior agreements.</p>
+          <p><strong className="text-paper">Entire agreement.</strong> These Terms, together with our Privacy Policy, constitute the entire agreement between you and Sellganise regarding the Service and supersede all prior agreements.</p>
           <p><strong className="text-paper">Severability.</strong> If any provision of these Terms is found to be unenforceable, that provision will be modified to the minimum extent necessary to make it enforceable, and the remaining provisions will continue in full force.</p>
           <p><strong className="text-paper">Waiver.</strong> Our failure to enforce any provision of these Terms does not constitute a waiver of our right to enforce that provision in the future.</p>
           <p><strong className="text-paper">Assignment.</strong> You may not assign or transfer these Terms or any rights hereunder without our prior written consent. We may assign these Terms in connection with a merger, acquisition, or sale of all or substantially all of our assets.</p>
@@ -332,17 +332,17 @@ export default function TermsPage() {
         <Section title="18. Contact">
           <p>For questions about these Terms:</p>
           <div className="mt-3 p-5 rounded-xl bg-ink-card border border-line text-sm space-y-2">
-            <p><span className="text-paper-faint w-20 inline-block">Email</span><a href="mailto:legal@stockpile.app" className="text-amber hover:underline">legal@stockpile.app</a></p>
-            <p><span className="text-paper-faint w-20 inline-block">Support</span><a href="mailto:support@stockpile.app" className="text-amber hover:underline">support@stockpile.app</a></p>
-            <p><span className="text-paper-faint w-20 inline-block">Privacy</span><a href="mailto:privacy@stockpile.app" className="text-amber hover:underline">privacy@stockpile.app</a></p>
+            <p><span className="text-paper-faint w-20 inline-block">Email</span><a href="mailto:legal@sellganise.com" className="text-amber hover:underline">legal@sellganise.com</a></p>
+            <p><span className="text-paper-faint w-20 inline-block">Support</span><a href="mailto:support@sellganise.com" className="text-amber hover:underline">support@sellganise.com</a></p>
+            <p><span className="text-paper-faint w-20 inline-block">Privacy</span><a href="mailto:privacy@sellganise.com" className="text-amber hover:underline">privacy@sellganise.com</a></p>
           </div>
         </Section>
 
         <div className="mt-12 pt-8 border-t border-line flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between text-sm text-paper-faint">
-          <p>© {new Date().getFullYear()} Stockpile Ltd. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Sellganise Ltd. All rights reserved.</p>
           <div className="flex gap-5">
             <Link href="/privacy" className="hover:text-paper transition-colors">Privacy Policy</Link>
-            <a href="mailto:legal@stockpile.app" className="hover:text-paper transition-colors">legal@stockpile.app</a>
+            <a href="mailto:legal@sellganise.com" className="hover:text-paper transition-colors">legal@sellganise.com</a>
           </div>
         </div>
       </main>

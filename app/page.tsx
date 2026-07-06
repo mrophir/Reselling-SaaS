@@ -148,7 +148,7 @@ function Nav() {
               <span className="absolute bottom-0 inset-x-0 bg-ink/25" style={{ height: "38%" }} />
               <span className="relative w-[3px] h-3.5 rounded-full bg-ink" />
             </span>
-            <span className="font-display text-[17px] font-medium tracking-tight">Stockpile</span>
+            <span className="font-display text-[17px] font-medium tracking-tight">Sellganise</span>
           </a>
 
           <nav className="hidden md:flex items-center gap-8 text-sm text-paper-dim">
@@ -373,7 +373,7 @@ function PhoneMockup() {
               <span style={{ width: 26, height: 26, borderRadius: 7, background: "#f0a020", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                 <span style={{ width: 2.5, height: 13, borderRadius: 2, background: "#0e0d0b" }} />
               </span>
-              <span style={{ fontSize: 17, fontWeight: 600, color: "#f5f1e8", letterSpacing: "-0.02em" }}>Stockpile</span>
+              <span style={{ fontSize: 17, fontWeight: 600, color: "#f5f1e8", letterSpacing: "-0.02em" }}>Sellganise</span>
             </div>
             <div style={{ display: "flex", gap: 8 }}>
               <div style={{ position: "relative", width: 34, height: 34, borderRadius: 10, background: "#1a1815", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -524,7 +524,7 @@ function DashboardMockup() {
                       <span style={{ width: 24, height: 24, borderRadius: 5, background: "#f0a020", display: "flex", alignItems: "center", justifyContent: "center" }}>
                         <span style={{ width: 3, height: 12, borderRadius: 2, background: "#0e0d0b" }} />
                       </span>
-                      <span style={{ fontSize: 15, fontWeight: 600, color: "#f5f1e8", letterSpacing: "-0.02em" }}>Stockpile</span>
+                      <span style={{ fontSize: 15, fontWeight: 600, color: "#f5f1e8", letterSpacing: "-0.02em" }}>Sellganise</span>
                     </div>
                     {/* nav */}
                     {navItems.map((n) => (
@@ -860,7 +860,7 @@ const FEATURE_TABS = [
     label: "Storage map",
     icon: "⊞",
     heading: "Know exactly where everything is.",
-    body: "Assign each item to a physical bin. When something sells at midnight, open Stockpile, search the item, and see its exact location in seconds — no digging.",
+    body: "Assign each item to a physical bin. When something sells at midnight, open Sellganise, search the item, and see its exact location in seconds — no digging.",
     preview: <StorageTab />,
   },
   {
@@ -956,7 +956,7 @@ function Features() {
 
 function Who() {
   const rows = [
-    { h: "The weekend sourcer", b: "You hit car boots and charity shops hard, come home with 40-60 items, and the logging never quite happens. Stockpile makes adding stock a tap, not a chore.", tag: "200-500 items" },
+    { h: "The weekend sourcer", b: "You hit car boots and charity shops hard, come home with 40-60 items, and the logging never quite happens. Sellganise makes adding stock a tap, not a chore.", tag: "200-500 items" },
     { h: "The full-time flipper", b: "This is your income. You're across four platforms with stock in 30+ bins, and a single lost item is real money. Retrieval and profit tracking pay for themselves.", tag: "500-2,000 items" },
     { h: "The scaling operator", b: "You've outgrown the spreadsheet, maybe added help, and need the numbers clean for tax. The monthly archives and aging flags keep the whole operation honest.", tag: "2,000+ items" },
   ];
@@ -1002,15 +1002,15 @@ function Versus() {
   return (
     <section id="vs" className="px-6 py-16 md:py-28 border-t border-line">
       <div className="mx-auto max-w-6xl">
-        <SectionEyebrow>Stockpile vs the spreadsheet</SectionEyebrow>
+        <SectionEyebrow>Sellganise vs the spreadsheet</SectionEyebrow>
         <h2 className="font-display font-medium text-[clamp(2rem,4.5vw,3.2rem)] leading-[1.05] tracking-tight max-w-3xl mb-5">
           A spreadsheet is free. So is forgetting £486 in a box.
         </h2>
         <p className="text-paper-dim max-w-2xl text-lg mb-14">
-          A grid stores what you type and does nothing else. Stockpile is built for the messy, physical reality of a stockroom and it actively watches the gaps a spreadsheet can't.
+          A grid stores what you type and does nothing else. Sellganise is built for the messy, physical reality of a stockroom and it actively watches the gaps a spreadsheet can't.
         </p>
         <Reveal>
-          {/* Mobile: stacked cards showing Stockpile advantage */}
+          {/* Mobile: stacked cards showing Sellganise advantage */}
           <div className="md:hidden space-y-3">
             {rows.map((r) => (
               <div key={r.f} className="rounded-xl border border-line bg-ink-card p-4">
@@ -1028,7 +1028,7 @@ function Versus() {
             <div className="grid grid-cols-[1.1fr_1fr_1.1fr] bg-ink-soft border-b border-line text-sm font-medium">
               <div className="p-5 text-paper-faint">The moment</div>
               <div className="p-5 text-paper-faint border-x border-line">Spreadsheet</div>
-              <div className="p-5 text-amber flex items-center gap-2">Stockpile</div>
+              <div className="p-5 text-amber flex items-center gap-2">Sellganise</div>
             </div>
             {rows.map((r, i) => (
               <div key={r.f} className={`grid grid-cols-[1.1fr_1fr_1.1fr] text-[14px] ${i % 2 ? "bg-ink-card" : "bg-ink"}`}>
@@ -1089,7 +1089,7 @@ function CaseStudy() {
             </div>
           </div>
           <div className="bg-ink-card p-8 border-t md:border-t-0 md:border-l border-line">
-            <p className="font-mono text-xs uppercase tracking-widest text-amber mb-6">After: Stockpile</p>
+            <p className="font-mono text-xs uppercase tracking-widest text-amber mb-6">After: Sellganise</p>
             <div className="space-y-5">
               {after.map((r) => (
                 <div key={r.label} className="flex items-start justify-between gap-4 text-sm">
@@ -1113,7 +1113,7 @@ function CaseStudy() {
                   { k: "Reselling since", v: "2022" },
                   { k: "Stock size", v: "800-1,100 items" },
                   { k: "Platforms", v: "eBay, Vinted" },
-                  { k: "On Stockpile since", v: "March 2025" },
+                  { k: "On Sellganise since", v: "March 2025" },
                 ].map((s) => (
                   <div key={s.k} className="flex gap-3 text-sm">
                     <span className="text-paper-faint w-28 shrink-0">{s.k}</span>
@@ -1130,10 +1130,10 @@ function CaseStudy() {
                 "I tried fixing it with more columns. A found column. A separate tab for sold. By January I had four tabs and none of them agreed on how many items I had. Tax time was embarrassing. I'd genuinely lost £340 of stock and had no clue what my actual margin was."
               </p>
               <blockquote className="border-l-2 border-amber pl-5 text-paper font-medium">
-                "First thing Stockpile showed me: I had £612 of unlisted stock sitting in three bins I'd half-forgotten. I listed all of it that week. That alone paid for a year of the subscription."
+                "First thing Sellganise showed me: I had £612 of unlisted stock sitting in three bins I'd half-forgotten. I listed all of it that week. That alone paid for a year of the subscription."
               </blockquote>
               <p>
-                "The bin map changed everything. I got a Vinted notification at 11pm. Opened Stockpile, searched the item: Bin C3, top layer. Done in 20 seconds. On the spreadsheet that would have been a full-box dig at midnight."
+                "The bin map changed everything. I got a Vinted notification at 11pm. Opened Sellganise, searched the item: Bin C3, top layer. Done in 20 seconds. On the spreadsheet that would have been a full-box dig at midnight."
               </p>
             </div>
           </div>
@@ -1151,7 +1151,7 @@ const REVIEWS = [
     platform: "Vinted & eBay",
     items: "~650 items",
     stars: 5,
-    text: "I used to spend Sunday evenings dreading the stock audit. Now I open Stockpile, see exactly what's unlisted, and I'm done in 20 minutes. The profit tracking alone has paid for itself ten times over.",
+    text: "I used to spend Sunday evenings dreading the stock audit. Now I open Sellganise, see exactly what's unlisted, and I'm done in 20 minutes. The profit tracking alone has paid for itself ten times over.",
   },
   {
     name: "Jake R.",
@@ -1179,7 +1179,7 @@ const REVIEWS = [
     platform: "Depop & Vinted",
     items: "~400 items",
     stars: 5,
-    text: "Tax time used to be a nightmare. Last January I exported my Stockpile monthly archives and handed them straight to my accountant. Two-hour job, not two days. Worth £15 a month easily.",
+    text: "Tax time used to be a nightmare. Last January I exported my Sellganise monthly archives and handed them straight to my accountant. Two-hour job, not two days. Worth £15 a month easily.",
   },
 ];
 
@@ -1427,7 +1427,7 @@ function Footer() {
           <span className="relative grid place-items-center w-6 h-6 rounded-[5px] bg-amber overflow-hidden">
             <span className="relative w-[2.5px] h-3 rounded-full bg-ink" />
           </span>
-          <span className="font-display text-paper">Stockpile</span>
+          <span className="font-display text-paper">Sellganise</span>
         </div>
         <p>Inventory CRM for resellers. © {new Date().getFullYear()}</p>
         <div className="flex gap-6 flex-wrap justify-center">
