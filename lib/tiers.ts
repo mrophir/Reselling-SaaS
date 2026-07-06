@@ -20,7 +20,8 @@ export type FeatureFlag =
   | "multi_platform"
   | "bulk_actions"
   | "advanced_reporting"
-  | "csv_import";
+  | "csv_import"
+  | "analytics_extension";
 
 export interface TierConfig {
   readonly key: TierKey;
@@ -66,6 +67,7 @@ export const TIERS: Readonly<Record<TierKey, TierConfig>> = {
       "bulk_actions",
       "advanced_reporting",
       "csv_import",
+      "analytics_extension",
     ],
     tagline: "Everything, unlimited stock, cancel anytime.",
   },

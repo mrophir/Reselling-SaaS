@@ -73,7 +73,7 @@ const SEED_ITEMS: Item[] = [
   { id: 6, code: "IT-0221", name: "Ralph Lauren shirt",    cond: "good",      paid: 4,  stage: "listed",   platform: ["Depop", "Vinted"],  bin: "B1" },
 ];
 
-type NavKey = "overview" | "stock" | "storage" | "calculator" | "archives";
+type NavKey = "overview" | "stock" | "storage" | "calculator" | "archives" | "analytics";
 
 const NAV: { key: NavKey; label: string; icon: React.ReactNode }[] = [
   {
@@ -119,6 +119,14 @@ const NAV: { key: NavKey; label: string; icon: React.ReactNode }[] = [
         <rect x="3" y="4" width="18" height="4" rx="1"/>
         <path d="M5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8"/>
         <line x1="10" y1="12" x2="14" y2="12"/>
+      </svg>
+    ),
+  },
+  {
+    key: "analytics", label: "Analytics extension",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] shrink-0">
+        <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
       </svg>
     ),
   },
@@ -1878,6 +1886,130 @@ function NotificationPanel({ saleRecords, items, dismissedAlertIds, salesCleared
   );
 }
 
+/* ---------- analytics extension ---------- */
+
+function AnalyticsExtension({ currentTier }: { currentTier: TierKey }) {
+  const isPro = currentTier === "pro";
+
+  return (
+    <div>
+      <div className="mb-6">
+        <h1 className="font-display text-2xl font-medium">Analytics extension</h1>
+        <p className="text-paper-dim text-sm mt-1">Instant market price analytics on every Vinted UK listing</p>
+      </div>
+
+      {!isPro && (
+        <div className="rounded-2xl border border-amber/30 bg-amber/[0.07] px-6 py-5 mb-6 flex items-center gap-4 flex-wrap">
+          <span className="grid place-items-center w-10 h-10 rounded-xl bg-amber/15 text-amber shrink-0">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </span>
+          <div className="flex-1 min-w-0">
+            <p className="font-medium text-sm">Pro feature</p>
+            <p className="text-paper-dim text-sm mt-0.5">Upgrade to Pro for £19.99/mo to unlock the analytics extension and everything else.</p>
+          </div>
+          <button className="px-4 py-2.5 rounded-xl bg-amber text-ink font-medium text-sm hover:brightness-110 transition-all whitespace-nowrap shrink-0">
+            Upgrade to Pro
+          </button>
+        </div>
+      )}
+
+      <div className={`rounded-2xl border border-line bg-ink-card overflow-hidden ${!isPro ? "opacity-50 pointer-events-none select-none" : ""}`}>
+        <div className="grid md:grid-cols-2">
+
+          {/* left — what it does + download */}
+          <div className="px-8 py-10 flex flex-col">
+            <div className="flex items-center gap-3 mb-5">
+              <span className="grid place-items-center w-9 h-9 rounded-xl bg-amber/15 border border-amber/25 text-amber shrink-0">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-4.5 h-4.5">
+                  <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+                </svg>
+              </span>
+              <div>
+                <p className="font-medium text-sm">Sellganise Analytics</p>
+                <p className="text-[11px] text-paper-faint">Chrome extension · Vinted UK · v1.0.0</p>
+              </div>
+            </div>
+
+            <p className="text-sm text-paper-dim leading-relaxed mb-6">
+              Browses Vinted alongside you. On every listing page it automatically scans comparable items, strips outlier prices, and injects a live market card into the sidebar — so you know instantly whether an item is a bargain, fairly priced, or overpriced before you buy.
+            </p>
+
+            <ul className="space-y-3 mb-8">
+              {[
+                ["Est. resale value", "Average price of matching live listings, filtered by size and condition where possible."],
+                ["Bargain / Fair / Overpriced", "Flags when a listing is ≤85% or ≥115% of the calculated market average."],
+                ["List at & Offer at", "75th and 25th percentile price suggestions — ambitious asking vs quick-sale pricing."],
+                ["Sell speed estimate", "Rough demand signal derived from favourites-per-day on comparable listings."],
+                ["100% private", "Every calculation happens locally in your browser. No data is sent to any third-party server."],
+              ].map(([title, desc]) => (
+                <li key={title} className="flex gap-2.5 text-sm">
+                  <span className="mt-0.5 w-4 h-4 shrink-0 rounded-full bg-moss/15 border border-moss/25 grid place-items-center">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-2.5 h-2.5 text-moss"><polyline points="20 6 9 17 4 12"/></svg>
+                  </span>
+                  <span className="text-paper-dim"><span className="text-paper font-medium">{title}</span> — {desc}</span>
+                </li>
+              ))}
+            </ul>
+
+            <a
+              href="/sellganise-analytics.zip"
+              download
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber text-ink font-semibold text-sm hover:brightness-110 transition-all w-fit"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Download extension
+            </a>
+            <p className="text-xs text-paper-faint mt-2.5">Chrome only · Vinted UK only · no account required</p>
+          </div>
+
+          {/* right — install steps */}
+          <div className="border-t md:border-t-0 md:border-l border-line bg-ink-soft/40 px-8 py-10">
+            <p className="text-xs font-mono uppercase tracking-widest text-paper-faint mb-6">How to install</p>
+            <ol className="space-y-5">
+              {[
+                { n: "1", title: "Download the zip", body: "Click Download extension and save the file anywhere on your computer." },
+                { n: "2", title: "Unzip it", body: "Double-click the zip to extract the Sellganise Extension folder." },
+                { n: "3", title: "Open Chrome extensions", body: <>Type <span className="font-mono text-[11px] text-amber bg-amber/10 px-1.5 py-0.5 rounded">chrome://extensions</span> in your address bar and enable <strong>Developer mode</strong> (top-right toggle).</> },
+                { n: "4", title: "Load unpacked", body: 'Click "Load unpacked" and select the extracted Sellganise Extension folder.' },
+                { n: "5", title: "Browse Vinted", body: "Open any Vinted UK item listing. The analytics card appears automatically in the sidebar within a second." },
+              ].map(({ n, title, body }) => (
+                <li key={n} className="flex gap-3">
+                  <span className="w-6 h-6 shrink-0 rounded-full border border-amber/30 bg-amber/10 grid place-items-center text-xs font-mono text-amber">{n}</span>
+                  <div>
+                    <p className="text-sm font-medium text-paper mb-0.5">{title}</p>
+                    <p className="text-sm text-paper-dim leading-relaxed">{body}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+
+            <div className="mt-8 rounded-xl border border-line-soft bg-ink px-4 py-4">
+              <p className="text-xs font-mono uppercase tracking-widest text-paper-faint mb-2">What you see on each listing</p>
+              <div className="space-y-1.5 text-sm">
+                {[
+                  ["Est. Resale Value", "£28.00", "amber"],
+                  ["List at (75th %ile)", "£32.00", "moss"],
+                  ["Offer at (25th %ile)", "£22.00", "paper-faint"],
+                  ["Sell speed", "Fast", "moss"],
+                  ["Market range", "£14 – £45", "paper-faint"],
+                ].map(([label, val, color]) => (
+                  <div key={label} className="flex justify-between">
+                    <span className="text-paper-faint">{label}</span>
+                    <span className={`font-mono font-medium text-${color}`}>{val}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ---------- page ---------- */
 
 export default function DashboardPage() {
@@ -2127,7 +2259,7 @@ export default function DashboardPage() {
       {/* mobile bottom tab bar */}
       <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-ink/95 backdrop-blur-md border-t border-line flex items-stretch">
         {NAV.map((n) => {
-          const shortLabel: Record<NavKey, string> = { overview: "Overview", stock: "Stock", storage: "Storage", calculator: "Calc", archives: "Archives" };
+          const shortLabel: Record<NavKey, string> = { overview: "Overview", stock: "Stock", storage: "Storage", calculator: "Calc", archives: "Archives", analytics: "Analytics" };
           return (
             <button
               key={n.key}
@@ -2237,6 +2369,7 @@ export default function DashboardPage() {
           {navKey === "storage"    && <StorageMap items={items} storageLocations={storageLocations} onAddStorage={() => setStorageModalOpen(true)} onRemoveItem={unassignFromStorage} />}
           {navKey === "calculator" && <ProfitCalculator />}
           {navKey === "archives"   && <Archives saleRecords={saleRecords} onDeleteSale={deleteSale} onEditSale={editSale} />}
+          {navKey === "analytics"  && <AnalyticsExtension currentTier={currentTier} />}
         </main>
       </div>
     </div>

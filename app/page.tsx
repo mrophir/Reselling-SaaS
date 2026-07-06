@@ -1310,10 +1310,11 @@ const FEATURE_LABELS: Record<FeatureFlag, string> = {
   bulk_actions: "Bulk actions",
   advanced_reporting: "Advanced reporting",
   csv_import: "CSV import",
+  analytics_extension: "Sellganise Analytics Chrome extension — live market price data on every Vinted listing",
 };
 
 const FREE_FEATURES: FeatureFlag[] = ["pipeline", "leak_alert", "bin_lookup", "basic_profit"];
-const PRO_EXTRA_FEATURES: FeatureFlag[] = ["monthly_archives", "aging_flags", "tax_export", "multi_platform", "bulk_actions", "advanced_reporting", "csv_import"];
+const PRO_EXTRA_FEATURES: FeatureFlag[] = ["monthly_archives", "aging_flags", "tax_export", "multi_platform", "bulk_actions", "advanced_reporting", "csv_import", "analytics_extension"];
 
 function CTA() {
   const free = getTier("starter");
