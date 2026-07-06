@@ -144,10 +144,6 @@ function Nav() {
       }`}>
         <div className="mx-auto max-w-6xl px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
           <a href="#top" className="flex items-center gap-2.5 shrink-0">
-            <span className="relative grid place-items-center w-7 h-7 rounded-[6px] bg-amber overflow-hidden">
-              <span className="absolute bottom-0 inset-x-0 bg-ink/25" style={{ height: "38%" }} />
-              <span className="relative w-[3px] h-3.5 rounded-full bg-ink" />
-            </span>
             <span className="font-display text-[17px] font-medium tracking-tight">Sellganise</span>
           </a>
 
@@ -370,9 +366,6 @@ function PhoneMockup() {
           {/* app header */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "2px 16px 10px", flexShrink: 0 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-              <span style={{ width: 26, height: 26, borderRadius: 7, background: "#f0a020", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <span style={{ width: 2.5, height: 13, borderRadius: 2, background: "#0e0d0b" }} />
-              </span>
               <span style={{ fontSize: 17, fontWeight: 600, color: "#f5f1e8", letterSpacing: "-0.02em" }}>Sellganise</span>
             </div>
             <div style={{ display: "flex", gap: 8 }}>
@@ -521,9 +514,6 @@ function DashboardMockup() {
                   <div style={{ width: 192, background: "#0e0d0b", borderRight: "1px solid #2a2722", display: "flex", flexDirection: "column", flexShrink: 0, padding: "16px 0" }}>
                     {/* logo */}
                     <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "0 16px 20px" }}>
-                      <span style={{ width: 24, height: 24, borderRadius: 5, background: "#f0a020", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <span style={{ width: 3, height: 12, borderRadius: 2, background: "#0e0d0b" }} />
-                      </span>
                       <span style={{ fontSize: 15, fontWeight: 600, color: "#f5f1e8", letterSpacing: "-0.02em" }}>Sellganise</span>
                     </div>
                     {/* nav */}

@@ -4,10 +4,6 @@ function LegalNav() {
   return (
     <header className="border-b border-line px-6 h-16 flex items-center justify-between sticky top-0 bg-ink/90 backdrop-blur-md z-50">
       <Link href="/" className="flex items-center gap-2.5 group">
-        <span className="relative grid place-items-center w-7 h-7 rounded-[6px] bg-amber overflow-hidden">
-          <span className="absolute bottom-0 inset-x-0 bg-ink/25" style={{ height: "38%" }} />
-          <span className="relative w-[3px] h-3.5 rounded-full bg-ink" />
-        </span>
         <span className="font-display text-[17px] font-medium tracking-tight">Sellganise</span>
       </Link>
       <div className="flex items-center gap-5 text-sm text-paper-faint">

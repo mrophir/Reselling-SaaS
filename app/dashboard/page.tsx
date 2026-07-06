@@ -2097,10 +2097,6 @@ export default function DashboardPage() {
       <aside className="hidden md:flex fixed md:sticky top-0 h-screen w-[230px] shrink-0 border-r border-line bg-ink-soft/40 flex-col z-40">
         <div className="h-16 flex items-center gap-2.5 px-4 border-b border-line">
           <a href="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
-            <span className="relative grid place-items-center w-7 h-7 rounded-[6px] bg-amber overflow-hidden shrink-0">
-              <span className="absolute bottom-0 inset-x-0 bg-ink/25" style={{ height: "38%" }} />
-              <span className="relative w-[3px] h-3.5 rounded-full bg-ink" />
-            </span>
             <span className="font-display text-[16px] font-medium">Sellganise</span>
           </a>
         </div>
@@ -2149,10 +2145,6 @@ export default function DashboardPage() {
       <div className="flex-1 min-w-0 flex flex-col">
         <header className="h-16 border-b border-line flex items-center gap-4 px-6 sticky top-0 bg-ink/85 backdrop-blur-md z-10">
           <a href="/" className="md:hidden flex items-center gap-2 shrink-0">
-            <span className="relative grid place-items-center w-7 h-7 rounded-[6px] bg-amber overflow-hidden shrink-0">
-              <span className="absolute bottom-0 inset-x-0 bg-ink/25" style={{ height: "38%" }} />
-              <span className="relative w-[3px] h-3.5 rounded-full bg-ink" />
-            </span>
             <span className="font-display text-[15px] font-medium tracking-tight">Sellganise</span>
           </a>
           <div className="flex items-center gap-2.5 flex-1 min-w-0 max-w-[420px]">
