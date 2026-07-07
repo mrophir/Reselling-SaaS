@@ -159,7 +159,7 @@ function Nav() {
               Dashboard
             </a>
             {/* Sign up — desktop only */}
-            <a href="#cta" className="hidden md:block text-sm font-medium px-3 py-2 rounded-lg border border-line text-paper hover:border-paper-faint transition-colors">
+            <a href="/signup" className="hidden md:block text-sm font-medium px-3 py-2 rounded-lg border border-line text-paper hover:border-paper-faint transition-colors">
               Sign up free
             </a>
             <ThemeToggle />
@@ -196,7 +196,7 @@ function Nav() {
               ))}
             </nav>
             <div className="px-4 py-4">
-              <a href="#cta" onClick={() => setMenuOpen(false)} className="block w-full text-center py-3.5 rounded-xl bg-amber text-ink font-medium text-sm hover:bg-paper transition-colors">
+              <a href="/signup" onClick={() => setMenuOpen(false)} className="block w-full text-center py-3.5 rounded-xl bg-amber text-ink font-medium text-sm hover:bg-paper transition-colors">
                 Sign up free — no card needed
               </a>
             </div>
@@ -925,7 +925,7 @@ function Features() {
                 </div>
                 <h3 className="font-display text-2xl font-medium mb-4 leading-snug">{tab.heading}</h3>
                 <p className="text-paper-dim leading-relaxed text-[15px]">{tab.body}</p>
-                <a href="#cta" className="mt-8 self-start inline-flex items-center gap-2 text-sm font-medium text-amber hover:text-paper transition-colors">
+                <a href="/signup" className="mt-8 self-start inline-flex items-center gap-2 text-sm font-medium text-amber hover:text-paper transition-colors">
                   Get started free
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                 </a>
@@ -1356,7 +1356,7 @@ function CTA() {
                   </li>
                 ))}
               </ul>
-              <a href="#" className="block text-center px-5 py-3.5 rounded-xl border border-line text-paper font-medium text-sm hover:border-paper-faint hover:bg-ink-soft transition-colors">
+              <a href="/signup" className="block text-center px-5 py-3.5 rounded-xl border border-line text-paper font-medium text-sm hover:border-paper-faint hover:bg-ink-soft transition-colors">
                 Start free — no card needed
               </a>
             </div>
@@ -1392,7 +1392,7 @@ function CTA() {
                   ))}
                 </ul>
               </div>
-              <a href="#" className="btn-shine block text-center px-5 py-3.5 rounded-xl bg-amber text-ink font-medium text-sm hover:bg-paper transition-colors">
+              <a href="/signup" className="btn-shine block text-center px-5 py-3.5 rounded-xl bg-amber text-ink font-medium text-sm hover:bg-paper transition-colors">
                 Get started
               </a>
               <p className="text-center text-xs text-paper-faint mt-3">Cancel anytime · No hidden fees</p>
