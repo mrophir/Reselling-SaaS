@@ -154,12 +154,10 @@ function Nav() {
           </nav>
 
           <div className="flex items-center gap-2">
-            {/* Dashboard — amber, always visible */}
-            <a href="/dashboard" className="btn-shine text-sm font-medium px-3 py-2 rounded-lg bg-amber text-ink hover:bg-paper transition-colors shrink-0">
-              Dashboard
+            <a href="/login" className="hidden md:block text-sm font-medium px-3 py-2 rounded-lg text-paper-dim hover:text-paper transition-colors shrink-0">
+              Sign in
             </a>
-            {/* Sign up — desktop only */}
-            <a href="/signup" className="hidden md:block text-sm font-medium px-3 py-2 rounded-lg border border-line text-paper hover:border-paper-faint transition-colors">
+            <a href="/signup" className="btn-shine text-sm font-medium px-3 py-2 rounded-lg bg-amber text-ink hover:bg-paper transition-colors shrink-0">
               Sign up free
             </a>
             <ThemeToggle />
@@ -195,9 +193,12 @@ function Nav() {
                 </a>
               ))}
             </nav>
-            <div className="px-4 py-4">
+            <div className="px-4 py-4 flex flex-col gap-2">
               <a href="/signup" onClick={() => setMenuOpen(false)} className="block w-full text-center py-3.5 rounded-xl bg-amber text-ink font-medium text-sm hover:bg-paper transition-colors">
                 Sign up free — no card needed
+              </a>
+              <a href="/login" onClick={() => setMenuOpen(false)} className="block w-full text-center py-2.5 rounded-xl border border-line text-paper font-medium text-sm hover:border-paper-faint transition-colors">
+                Sign in
               </a>
             </div>
           </div>
