@@ -1229,6 +1229,7 @@ function Stock({ items, onSell, onToggleListed, onEdit, onRemove, onUnsell, quer
   }
 
   const allSelected = shown.length > 0 && selectedIds.size === shown.length;
+  const unlistedShown = shown.filter((i) => i.stage === "unlisted");
 
   return (
     <div className="pb-4">
@@ -1241,7 +1242,7 @@ function Stock({ items, onSell, onToggleListed, onEdit, onRemove, onUnsell, quer
               : q ? `${shown.length} result${shown.length !== 1 ? "s" : ""} for "${query}"` : "Every item across all three stages"}
           </p>
         </div>
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
           {selectMode ? (
             <>
               <button onClick={toggleAll} className="text-xs font-medium px-3 py-2 rounded-lg border border-line text-paper-dim hover:text-paper hover:border-paper-faint transition-colors">
@@ -1253,13 +1254,24 @@ function Stock({ items, onSell, onToggleListed, onEdit, onRemove, onUnsell, quer
             </>
           ) : (
             <>
+              {unlistedShown.length > 0 && (
+                <button
+                  onClick={() => onBulkList(unlistedShown.map((i) => i.id))}
+                  className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-lg bg-moss/15 text-moss border border-moss/30 hover:bg-moss/25 transition-colors"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                  List all unlisted ({unlistedShown.length})
+                </button>
+              )}
               {items.length > 0 && (
                 <button onClick={exportStock} className="flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg border border-line text-paper-dim hover:text-paper hover:border-paper-faint transition-colors">
                   <IconDownload /> Export CSV
                 </button>
               )}
               <button
-                onClick={() => { if (canBulk) { setSelectMode(true); } else { /* upsell handled in parent via toast */ window.dispatchEvent(new CustomEvent("sellganise:upsell-bulk")); } }}
+                onClick={() => { if (canBulk) { setSelectMode(true); } else { window.dispatchEvent(new CustomEvent("sellganise:upsell-bulk")); } }}
                 title={canBulk ? "Select items for bulk actions" : "Pro feature — upgrade to use bulk actions"}
                 className={`flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-lg border transition-colors ${canBulk ? "border-line text-paper-dim hover:text-paper hover:border-paper-faint" : "border-line text-paper-faint cursor-default opacity-60"}`}
               >
