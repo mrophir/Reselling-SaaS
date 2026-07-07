@@ -275,6 +275,7 @@ function AddStockModal({ onClose, onAdd, onAddMany, storageLocations }: {
   const [form, setForm] = useState(EMPTY_FORM);
   const [error, setError] = useState("");
   const [pasteText, setPasteText] = useState("");
+  const [pasteBin, setPasteBin] = useState("");
   const nameRef = useRef<HTMLInputElement>(null);
   const pasteRef = useRef<HTMLTextAreaElement>(null);
   useEscClose(onClose);
@@ -308,6 +309,7 @@ function AddStockModal({ onClose, onAdd, onAddMany, storageLocations }: {
       stage: "unlisted" as Stage,
       age: 0,
       createdAt: now + i,
+      bin: pasteBin || undefined,
     }));
     onAddMany(newItems);
     onClose();
@@ -443,6 +445,24 @@ function AddStockModal({ onClose, onAdd, onAddMany, storageLocations }: {
               value={pasteText}
               onChange={(e) => { setPasteText(e.target.value); setError(""); }}
             />
+          </div>
+
+          <div>
+            <label className="block text-sm text-paper-dim mb-1.5">
+              Storage location <span className="text-paper-faint">(optional — applies to all items)</span>
+            </label>
+            {storageLocations.length > 0 ? (
+              <select className={field} value={pasteBin} onChange={(e) => setPasteBin(e.target.value)}>
+                <option value="">No location assigned</option>
+                {storageLocations.map((loc) => (
+                  <option key={loc} value={loc}>{loc}</option>
+                ))}
+              </select>
+            ) : (
+              <div className="rounded-xl border border-line-soft bg-ink-soft px-3.5 py-2.5 text-sm text-paper-faint">
+                No storage locations yet — create one in the Storage map first
+              </div>
+            )}
           </div>
 
           {/* live preview */}
