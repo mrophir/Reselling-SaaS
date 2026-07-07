@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { ThemeToggle } from "../components/ThemeToggle";
 import { hasFeature, type TierKey } from "../../lib/tiers";
+import { createClient } from "@/lib/supabase/client";
 
 /* ---------- types & data ---------- */
 
@@ -2471,7 +2472,7 @@ export default function DashboardPage() {
                     Settings
                   </button>
                   <button
-                    onClick={() => { window.location.href = "/"; }}
+                    onClick={async () => { const sb = createClient(); await sb.auth.signOut(); window.location.href = "/"; }}
                     className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-rust hover:bg-rust/10 transition-colors"
                   >
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 shrink-0">
