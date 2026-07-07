@@ -39,7 +39,7 @@ function LoginForm() {
       </h1>
       <p className="text-sm text-paper-dim mb-7">
         {mode === "signin"
-          ? "Sign in to your Sellganise account."
+          ? "Log in to your Sellganise account."
           : "No card needed. 50 items free forever."}
       </p>
 
@@ -93,7 +93,7 @@ function LoginForm() {
         >
           {isPending
             ? mode === "signin" ? "Signing in…" : "Creating account…"
-            : mode === "signin" ? "Sign in" : "Create account"}
+            : mode === "signin" ? "Log in" : "Create account"}
         </button>
       </form>
 
@@ -121,7 +121,7 @@ function LoginForm() {
               onClick={() => { setMode("signin"); setError(null); setSuccess(null); }}
               className="text-amber hover:text-paper transition-colors font-medium"
             >
-              Sign in
+              Log in
             </button>
           </>
         )}

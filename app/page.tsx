@@ -155,7 +155,7 @@ function Nav() {
 
           <div className="flex items-center gap-2">
             <a href="/login" className="hidden md:block text-sm font-medium px-3 py-2 rounded-lg text-paper-dim hover:text-paper transition-colors shrink-0">
-              Sign in
+              Log in
             </a>
             <a href="/signup" className="btn-shine text-sm font-medium px-3 py-2 rounded-lg bg-amber text-ink hover:bg-paper transition-colors shrink-0">
               Sign up free
@@ -198,7 +198,7 @@ function Nav() {
                 Sign up free — no card needed
               </a>
               <a href="/login" onClick={() => setMenuOpen(false)} className="block w-full text-center py-2.5 rounded-xl border border-line text-paper font-medium text-sm hover:border-paper-faint transition-colors">
-                Sign in
+                Log in
               </a>
             </div>
           </div>
