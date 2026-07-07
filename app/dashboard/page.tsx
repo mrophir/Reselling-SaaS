@@ -2022,9 +2022,7 @@ function NotificationPanel({ saleRecords, items, dismissedAlertIds, salesCleared
 
 /* ---------- analytics extension ---------- */
 
-function AnalyticsExtension({ currentTier }: { currentTier: TierKey }) {
-  const isPro = currentTier === "pro";
-
+function AnalyticsExtension() {
   return (
     <div>
       <div className="mb-6">
@@ -2032,22 +2030,7 @@ function AnalyticsExtension({ currentTier }: { currentTier: TierKey }) {
         <p className="text-paper-dim text-sm mt-1">Instant market price analytics on every Vinted UK listing</p>
       </div>
 
-      {!isPro && (
-        <div className="rounded-2xl border border-amber/30 bg-amber/[0.07] px-6 py-5 mb-6 flex items-center gap-4 flex-wrap">
-          <span className="grid place-items-center w-10 h-10 rounded-xl bg-amber/15 text-amber shrink-0">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          </span>
-          <div className="flex-1 min-w-0">
-            <p className="font-medium text-sm">Pro feature</p>
-            <p className="text-paper-dim text-sm mt-0.5">Upgrade to Pro for £19.99/mo to unlock the analytics extension and everything else.</p>
-          </div>
-          <button className="px-4 py-2.5 rounded-xl bg-amber text-ink font-medium text-sm hover:brightness-110 transition-all whitespace-nowrap shrink-0">
-            Upgrade to Pro
-          </button>
-        </div>
-      )}
-
-      <div className={`rounded-2xl border border-line bg-ink-card overflow-hidden ${!isPro ? "opacity-50 pointer-events-none select-none" : ""}`}>
+      <div className="rounded-2xl border border-line bg-ink-card overflow-hidden">
         <div className="grid md:grid-cols-2">
 
           {/* left — what it does + download */}
@@ -2508,7 +2491,7 @@ export default function DashboardPage() {
           {navKey === "storage"    && <StorageMap items={items} storageLocations={storageLocations} onAddStorage={() => setStorageModalOpen(true)} onRemoveItem={unassignFromStorage} />}
           {navKey === "calculator" && <ProfitCalculator />}
           {navKey === "archives"   && <Archives saleRecords={saleRecords} onDeleteSale={deleteSale} onEditSale={editSale} />}
-          {navKey === "analytics"  && <AnalyticsExtension currentTier={currentTier} />}
+          {navKey === "analytics"  && <AnalyticsExtension />}
         </main>
       </div>
     </div>
