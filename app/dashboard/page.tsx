@@ -2151,6 +2151,9 @@ export default function DashboardPage() {
   const notifRef                          = useRef<HTMLDivElement>(null);
   const [userMenuOpen, setUserMenuOpen]   = useState(false);
   const userMenuRef                       = useRef<HTMLDivElement>(null);
+  const [userEmail, setUserEmail]         = useState("");
+  const [userInitials, setUserInitials]   = useState("?");
+  const [userName, setUserName]           = useState("");
 
   function clearNotifications(alertIds: number[]) {
     setDismissedAlertIds((prev) => [...new Set([...prev, ...alertIds])]);
@@ -2174,6 +2177,18 @@ export default function DashboardPage() {
     document.addEventListener("mousedown", handleOutside);
     return () => document.removeEventListener("mousedown", handleOutside);
   }, [userMenuOpen]);
+
+  useEffect(() => {
+    createClient().auth.getUser().then(({ data: { user } }) => {
+      if (!user) return;
+      const email = user.email ?? "";
+      const name = (user.user_metadata?.full_name as string) ?? email.split("@")[0] ?? "";
+      const initials = name.split(" ").map((w: string) => w[0]).join("").toUpperCase().slice(0, 2) || email[0]?.toUpperCase() || "?";
+      setUserEmail(email);
+      setUserName(name);
+      setUserInitials(initials);
+    });
+  }, []);
 
   // Load persisted state from localStorage on first mount
   useEffect(() => {
@@ -2453,13 +2468,13 @@ export default function DashboardPage() {
               onClick={() => setUserMenuOpen((o) => !o)}
               className="grid place-items-center w-9 h-9 rounded-full bg-ink-card border border-line text-xs font-medium text-paper-dim hover:text-paper hover:border-paper-faint transition-colors"
             >
-              JD
+              {userInitials}
             </button>
             {userMenuOpen && (
               <div className="absolute right-0 top-[calc(100%+8px)] w-52 max-w-[calc(100vw-2rem)] rounded-xl border border-line bg-ink-card shadow-2xl shadow-black/60 overflow-hidden z-50">
                 <div className="px-4 py-3 border-b border-line">
-                  <p className="text-sm font-medium text-paper">Jack</p>
-                  <p className="text-xs text-paper-faint mt-0.5">jacktozer11@gmail.com</p>
+                  {userName && <p className="text-sm font-medium text-paper">{userName}</p>}
+                  <p className="text-xs text-paper-faint mt-0.5">{userEmail}</p>
                 </div>
                 <div className="py-1">
                   <button
