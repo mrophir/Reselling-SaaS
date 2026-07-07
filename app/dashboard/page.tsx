@@ -249,17 +249,40 @@ function ToastContainer({ toasts, onDismiss }: { toasts: Toast[]; onDismiss: (id
 
 const EMPTY_FORM = { name: "", paid: "", cond: "good" as CondKey, bin: "", itemCode: "", notes: "", size: "" };
 
-function AddStockModal({ onClose, onAdd, storageLocations }: {
+function parsePasteList(raw: string): { name: string; paid: number }[] {
+  return raw
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .flatMap((line) => {
+      // Match: "Item name - £12.34" or "Item name - 12.34" (trailing punctuation stripped)
+      const m = line.match(/^(.+?)\s*[-–]\s*£?([\d]+(?:[.,]\d+)?)[.\s]*$/);
+      if (!m) return [];
+      const name = m[1].trim();
+      const paid = parseFloat(m[2].replace(",", "."));
+      if (!name || isNaN(paid)) return [];
+      return [{ name, paid }];
+    });
+}
+
+function AddStockModal({ onClose, onAdd, onAddMany, storageLocations }: {
   onClose: () => void;
   onAdd: (item: Item) => void;
+  onAddMany: (items: Item[]) => void;
   storageLocations: string[];
 }) {
+  const [tab, setTab] = useState<"single" | "paste">("single");
   const [form, setForm] = useState(EMPTY_FORM);
   const [error, setError] = useState("");
+  const [pasteText, setPasteText] = useState("");
   const nameRef = useRef<HTMLInputElement>(null);
+  const pasteRef = useRef<HTMLTextAreaElement>(null);
   useEscClose(onClose);
 
-  useEffect(() => { nameRef.current?.focus(); }, []);
+  useEffect(() => {
+    if (tab === "single") nameRef.current?.focus();
+    else pasteRef.current?.focus();
+  }, [tab]);
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -272,6 +295,25 @@ function AddStockModal({ onClose, onAdd, storageLocations }: {
     onClose();
   }
 
+  function submitPaste() {
+    const parsed = parsePasteList(pasteText);
+    if (parsed.length === 0) { setError("No items found. Use the format: Item name - £12.34"); return; }
+    const now = Date.now();
+    const newItems: Item[] = parsed.map((p, i) => ({
+      id: now + i,
+      code: `IT-${String(now + i).slice(-4)}`,
+      name: p.name,
+      cond: "good" as CondKey,
+      paid: p.paid,
+      stage: "unlisted" as Stage,
+      age: 0,
+      createdAt: now + i,
+    }));
+    onAddMany(newItems);
+    onClose();
+  }
+
+  const parsed = parsePasteList(pasteText);
   const conditions: CondKey[] = ["excellent", "good", "fair", "flawed"];
   const field = "w-full bg-ink border border-line rounded-xl px-3.5 py-2.5 text-sm text-paper outline-none focus:border-amber/60 transition-colors placeholder:text-paper-faint";
 
@@ -284,98 +326,158 @@ function AddStockModal({ onClose, onAdd, storageLocations }: {
         </div>
         <button onClick={onClose} className="grid place-items-center w-8 h-8 rounded-lg text-paper-faint hover:text-paper hover:bg-ink-soft transition-colors"><IconClose /></button>
       </div>
-      <form onSubmit={submit} className="px-6 py-5 space-y-5">
-        <div>
-          <label className="block text-sm text-paper-dim mb-1.5">Item name</label>
-          <input ref={nameRef} className={field} placeholder="e.g. Carhartt beanie" value={form.name}
-            onChange={(e) => { setForm((f) => ({ ...f, name: e.target.value })); setError(""); }} />
-        </div>
-        <div>
-          <label className="block text-sm text-paper-dim mb-1.5">Price paid (£)</label>
-          <div className="relative">
-            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-paper-faint text-sm">£</span>
-            <input className={`${field} pl-7`} type="number" min="0" step="0.01" placeholder="0.00" value={form.paid}
-              onChange={(e) => { setForm((f) => ({ ...f, paid: e.target.value })); setError(""); }} />
+
+      {/* tab toggle */}
+      <div className="flex gap-1 px-6 pt-4">
+        {(["single", "paste"] as const).map((t) => (
+          <button
+            key={t}
+            type="button"
+            onClick={() => { setTab(t); setError(""); }}
+            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${tab === t ? "bg-amber/15 text-amber border border-amber/30" : "text-paper-faint hover:text-paper"}`}
+          >
+            {t === "single" ? "Single item" : "Paste a list"}
+          </button>
+        ))}
+      </div>
+
+      {tab === "single" ? (
+        <form onSubmit={submit} className="px-6 py-5 space-y-5">
+          <div>
+            <label className="block text-sm text-paper-dim mb-1.5">Item name</label>
+            <input ref={nameRef} className={field} placeholder="e.g. Carhartt beanie" value={form.name}
+              onChange={(e) => { setForm((f) => ({ ...f, name: e.target.value })); setError(""); }} />
           </div>
-        </div>
-        <div>
-          <label className="block text-sm text-paper-dim mb-2">Condition</label>
-          <div className="grid grid-cols-4 gap-2">
-            {conditions.map((c) => {
-              const active = form.cond === c;
-              const meta = COND[c];
-              return (
-                <button key={c} type="button" onClick={() => setForm((f) => ({ ...f, cond: c }))}
-                  className="flex flex-col items-center gap-1.5 py-3 rounded-xl border transition-all text-xs font-medium"
-                  style={{ borderColor: active ? meta.dot + "80" : "var(--color-line)", background: active ? meta.bg : "transparent", color: active ? meta.fg : "var(--color-paper-faint)" }}>
-                  <span className="w-2.5 h-2.5 rounded-full" style={{ background: meta.dot }} />
-                  {meta.label}
-                </button>
-              );
-            })}
+          <div>
+            <label className="block text-sm text-paper-dim mb-1.5">Price paid (£)</label>
+            <div className="relative">
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-paper-faint text-sm">£</span>
+              <input className={`${field} pl-7`} type="number" min="0" step="0.01" placeholder="0.00" value={form.paid}
+                onChange={(e) => { setForm((f) => ({ ...f, paid: e.target.value })); setError(""); }} />
+            </div>
           </div>
-        </div>
-        <div>
-          <label className="block text-sm text-paper-dim mb-1.5">Size <span className="text-paper-faint">(optional)</span></label>
-          <select className={field} value={form.size} onChange={(e) => setForm((f) => ({ ...f, size: e.target.value }))}>
-            <option value="">No size</option>
-            {SIZE_GROUPS.map((group) => (
-              <optgroup key={group.label} label={group.label}>
-                {group.sizes.map((s) => <option key={s} value={s}>{s}</option>)}
-              </optgroup>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm text-paper-dim mb-1.5">
-            Storage location <span className="text-paper-faint">(optional)</span>
-          </label>
-          {storageLocations.length > 0 ? (
-            <select
-              className={field}
-              value={form.bin}
-              onChange={(e) => setForm((f) => ({ ...f, bin: e.target.value }))}
-            >
-              <option value="">No location assigned</option>
-              {storageLocations.map((loc) => (
-                <option key={loc} value={loc}>{loc}</option>
+          <div>
+            <label className="block text-sm text-paper-dim mb-2">Condition</label>
+            <div className="grid grid-cols-4 gap-2">
+              {conditions.map((c) => {
+                const active = form.cond === c;
+                const meta = COND[c];
+                return (
+                  <button key={c} type="button" onClick={() => setForm((f) => ({ ...f, cond: c }))}
+                    className="flex flex-col items-center gap-1.5 py-3 rounded-xl border transition-all text-xs font-medium"
+                    style={{ borderColor: active ? meta.dot + "80" : "var(--color-line)", background: active ? meta.bg : "transparent", color: active ? meta.fg : "var(--color-paper-faint)" }}>
+                    <span className="w-2.5 h-2.5 rounded-full" style={{ background: meta.dot }} />
+                    {meta.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm text-paper-dim mb-1.5">Size <span className="text-paper-faint">(optional)</span></label>
+            <select className={field} value={form.size} onChange={(e) => setForm((f) => ({ ...f, size: e.target.value }))}>
+              <option value="">No size</option>
+              {SIZE_GROUPS.map((group) => (
+                <optgroup key={group.label} label={group.label}>
+                  {group.sizes.map((s) => <option key={s} value={s}>{s}</option>)}
+                </optgroup>
               ))}
             </select>
-          ) : (
-            <div className="rounded-xl border border-line-soft bg-ink-soft px-3.5 py-2.5 text-sm text-paper-faint">
-              No storage locations yet — create one in the Storage map first
+          </div>
+          <div>
+            <label className="block text-sm text-paper-dim mb-1.5">
+              Storage location <span className="text-paper-faint">(optional)</span>
+            </label>
+            {storageLocations.length > 0 ? (
+              <select className={field} value={form.bin} onChange={(e) => setForm((f) => ({ ...f, bin: e.target.value }))}>
+                <option value="">No location assigned</option>
+                {storageLocations.map((loc) => (
+                  <option key={loc} value={loc}>{loc}</option>
+                ))}
+              </select>
+            ) : (
+              <div className="rounded-xl border border-line-soft bg-ink-soft px-3.5 py-2.5 text-sm text-paper-faint">
+                No storage locations yet — create one in the Storage map first
+              </div>
+            )}
+          </div>
+          <div>
+            <label className="block text-sm text-paper-dim mb-1.5">
+              Item code <span className="text-paper-faint">(optional)</span>
+            </label>
+            <input
+              className={field}
+              placeholder="e.g. SKU-001, TAG-42 — auto-generated if left blank"
+              value={form.itemCode}
+              onChange={(e) => setForm((f) => ({ ...f, itemCode: e.target.value }))}
+            />
+          </div>
+          <div>
+            <label className="block text-sm text-paper-dim mb-1.5">
+              Notes <span className="text-paper-faint">(optional)</span>
+            </label>
+            <textarea
+              className={`${field} resize-none`}
+              rows={3}
+              placeholder="e.g. small mark on left sleeve, missing button, bought as bundle…"
+              value={form.notes}
+              onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
+            />
+          </div>
+          {error && <p className="text-sm text-rust">{error}</p>}
+          <div className="flex gap-3 pt-1">
+            <button type="button" onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-line text-sm text-paper-dim hover:text-paper hover:border-paper-faint transition-colors">Cancel</button>
+            <button type="submit" className="flex-1 py-2.5 rounded-xl bg-amber text-ink text-sm font-medium hover:bg-paper transition-colors">Add to stock</button>
+          </div>
+        </form>
+      ) : (
+        <div className="px-6 py-5 space-y-4">
+          <div>
+            <label className="block text-sm text-paper-dim mb-1.5">Paste your list</label>
+            <p className="text-xs text-paper-faint mb-2">One item per line, in the format: <span className="font-mono text-amber">Item name - £12.34</span></p>
+            <textarea
+              ref={pasteRef}
+              className={`${field} resize-none font-mono text-xs leading-relaxed`}
+              rows={8}
+              placeholder={"Air rift Navy/ white toe - £13.49\nAdidas campus size 5 - £9.29\nMerrell trainers - £12.44"}
+              value={pasteText}
+              onChange={(e) => { setPasteText(e.target.value); setError(""); }}
+            />
+          </div>
+
+          {/* live preview */}
+          {parsed.length > 0 && (
+            <div className="rounded-xl border border-line bg-ink-soft overflow-hidden">
+              <div className="px-3.5 py-2 border-b border-line flex items-center justify-between">
+                <span className="text-xs font-mono uppercase tracking-wider text-paper-faint">Preview</span>
+                <span className="text-xs text-moss font-medium">{parsed.length} item{parsed.length === 1 ? "" : "s"} detected</span>
+              </div>
+              <ul className="divide-y divide-line max-h-48 overflow-y-auto">
+                {parsed.map((p, i) => (
+                  <li key={i} className="flex items-center justify-between px-3.5 py-2 text-sm">
+                    <span className="text-paper truncate pr-4">{p.name}</span>
+                    <span className="text-amber font-mono shrink-0">£{p.paid.toFixed(2)}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
+
+          {error && <p className="text-sm text-rust">{error}</p>}
+
+          <div className="flex gap-3 pt-1">
+            <button type="button" onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-line text-sm text-paper-dim hover:text-paper hover:border-paper-faint transition-colors">Cancel</button>
+            <button
+              type="button"
+              onClick={submitPaste}
+              disabled={parsed.length === 0}
+              className="flex-1 py-2.5 rounded-xl bg-amber text-ink text-sm font-medium hover:bg-paper transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              {parsed.length > 0 ? `Add ${parsed.length} item${parsed.length === 1 ? "" : "s"}` : "Add to stock"}
+            </button>
+          </div>
         </div>
-        <div>
-          <label className="block text-sm text-paper-dim mb-1.5">
-            Item code <span className="text-paper-faint">(optional)</span>
-          </label>
-          <input
-            className={field}
-            placeholder="e.g. SKU-001, TAG-42 — auto-generated if left blank"
-            value={form.itemCode}
-            onChange={(e) => setForm((f) => ({ ...f, itemCode: e.target.value }))}
-          />
-        </div>
-        <div>
-          <label className="block text-sm text-paper-dim mb-1.5">
-            Notes <span className="text-paper-faint">(optional)</span>
-          </label>
-          <textarea
-            className={`${field} resize-none`}
-            rows={3}
-            placeholder="e.g. small mark on left sleeve, missing button, bought as bundle…"
-            value={form.notes}
-            onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
-          />
-        </div>
-        {error && <p className="text-sm text-rust">{error}</p>}
-        <div className="flex gap-3 pt-1">
-          <button type="button" onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-line text-sm text-paper-dim hover:text-paper hover:border-paper-faint transition-colors">Cancel</button>
-          <button type="submit" className="flex-1 py-2.5 rounded-xl bg-amber text-ink text-sm font-medium hover:bg-paper transition-colors">Add to stock</button>
-        </div>
-      </form>
+      )}
     </ModalShell>
   );
 }
@@ -2104,6 +2206,11 @@ export default function DashboardPage() {
     addToast(`${item.name} added to stock`);
   }
 
+  function addManyItems(newItems: Item[]) {
+    setItems((prev) => [...newItems, ...prev]);
+    addToast(`${newItems.length} item${newItems.length === 1 ? "" : "s"} added to stock`, "info");
+  }
+
   function addStorageLocation(name: string) {
     setStorageLocations((prev) => prev.includes(name) ? prev : [...prev, name]);
     addToast(`Storage location "${name}" created`, "info");
@@ -2207,7 +2314,7 @@ export default function DashboardPage() {
   return (
     <div className="flex min-h-screen bg-ink">
       <ToastContainer toasts={toasts} onDismiss={dismissToast} />
-      {addModalOpen && <AddStockModal onClose={() => setAddModalOpen(false)} onAdd={addItem} storageLocations={storageLocations} />}
+      {addModalOpen && <AddStockModal onClose={() => setAddModalOpen(false)} onAdd={addItem} onAddMany={addManyItems} storageLocations={storageLocations} />}
       {storageModalOpen && <AddStorageModal onClose={() => setStorageModalOpen(false)} onAdd={addStorageLocation} />}
       {editTarget && (
         <EditStockModal
