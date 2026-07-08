@@ -211,80 +211,194 @@ function Nav() {
 /* ---------- hero ---------- */
 
 function Hero() {
-  const L2_PHRASES = [
-    "Stock Management Just Got Easier",
-    "Making Resellers More Profitable",
-    "Manage Your Stock, Make More Profit",
-  ];
-
-  const { displayed: t2, started: t2started } = useCyclingTypewriter(
-    L2_PHRASES,
-    480,
-    80,
-    42,
-    3000,
-    600
-  );
-
   return (
-    <section id="top" className="grain relative overflow-hidden pt-28 pb-16 md:pt-40 md:pb-28 px-6">
-      <div className="orb absolute top-10 left-1/2 -translate-x-1/2 w-[800px] h-[500px] rounded-full bg-amber/[0.055] blur-3xl pointer-events-none" />
+    <section id="top" className="grain relative overflow-hidden pt-28 pb-0 md:pt-36 md:pb-0 px-6">
+      {/* background glows */}
+      <div className="orb absolute -top-20 left-1/2 -translate-x-1/2 w-[1100px] h-[700px] rounded-full bg-amber/[0.08] blur-3xl pointer-events-none" />
+      <div className="absolute top-60 -left-40 w-[500px] h-[500px] rounded-full bg-amber/[0.025] blur-3xl pointer-events-none" />
+      <div className="absolute top-40 -right-40 w-[400px] h-[400px] rounded-full bg-amber/[0.02] blur-3xl pointer-events-none" />
 
-      <div className="relative mx-auto max-w-4xl text-center">
-        {/* social proof pill */}
-        <div className="rise inline-flex items-center gap-2 sm:gap-3 rounded-full border border-line bg-ink-card/80 px-3 sm:px-4 py-2 mb-8 md:mb-10 text-xs">
-          <span className="flex items-center gap-1.5 text-paper-dim">
-            <span className="w-1.5 h-1.5 rounded-full bg-moss shrink-0" style={{ animation: "blink 1.6s infinite" }} />
-            <span className="hidden sm:inline">Trusted by resellers across the UK</span>
-            <span className="sm:hidden">Trusted by UK resellers</span>
-          </span>
-          <span className="w-px h-3 bg-line shrink-0" />
-          <span className="text-amber font-mono font-medium">10,000+ items tracked</span>
+      {/* ── text block ── */}
+      <div className="relative mx-auto max-w-4xl text-center pb-14 md:pb-20">
+
+        {/* star badge */}
+        <div className="rise inline-flex items-center gap-2.5 rounded-full border border-amber/25 bg-amber/[0.08] px-4 py-2 mb-8 md:mb-10">
+          <div className="flex gap-px">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <svg key={i} viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-amber">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+              </svg>
+            ))}
+          </div>
+          <span className="text-xs text-paper-dim">Trusted by resellers across the UK</span>
+          <span className="w-px h-3 bg-amber/25 shrink-0" />
+          <span className="text-xs text-amber font-mono font-medium">10,000+ items tracked</span>
         </div>
 
-        {/* heading — typewriter */}
-        <h1 className="font-display font-medium leading-[1.05] md:leading-[0.94] tracking-tight text-[clamp(2rem,7.5vw,5.8rem)] min-h-[2.2em] md:min-h-[1.9em]">
-          <span className="text-amber">
-            {t2}
-            <span className="cursor-blink inline-block w-[3px] h-[0.82em] bg-amber rounded-sm align-middle ml-1 translate-y-[-0.05em]" />
-          </span>
+        {/* headline — static, confident */}
+        <h1 className="rise font-display font-medium leading-[1.04] tracking-tight text-[clamp(2.8rem,7.5vw,5.8rem)]" style={{ animationDelay: "0.06s" }}>
+          Know what you own.
+          <br />
+          <span className="text-amber">Know what you&apos;re making.</span>
         </h1>
 
         {/* subtext */}
-        <p className="rise mt-6 md:mt-8 text-base md:text-lg text-paper-dim max-w-xl mx-auto leading-relaxed" style={{ animationDelay: "0.12s" }}>
-          A live view of everything you own, exactly where it&apos;s stored, and what you&apos;re actually making — from source to sold.
+        <p className="rise mt-6 md:mt-8 text-base md:text-xl text-paper-dim max-w-2xl mx-auto leading-relaxed" style={{ animationDelay: "0.12s" }}>
+          Sellganise tracks every item from source to sold — what&apos;s listed, where it&apos;s stored, and your real profit. No spreadsheet required.
         </p>
 
         {/* CTAs */}
-        <div className="rise mt-8 md:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3" style={{ animationDelay: "0.17s" }}>
-          <a href="/signup" className="btn-shine w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-amber text-ink font-medium text-[15px] hover:bg-paper transition-colors">
-            Sign up free
+        <div className="rise mt-8 md:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3" style={{ animationDelay: "0.16s" }}>
+          <a href="/signup" className="btn-shine w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-amber text-ink font-semibold text-base hover:bg-paper transition-colors">
+            Start for free
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
           </a>
-          <a href="#vs" className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl border border-line text-paper hover:border-paper-faint hover:-translate-y-0.5 transition-all duration-200 text-[15px]">
-            Why not a spreadsheet?
+          <a href="#features" className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl border border-line text-paper hover:border-paper-faint hover:-translate-y-0.5 transition-all duration-200 text-base">
+            See features
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><polyline points="6 9 12 15 18 9"/></svg>
           </a>
         </div>
 
-        {/* built for */}
-        <p className="rise mt-5 text-sm" style={{ animationDelay: "0.22s" }}>
-          <span className="text-paper-faint">Built for</span>
-          <span className="text-paper-dim"> · Weekend sourcers · Full-time flippers · Scaling operators</span>
+        {/* trust micro-copy */}
+        <p className="rise mt-4 text-xs text-paper-faint" style={{ animationDelay: "0.19s" }}>
+          No credit card required &nbsp;·&nbsp; Free plan available &nbsp;·&nbsp; Cancel anytime
         </p>
 
-        {/* stats row */}
-        <div className="rise mt-10 md:mt-16 inline-grid grid-cols-3 gap-px bg-line rounded-2xl overflow-hidden border border-line shadow-xl shadow-black/30" style={{ animationDelay: "0.26s" }}>
+        {/* platform pills */}
+        <div className="rise mt-8 flex flex-wrap items-center justify-center gap-2" style={{ animationDelay: "0.22s" }}>
+          <span className="text-xs text-paper-faint mr-1">Works with</span>
+          {["Vinted", "eBay", "Depop", "Facebook", "Shpock"].map((p) => (
+            <span key={p} className="text-xs font-medium px-3 py-1.5 rounded-full border border-line bg-ink-card/80 text-paper-dim hover:border-amber/30 hover:text-paper transition-colors">
+              {p}
+            </span>
+          ))}
+        </div>
+
+        {/* stats */}
+        <div className="rise mt-10 md:mt-14 inline-grid grid-cols-3 gap-px bg-line rounded-2xl overflow-hidden border border-line shadow-xl shadow-black/30" style={{ animationDelay: "0.26s" }}>
           {[
-            { v: "£0",    l: "to get started" },
-            { v: "5 min", l: "to first insight" },
+            { v: "£0",    l: "to get started"    },
+            { v: "5 min", l: "to first insight"  },
             { v: "100%",  l: "profit visibility" },
           ].map((s) => (
-            <div key={s.l} className="bg-ink-card px-4 md:px-8 py-4 md:py-5 text-center">
-              <div className="font-mono text-lg md:text-2xl font-medium text-amber">{s.v}</div>
+            <div key={s.l} className="bg-ink-card px-5 md:px-10 py-4 md:py-5 text-center">
+              <div className="font-mono text-xl md:text-2xl font-medium text-amber">{s.v}</div>
               <div className="text-[10px] md:text-xs text-paper-faint mt-1">{s.l}</div>
             </div>
           ))}
         </div>
+      </div>
+
+      {/* ── product preview — perspective tilt fading into next section ── */}
+      <div className="rise relative max-w-6xl mx-auto" style={{ animationDelay: "0.32s" }}>
+        <div style={{ perspective: "1600px" }}>
+          <div
+            className="rounded-t-2xl border border-b-0 border-line/40 overflow-hidden shadow-[0_-12px_80px_rgba(0,0,0,0.7)]"
+            style={{ transform: "rotateX(7deg) scale(0.97)", transformOrigin: "center bottom" }}
+          >
+            {/* Mobile: phone */}
+            <div className="md:hidden bg-ink py-6 px-8 flex justify-center">
+              <PhoneMockup />
+            </div>
+
+            {/* Desktop: laptop screen content only (no outer frame) */}
+            <div className="hidden md:block" style={{ background: "#0e0d0b", fontFamily: "Inter, system-ui, sans-serif" }}>
+              {/* mini top bar */}
+              <div style={{ height: 44, borderBottom: "1px solid #2a2722", display: "flex", alignItems: "center", padding: "0 20px", gap: 8, background: "#0a0908", flexShrink: 0 }}>
+                <div style={{ display: "flex", gap: 6, marginRight: 12 }}>
+                  {["#ff5f57","#ffbd2e","#28ca41"].map((c) => <div key={c} style={{ width: 10, height: 10, borderRadius: "50%", background: c, opacity: 0.7 }} />)}
+                </div>
+                <div style={{ flex: 1, background: "#161410", border: "1px solid #211e1a", borderRadius: 6, height: 24, display: "flex", alignItems: "center", padding: "0 10px", gap: 6, maxWidth: 340, margin: "0 auto" }}>
+                  <span style={{ fontSize: 10, color: "#6f6a5e" }}>🔒</span>
+                  <span style={{ fontSize: 10, color: "#6f6a5e" }}>app.sellganise.com/dashboard</span>
+                </div>
+              </div>
+              {/* dashboard */}
+              <div style={{ display: "flex", height: 520 }}>
+                {/* sidebar */}
+                <div style={{ width: 192, background: "#0e0d0b", borderRight: "1px solid #2a2722", display: "flex", flexDirection: "column", flexShrink: 0, padding: "16px 0" }}>
+                  <div style={{ padding: "0 16px 20px" }}>
+                    <span style={{ fontSize: 15, fontWeight: 600, color: "#f5f1e8", letterSpacing: "-0.02em" }}>Sellganise</span>
+                  </div>
+                  {[
+                    { l: "Overview", active: true },
+                    { l: "Stock", active: false },
+                    { l: "Storage map", active: false },
+                    { l: "Calculator", active: false },
+                    { l: "Monthly archives", active: false },
+                  ].map((n) => (
+                    <div key={n.l} style={{ padding: "8px 12px", margin: "1px 8px", borderRadius: 8, background: n.active ? "#1a1815" : "transparent", display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{ width: 5, height: 5, borderRadius: "50%", background: n.active ? "#f0a020" : "#2a2722" }} />
+                      <span style={{ fontSize: 12, color: n.active ? "#f5f1e8" : "#6f6a5e", fontWeight: n.active ? 500 : 400 }}>{n.l}</span>
+                    </div>
+                  ))}
+                  <div style={{ flex: 1 }} />
+                  <div style={{ margin: "0 8px", padding: "10px 12px", borderRadius: 8, border: "1px solid #2a2722", background: "#161410" }}>
+                    <div style={{ fontSize: 10, color: "#6f6a5e", fontFamily: "monospace", marginBottom: 4 }}>RESELLER PLAN</div>
+                    <div style={{ height: 4, borderRadius: 2, background: "#2a2722", overflow: "hidden" }}>
+                      <div style={{ width: "38%", height: "100%", background: "#f0a020", borderRadius: 2 }} />
+                    </div>
+                    <div style={{ fontSize: 10, color: "#b8b1a3", marginTop: 4 }}>190 / 500 items</div>
+                  </div>
+                </div>
+                {/* main */}
+                <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                  {/* header */}
+                  <div style={{ height: 52, borderBottom: "1px solid #2a2722", display: "flex", alignItems: "center", padding: "0 20px", gap: 12, flexShrink: 0 }}>
+                    <div style={{ flex: 1, background: "#1a1815", border: "1px solid #211e1a", borderRadius: 8, height: 28, display: "flex", alignItems: "center", padding: "0 10px", gap: 6, maxWidth: 300 }}>
+                      <span style={{ fontSize: 11, color: "#6f6a5e" }}>🔍</span>
+                      <span style={{ fontSize: 11, color: "#6f6a5e" }}>Find an item or bin…</span>
+                    </div>
+                    <div style={{ marginLeft: "auto", display: "flex", gap: 8, alignItems: "center" }}>
+                      <div style={{ padding: "5px 12px", background: "#f0a020", borderRadius: 7, fontSize: 11, fontWeight: 600, color: "#0e0d0b", cursor: "pointer" }}>+ Add stock</div>
+                      <div style={{ width: 30, height: 30, borderRadius: "50%", background: "#161410", border: "1px solid #2a2722", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <span style={{ fontSize: 11, color: "#b8b1a3", fontWeight: 500 }}>JT</span>
+                      </div>
+                    </div>
+                  </div>
+                  {/* content */}
+                  <div style={{ flex: 1, padding: "18px 20px", overflow: "hidden", display: "flex", flexDirection: "column", gap: 10 }}>
+                    <div style={{ fontSize: 18, fontWeight: 600, color: "#f5f1e8", letterSpacing: "-0.02em" }}>Overview</div>
+                    {/* dead money banner */}
+                    <div style={{ background: "rgba(240,160,32,0.07)", border: "1px solid rgba(240,160,32,0.3)", borderRadius: 12, padding: "10px 14px", display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+                      <div style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(240,160,32,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14 }}>⚠️</div>
+                      <div>
+                        <div style={{ fontSize: 16, color: "#f0a020", fontFamily: "monospace", fontWeight: 600, lineHeight: 1 }}>£243.00 not listed</div>
+                        <div style={{ fontSize: 11, color: "#b8b1a3", marginTop: 3 }}>2 items bought but not earning — clear the pile</div>
+                      </div>
+                    </div>
+                    {/* stat cards */}
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 8, flexShrink: 0 }}>
+                      {[
+                        { l: "Unlisted", v: "2", c: "#f0a020" },
+                        { l: "Listed", v: "8", c: "#f5f1e8" },
+                        { l: "Sold · Jul", v: "3", c: "#f5f1e8" },
+                        { l: "Profit · Jul", v: "£127.50", c: "#7fae4a" },
+                      ].map((s) => (
+                        <div key={s.l} style={{ background: "#161410", border: "1px solid #2a2722", borderRadius: 10, padding: "8px 10px" }}>
+                          <div style={{ fontSize: 10, color: "#6f6a5e", marginBottom: 3 }}>{s.l}</div>
+                          <div style={{ fontSize: 15, color: s.c, fontFamily: "monospace", fontWeight: 600 }}>{s.v}</div>
+                        </div>
+                      ))}
+                    </div>
+                    {/* item list */}
+                    <div style={{ background: "#161410", border: "1px solid #2a2722", borderRadius: 12, overflow: "hidden", flex: 1 }}>
+                      <div style={{ display: "flex", gap: 2, padding: "6px 8px", borderBottom: "1px solid #211e1a" }}>
+                        {[["unlisted · 2", false], ["listed · 8", true], ["sold · 3", false]].map(([l, a]) => (
+                          <div key={String(l)} style={{ padding: "5px 12px", borderRadius: 7, fontSize: 11, fontWeight: a ? 500 : 400, color: a ? "#f5f1e8" : "#6f6a5e", background: a ? "#1a1815" : "transparent" }}>{String(l)}</div>
+                        ))}
+                      </div>
+                      {MOCK_ITEMS.map((it) => <MockItemRow key={it.name} item={it} />)}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* gradient fade to next section */}
+        <div className="absolute inset-x-0 bottom-0 h-52 bg-gradient-to-t from-ink via-ink/80 to-transparent pointer-events-none" />
       </div>
     </section>
   );
