@@ -1109,6 +1109,135 @@ function Features() {
   );
 }
 
+/* ---------- export section ---------- */
+
+const STOCK_COLS  = ["Item Code", "Name", "Condition", "Size", "Paid (£)", "Status", "Platform", "Bin", "Notes"];
+const SOLD_COLS   = ["Item", "Platform", "Paid (£)", "Sold For (£)", "Profit (£)", "Margin (%)", "Month"];
+const STOCK_ROWS  = [
+  ["SG-001", "North Face Puffer",  "Excellent", "L",  "22.00", "Listed",   "Vinted",  "A1", ""],
+  ["SG-002", "Levi 501 Jeans",     "Good",      "32", "8.00",  "Listed",   "eBay",    "B3", "Slight fade"],
+  ["SG-003", "Nike Air Max 90",    "Fair",      "9",  "45.00", "Unlisted", "",        "C1", ""],
+  ["SG-004", "Burberry Scarf",     "Excellent", "—",  "55.00", "Listed",   "eBay",    "D2", ""],
+];
+const SOLD_ROWS   = [
+  ["Nike Air Max 90",  "eBay",   "45.00", "89.00",  "44.00",  "49%", "Jun 2026"],
+  ["Levi 501 Jeans",  "Vinted", "8.00",  "24.00",  "16.00",  "67%", "Jun 2026"],
+  ["Carhartt Beanie", "Depop",  "5.00",  "18.00",  "13.00",  "72%", "Jul 2026"],
+];
+
+function SpreadsheetPreview({ cols, rows, accentCol }: { cols: string[]; rows: string[][]; accentCol: number }) {
+  return (
+    <div className="overflow-x-auto rounded-xl border border-line shadow-lg shadow-black/30">
+      <table className="w-full text-xs border-collapse" style={{ fontFamily: "monospace" }}>
+        <thead>
+          <tr className="bg-ink-soft/60 border-b border-line">
+            {cols.map((c, i) => (
+              <th key={c} className={`px-3 py-2.5 text-left font-semibold whitespace-nowrap ${i === accentCol ? "text-amber" : "text-paper-dim"}`}>
+                {c}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row, ri) => (
+            <tr key={ri} className="border-b border-line/50 hover:bg-ink-soft/30 transition-colors">
+              {row.map((cell, ci) => (
+                <td key={ci} className={`px-3 py-2 whitespace-nowrap ${ci === accentCol ? "text-amber font-medium" : "text-paper-faint"} ${cell === "Unlisted" ? "text-amber" : ""} ${cell === "Listed" ? "text-moss" : ""}`}>
+                  {cell || <span className="text-paper-faint/30">—</span>}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function ExportSection() {
+  return (
+    <section className="px-6 py-16 md:py-24 border-t border-line">
+      <div className="mx-auto max-w-6xl">
+        <Reveal>
+          <div className="text-center mb-12">
+            <SectionEyebrow center>Export</SectionEyebrow>
+            <h2 className="font-display font-medium text-[clamp(1.9rem,4vw,3rem)] leading-[1.05] tracking-tight mb-4">
+              Your data, always yours.
+            </h2>
+            <p className="text-paper-dim max-w-lg mx-auto text-lg">
+              One click exports everything to CSV — open in Excel, Google Sheets, or Numbers. No lock-in, ever.
+            </p>
+          </div>
+        </Reveal>
+
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* Stock export card */}
+          <Reveal>
+            <div className="rounded-2xl border border-line bg-ink-card overflow-hidden h-full flex flex-col">
+              <div className="p-6 border-b border-line flex items-start gap-4">
+                <div className="w-10 h-10 rounded-xl bg-amber/10 border border-amber/20 flex items-center justify-center shrink-0">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-amber">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="font-display text-lg font-medium mb-1">Stock list export</h3>
+                  <p className="text-paper-dim text-sm leading-relaxed">Every item you own — condition, storage bin, platform, and what you paid — in one clean file.</p>
+                </div>
+              </div>
+              <div className="p-5 flex-1">
+                <SpreadsheetPreview cols={STOCK_COLS} rows={STOCK_ROWS} accentCol={4} />
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {["Item code", "Name & condition", "Size", "Paid", "Stage", "Platform", "Storage bin", "Notes"].map((t) => (
+                    <span key={t} className="text-[11px] px-2.5 py-1 rounded-full bg-ink-soft border border-line text-paper-faint">{t}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </Reveal>
+
+          {/* Monthly sold export card */}
+          <Reveal>
+            <div className="rounded-2xl border border-line bg-ink-card overflow-hidden h-full flex flex-col">
+              <div className="p-6 border-b border-line flex items-start gap-4">
+                <div className="w-10 h-10 rounded-xl bg-moss/10 border border-moss/20 flex items-center justify-center shrink-0">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-moss">
+                    <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                    <polyline points="8 14 10 16 16 12"/>
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="font-display text-lg font-medium mb-1">Monthly sold export</h3>
+                  <p className="text-paper-dim text-sm leading-relaxed">Every sale for a month — item, platform, profit, and margin — plus a summary row of totals at the bottom.</p>
+                </div>
+              </div>
+              <div className="p-5 flex-1">
+                <SpreadsheetPreview cols={SOLD_COLS} rows={SOLD_ROWS} accentCol={4} />
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {["Item name", "Platform", "Paid", "Sold for", "Profit", "Margin %", "Extra costs", "Totals row"].map((t) => (
+                    <span key={t} className="text-[11px] px-2.5 py-1 rounded-full bg-ink-soft border border-line text-paper-faint">{t}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+
+        {/* bottom trust line */}
+        <Reveal>
+          <p className="text-center text-sm text-paper-faint mt-8">
+            Works with&nbsp;
+            <span className="text-paper-dim">Excel · Google Sheets · Numbers · LibreOffice</span>
+            &nbsp;·&nbsp;
+            <span className="text-paper-dim">Export any time, no upgrade required</span>
+          </p>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
 /* ---------- analytics extension ---------- */
 
 function AnalyticsSection() {
@@ -1719,6 +1848,7 @@ export default function Page() {
       <Problem />
       <DashboardMockup />
       <Features />
+      <ExportSection />
       <AnalyticsSection />
       <Who />
       <Versus />
