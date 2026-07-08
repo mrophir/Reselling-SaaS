@@ -1474,6 +1474,14 @@ function Stock({ items, onSell, onToggleListed, onEdit, onRemove, onUnsell, quer
                 ? `${selectedIds.size} of ${shown.length} selected`
                 : `${shown.length} item${shown.length !== 1 ? "s" : ""}`}
             </span>
+            {!selectMode && (
+              <>
+                <span className="text-xs text-paper-faint/40">·</span>
+                <span className="text-xs text-paper-faint">
+                  Total cost <span className="font-mono text-amber">{gbp(shown.reduce((s, i) => s + i.paid, 0))}</span>
+                </span>
+              </>
+            )}
 
             <div className="ml-auto flex items-center gap-2">
               {/* List all unlisted */}
