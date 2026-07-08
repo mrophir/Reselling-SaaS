@@ -957,7 +957,7 @@ function AnalyticsSection() {
   return (
     <section id="analytics" className="px-6 py-16 md:py-28 border-t border-line overflow-hidden">
       <div className="mx-auto max-w-6xl">
-        <div className="grid md:grid-cols-[1fr_1.15fr] gap-14 md:gap-20 items-center">
+        <div className="grid md:grid-cols-2 gap-14 md:gap-20 items-center">
 
           {/* ── left: description ── */}
           <div>
@@ -998,42 +998,20 @@ function AnalyticsSection() {
             </div>
           </div>
 
-          {/* ── right: screenshots ── */}
+          {/* ── right: screenshot ── */}
           <Reveal>
-            <div className="relative">
-              {/* unified frame */}
-              <div className="rounded-2xl border border-line bg-ink-soft/30 p-3 shadow-2xl shadow-black/70">
-                <div className="flex gap-2.5 items-start">
+            <div className="relative flex justify-center">
+              {/* ambient glow behind card */}
+              <div className="absolute inset-0 bg-amber/[0.07] blur-3xl pointer-events-none rounded-full scale-75" />
 
-                  {/* Vinted listing — wider */}
-                  <div className="flex-[1.65] rounded-xl overflow-hidden border border-line/50 shadow-lg shadow-black/50 min-w-0">
-                    <img
-                      src="/analytics-vinted.png"
-                      alt="Vinted listing page with Sellganise Analytics extension active"
-                      className="w-full block object-cover"
-                    />
-                  </div>
-
-                  {/* Analytics card — narrower, taller */}
-                  <div className="flex-1 rounded-xl overflow-hidden border border-amber/25 shadow-xl shadow-black/60 ring-1 ring-amber/10 min-w-0">
-                    <img
-                      src="/analytics-card.png"
-                      alt="Sellganise Analytics card showing estimated resale value, pricing suggestions and sell speed"
-                      className="w-full block"
-                    />
-                  </div>
-
-                </div>
-
-                {/* caption bar */}
-                <div className="mt-2.5 px-1 flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-moss shrink-0" style={{ animation: "blink 1.6s infinite" }} />
-                  <span className="text-[11px] text-paper-faint font-mono">Live on every Vinted UK listing</span>
-                </div>
+              {/* card screenshot */}
+              <div className="relative w-full max-w-[340px] rounded-2xl overflow-hidden border border-line/60 shadow-2xl shadow-black/70 ring-1 ring-white/5">
+                <img
+                  src="/analytics-card.png"
+                  alt="Sellganise Analytics extension card — estimated resale value, pricing suggestions and sell speed on a Vinted listing"
+                  className="w-full block"
+                />
               </div>
-
-              {/* ambient glow */}
-              <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-2/3 h-16 bg-amber/[0.08] blur-3xl pointer-events-none" />
             </div>
           </Reveal>
 
