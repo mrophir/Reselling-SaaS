@@ -1567,7 +1567,7 @@ const REVIEWS = [
     platform: "Depop & Vinted",
     items: "~400 items",
     stars: 5,
-    text: "Tax time used to be a nightmare. Last January I exported my Sellganise monthly archives and handed them straight to my accountant. Two-hour job, not two days. Worth £15 a month easily.",
+    text: "Tax time used to be a nightmare. Last January I exported my Sellganise monthly archives and handed them straight to my accountant. Two-hour job, not two days. Worth £19.99 a month easily.",
   },
 ];
 
