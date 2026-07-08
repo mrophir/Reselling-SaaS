@@ -793,7 +793,7 @@ function DashboardMockup() {
 /* ---------- logo strip ---------- */
 
 function Strip() {
-  const platforms = ["Vinted", "eBay", "Depop", "Facebook Marketplace", "Shpock", "Gumtree"];
+  const platforms = ["Vinted", "eBay", "Depop", "Facebook Marketplace", "Gumtree"];
   const items = [...platforms, ...platforms];
   return (
     <section className="border-y border-line bg-ink-soft/40 overflow-hidden">
