@@ -210,195 +210,241 @@ function Nav() {
 
 /* ---------- hero ---------- */
 
+const STORAGE_BINS = [
+  { id: "A1", items: 4, value: 112, unlisted: 1, names: ["North Face Puffer", "Carhartt Beanie", "Ralph Lauren Shirt", "Champion Hoodie"] },
+  { id: "A2", items: 3, value: 67,  unlisted: 0, names: ["Levi 501 Jeans", "Carhartt Work Shirt", "Dickies Trousers"] },
+  { id: "A3", items: 5, value: 189, unlisted: 2, names: ["Nike Air Max 90", "Adidas Tracksuit", "Puma Hoodie", "New Balance 550s", "Reebok Classic"] },
+  { id: "B1", items: 2, value: 83,  unlisted: 0, names: ["Burberry Scarf", "Tommy Hilfiger Jacket"] },
+  { id: "B2", items: 0, value: 0,   unlisted: 0, names: [] },
+  { id: "B3", items: 6, value: 244, unlisted: 1, names: ["Stone Island Jumper", "CP Company Goggle", "Barbour Wax Jacket", "Wrangler Denim", "Lee Cooper Jeans", "Carhartt WIP"] },
+  { id: "C1", items: 1, value: 22,  unlisted: 1, names: ["Adidas Gazelle"] },
+  { id: "C2", items: 3, value: 97,  unlisted: 0, names: ["Levi Trucker Jacket", "Wrangler Shirt", "Lee Carpenter Pant"] },
+  { id: "C3", items: 2, value: 58,  unlisted: 0, names: ["Timberland Boots", "Dr Martens 1460"] },
+] as const;
+
 function Hero() {
+  const L2_PHRASES = [
+    "Stock Management Just Got Easier",
+    "Making Resellers More Profitable",
+    "Manage Your Stock, Make More Profit",
+  ];
+
+  const { displayed: t2 } = useCyclingTypewriter(
+    L2_PHRASES, 480, 80, 42, 3000, 600
+  );
+
   return (
     <section id="top" className="grain relative overflow-hidden pt-28 pb-0 md:pt-36 md:pb-0 px-6">
-      {/* background glows */}
-      <div className="orb absolute -top-20 left-1/2 -translate-x-1/2 w-[1100px] h-[700px] rounded-full bg-amber/[0.08] blur-3xl pointer-events-none" />
-      <div className="absolute top-60 -left-40 w-[500px] h-[500px] rounded-full bg-amber/[0.025] blur-3xl pointer-events-none" />
-      <div className="absolute top-40 -right-40 w-[400px] h-[400px] rounded-full bg-amber/[0.02] blur-3xl pointer-events-none" />
+      {/* radial spotlight glow — mimics the Tarss cone effect */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute left-1/2 -top-10 -translate-x-1/2 w-[1000px] h-[700px]"
+          style={{ background: "radial-gradient(ellipse 55% 60% at 50% 10%, rgba(240,160,32,0.14) 0%, rgba(240,160,32,0.05) 45%, transparent 75%)" }} />
+        <div className="absolute left-1/2 -translate-x-1/2 top-0 w-[600px] h-[600px]"
+          style={{ background: "radial-gradient(ellipse 50% 50% at 50% 0%, rgba(240,160,32,0.06) 0%, transparent 70%)" }} />
+      </div>
 
-      {/* ── text block ── */}
-      <div className="relative mx-auto max-w-4xl text-center pb-14 md:pb-20">
-
-        {/* star badge */}
-        <div className="rise inline-flex items-center gap-2.5 rounded-full border border-amber/25 bg-amber/[0.08] px-4 py-2 mb-8 md:mb-10">
-          <div className="flex gap-px">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <svg key={i} viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-amber">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-              </svg>
-            ))}
+      {/* ── floating sold card (left) ── */}
+      <div className="absolute hidden lg:block" style={{ left: "calc(50% - 520px)", top: "260px", animation: "rise 0.6s ease both 0.5s" }}>
+        <div style={{ background: "#161410", border: "1px solid #2a2722", borderRadius: 14, padding: "12px 14px", width: 200, boxShadow: "0 8px 40px rgba(0,0,0,0.5)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+            <div style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(127,174,74,0.15)", border: "1px solid rgba(127,174,74,0.3)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#7fae4a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 600, color: "#f5f1e8" }}>Just sold</div>
+              <div style={{ fontSize: 10, color: "#6f6a5e" }}>Vinted · 2 mins ago</div>
+            </div>
+            <div style={{ marginLeft: "auto", width: 7, height: 7, borderRadius: "50%", background: "#7fae4a", boxShadow: "0 0 6px #7fae4a" }} />
           </div>
-          <span className="text-xs text-paper-dim">Trusted by resellers across the UK</span>
-          <span className="w-px h-3 bg-amber/25 shrink-0" />
-          <span className="text-xs text-amber font-mono font-medium">10,000+ items tracked</span>
+          <div style={{ borderTop: "1px solid #2a2722", paddingTop: 8 }}>
+            <div style={{ fontSize: 11, color: "#b8b1a3", marginBottom: 4 }}>Nike Air Max 90</div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <span style={{ fontSize: 10, color: "#6f6a5e" }}>Paid £45 · Sold £89</span>
+              <span style={{ fontSize: 12, fontFamily: "monospace", fontWeight: 700, color: "#7fae4a" }}>+£44</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── floating bin card (right) ── */}
+      <div className="absolute hidden lg:block" style={{ right: "calc(50% - 520px)", top: "250px", animation: "rise 0.6s ease both 0.6s" }}>
+        <div style={{ background: "#161410", border: "1px solid #2a2722", borderRadius: 14, padding: "12px 14px", width: 180, boxShadow: "0 8px 40px rgba(0,0,0,0.5)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+            <div style={{ width: 32, height: 28, borderRadius: 7, background: "rgba(240,160,32,0.12)", border: "1px solid rgba(240,160,32,0.3)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <span style={{ fontSize: 11, fontFamily: "monospace", fontWeight: 700, color: "#f0a020" }}>B3</span>
+            </div>
+            <div style={{ fontSize: 11, fontWeight: 600, color: "#f5f1e8" }}>Storage Bin</div>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+            <div style={{ background: "#0e0d0b", borderRadius: 8, padding: "6px 8px", textAlign: "center" }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: "#f5f1e8", fontFamily: "monospace" }}>6</div>
+              <div style={{ fontSize: 9, color: "#6f6a5e", marginTop: 1 }}>items</div>
+            </div>
+            <div style={{ background: "#0e0d0b", borderRadius: 8, padding: "6px 8px", textAlign: "center" }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#7fae4a", fontFamily: "monospace" }}>£244</div>
+              <div style={{ fontSize: 9, color: "#6f6a5e", marginTop: 1 }}>value</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── centred text ── */}
+      <div className="relative mx-auto max-w-3xl text-center pb-14 md:pb-20">
+
+        {/* eyebrow pill */}
+        <div className="rise inline-flex items-center gap-2 rounded-full border border-line bg-ink-card/80 px-4 py-2 mb-8 md:mb-10 text-xs">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber shrink-0" style={{ animation: "blink 1.6s infinite" }} />
+          <span className="text-paper-dim">Stop losing track of your reselling stock</span>
         </div>
 
-        {/* headline — static, confident */}
-        <h1 className="rise font-display font-medium leading-[1.04] tracking-tight text-[clamp(2.8rem,7.5vw,5.8rem)]" style={{ animationDelay: "0.06s" }}>
-          Know what you own.
-          <br />
-          <span className="text-amber">Know what you&apos;re making.</span>
+        {/* typewriter headline */}
+        <h1 className="font-display font-medium leading-[1.05] md:leading-[0.97] tracking-tight text-[clamp(2.2rem,6.5vw,5rem)] min-h-[2.3em] md:min-h-[2em]">
+          <span className="text-amber">
+            {t2}
+            <span className="cursor-blink inline-block w-[3px] h-[0.82em] bg-amber rounded-sm align-middle ml-1 translate-y-[-0.05em]" />
+          </span>
         </h1>
 
         {/* subtext */}
-        <p className="rise mt-6 md:mt-8 text-base md:text-xl text-paper-dim max-w-2xl mx-auto leading-relaxed" style={{ animationDelay: "0.12s" }}>
-          Sellganise tracks every item from source to sold — what&apos;s listed, where it&apos;s stored, and your real profit. No spreadsheet required.
+        <p className="rise mt-6 md:mt-7 text-base md:text-lg text-paper-dim max-w-xl mx-auto leading-relaxed" style={{ animationDelay: "0.12s" }}>
+          A live view of everything you own, exactly where it&apos;s stored, and what you&apos;re actually making — from source to sold.
         </p>
 
-        {/* CTAs */}
-        <div className="rise mt-8 md:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3" style={{ animationDelay: "0.16s" }}>
+        {/* CTA */}
+        <div className="rise mt-8 md:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3" style={{ animationDelay: "0.17s" }}>
           <a href="/signup" className="btn-shine w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-amber text-ink font-semibold text-base hover:bg-paper transition-colors">
             Start for free
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
           </a>
-          <a href="#features" className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl border border-line text-paper hover:border-paper-faint hover:-translate-y-0.5 transition-all duration-200 text-base">
-            See features
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><polyline points="6 9 12 15 18 9"/></svg>
+          <a href="#vs" className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-4 rounded-xl border border-line text-paper hover:border-paper-faint hover:-translate-y-0.5 transition-all duration-200 text-base">
+            Why not a spreadsheet?
           </a>
         </div>
 
-        {/* trust micro-copy */}
-        <p className="rise mt-4 text-xs text-paper-faint" style={{ animationDelay: "0.19s" }}>
+        {/* trust */}
+        <p className="rise mt-4 text-xs text-paper-faint" style={{ animationDelay: "0.21s" }}>
           No credit card required &nbsp;·&nbsp; Free plan available &nbsp;·&nbsp; Cancel anytime
         </p>
-
-        {/* platform pills */}
-        <div className="rise mt-8 flex flex-wrap items-center justify-center gap-2" style={{ animationDelay: "0.22s" }}>
-          <span className="text-xs text-paper-faint mr-1">Works with</span>
-          {["Vinted", "eBay", "Depop", "Facebook", "Shpock"].map((p) => (
-            <span key={p} className="text-xs font-medium px-3 py-1.5 rounded-full border border-line bg-ink-card/80 text-paper-dim hover:border-amber/30 hover:text-paper transition-colors">
-              {p}
-            </span>
-          ))}
-        </div>
-
-        {/* stats */}
-        <div className="rise mt-10 md:mt-14 inline-grid grid-cols-3 gap-px bg-line rounded-2xl overflow-hidden border border-line shadow-xl shadow-black/30" style={{ animationDelay: "0.26s" }}>
-          {[
-            { v: "£0",    l: "to get started"    },
-            { v: "5 min", l: "to first insight"  },
-            { v: "100%",  l: "profit visibility" },
-          ].map((s) => (
-            <div key={s.l} className="bg-ink-card px-5 md:px-10 py-4 md:py-5 text-center">
-              <div className="font-mono text-xl md:text-2xl font-medium text-amber">{s.v}</div>
-              <div className="text-[10px] md:text-xs text-paper-faint mt-1">{s.l}</div>
-            </div>
-          ))}
-        </div>
       </div>
 
-      {/* ── product preview — perspective tilt fading into next section ── */}
-      <div className="rise relative max-w-6xl mx-auto" style={{ animationDelay: "0.32s" }}>
+      {/* ── storage map dashboard preview ── */}
+      <div className="rise relative max-w-5xl mx-auto" style={{ animationDelay: "0.35s" }}>
         <div style={{ perspective: "1600px" }}>
           <div
-            className="rounded-t-2xl border border-b-0 border-line/40 overflow-hidden shadow-[0_-12px_80px_rgba(0,0,0,0.7)]"
-            style={{ transform: "rotateX(7deg) scale(0.97)", transformOrigin: "center bottom" }}
+            className="rounded-t-2xl border border-b-0 border-line/40 overflow-hidden shadow-[0_-16px_80px_rgba(0,0,0,0.75)]"
+            style={{ transform: "rotateX(6deg) scale(0.975)", transformOrigin: "center bottom" }}
           >
-            {/* Mobile: phone */}
+            {/* Mobile */}
             <div className="md:hidden bg-ink py-6 px-8 flex justify-center">
               <PhoneMockup />
             </div>
 
-            {/* Desktop: laptop screen content only (no outer frame) */}
-            <div className="hidden md:block" style={{ background: "#0e0d0b", fontFamily: "Inter, system-ui, sans-serif" }}>
-              {/* mini top bar */}
-              <div style={{ height: 44, borderBottom: "1px solid #2a2722", display: "flex", alignItems: "center", padding: "0 20px", gap: 8, background: "#0a0908", flexShrink: 0 }}>
-                <div style={{ display: "flex", gap: 6, marginRight: 12 }}>
-                  {["#ff5f57","#ffbd2e","#28ca41"].map((c) => <div key={c} style={{ width: 10, height: 10, borderRadius: "50%", background: c, opacity: 0.7 }} />)}
+            {/* Desktop — storage map */}
+            <div className="hidden md:flex" style={{ background: "#0a0908", height: 460, fontFamily: "Inter, system-ui, sans-serif" }}>
+              {/* sidebar */}
+              <div style={{ width: 180, background: "#0e0d0b", borderRight: "1px solid #1e1c18", display: "flex", flexDirection: "column", flexShrink: 0, padding: "14px 0" }}>
+                <div style={{ padding: "0 14px 18px" }}>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: "#f5f1e8", letterSpacing: "-0.02em" }}>Sellganise</span>
                 </div>
-                <div style={{ flex: 1, background: "#161410", border: "1px solid #211e1a", borderRadius: 6, height: 24, display: "flex", alignItems: "center", padding: "0 10px", gap: 6, maxWidth: 340, margin: "0 auto" }}>
-                  <span style={{ fontSize: 10, color: "#6f6a5e" }}>🔒</span>
-                  <span style={{ fontSize: 10, color: "#6f6a5e" }}>app.sellganise.com/dashboard</span>
-                </div>
-              </div>
-              {/* dashboard */}
-              <div style={{ display: "flex", height: 520 }}>
-                {/* sidebar */}
-                <div style={{ width: 192, background: "#0e0d0b", borderRight: "1px solid #2a2722", display: "flex", flexDirection: "column", flexShrink: 0, padding: "16px 0" }}>
-                  <div style={{ padding: "0 16px 20px" }}>
-                    <span style={{ fontSize: 15, fontWeight: 600, color: "#f5f1e8", letterSpacing: "-0.02em" }}>Sellganise</span>
+                {[
+                  { l: "Overview",        active: false },
+                  { l: "Stock",           active: false },
+                  { l: "Storage map",     active: true  },
+                  { l: "Calculator",      active: false },
+                  { l: "Monthly archives",active: false },
+                ].map((n) => (
+                  <div key={n.l} style={{ padding: "7px 10px", margin: "1px 6px", borderRadius: 7, background: n.active ? "#1a1815" : "transparent", display: "flex", alignItems: "center", gap: 7 }}>
+                    <span style={{ width: 5, height: 5, borderRadius: "50%", background: n.active ? "#f0a020" : "#2a2722", flexShrink: 0 }} />
+                    <span style={{ fontSize: 11, color: n.active ? "#f5f1e8" : "#6f6a5e", fontWeight: n.active ? 500 : 400 }}>{n.l}</span>
                   </div>
+                ))}
+              </div>
+
+              {/* main */}
+              <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+                {/* topbar */}
+                <div style={{ height: 46, borderBottom: "1px solid #1e1c18", display: "flex", alignItems: "center", padding: "0 18px", gap: 10, flexShrink: 0 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "#f5f1e8", letterSpacing: "-0.01em" }}>Storage map</div>
+                  <div style={{ marginLeft: "auto", display: "flex", gap: 6 }}>
+                    <div style={{ padding: "4px 10px", background: "#f0a020", borderRadius: 6, fontSize: 10, fontWeight: 600, color: "#0a0908" }}>+ New bin</div>
+                    <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#161410", border: "1px solid #2a2722", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <span style={{ fontSize: 10, color: "#b8b1a3", fontWeight: 500 }}>JT</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* summary bar */}
+                <div style={{ padding: "10px 18px", borderBottom: "1px solid #1e1c18", display: "flex", gap: 12, flexShrink: 0 }}>
                   {[
-                    { l: "Overview", active: true },
-                    { l: "Stock", active: false },
-                    { l: "Storage map", active: false },
-                    { l: "Calculator", active: false },
-                    { l: "Monthly archives", active: false },
-                  ].map((n) => (
-                    <div key={n.l} style={{ padding: "8px 12px", margin: "1px 8px", borderRadius: 8, background: n.active ? "#1a1815" : "transparent", display: "flex", alignItems: "center", gap: 8 }}>
-                      <span style={{ width: 5, height: 5, borderRadius: "50%", background: n.active ? "#f0a020" : "#2a2722" }} />
-                      <span style={{ fontSize: 12, color: n.active ? "#f5f1e8" : "#6f6a5e", fontWeight: n.active ? 500 : 400 }}>{n.l}</span>
+                    { l: "Total bins", v: "9" },
+                    { l: "Total items", v: "26" },
+                    { l: "Total value", v: "£872" },
+                    { l: "Unlisted value", v: "£243", warn: true },
+                  ].map((s) => (
+                    <div key={s.l} style={{ background: "#161410", border: `1px solid ${s.warn ? "rgba(240,160,32,0.3)" : "#2a2722"}`, borderRadius: 8, padding: "6px 12px", display: "flex", flexDirection: "column", gap: 2 }}>
+                      <div style={{ fontSize: 9, color: "#6f6a5e" }}>{s.l}</div>
+                      <div style={{ fontSize: 13, fontFamily: "monospace", fontWeight: 600, color: s.warn ? "#f0a020" : "#f5f1e8" }}>{s.v}</div>
                     </div>
                   ))}
-                  <div style={{ flex: 1 }} />
-                  <div style={{ margin: "0 8px", padding: "10px 12px", borderRadius: 8, border: "1px solid #2a2722", background: "#161410" }}>
-                    <div style={{ fontSize: 10, color: "#6f6a5e", fontFamily: "monospace", marginBottom: 4 }}>RESELLER PLAN</div>
-                    <div style={{ height: 4, borderRadius: 2, background: "#2a2722", overflow: "hidden" }}>
-                      <div style={{ width: "38%", height: "100%", background: "#f0a020", borderRadius: 2 }} />
-                    </div>
-                    <div style={{ fontSize: 10, color: "#b8b1a3", marginTop: 4 }}>190 / 500 items</div>
-                  </div>
                 </div>
-                {/* main */}
-                <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-                  {/* header */}
-                  <div style={{ height: 52, borderBottom: "1px solid #2a2722", display: "flex", alignItems: "center", padding: "0 20px", gap: 12, flexShrink: 0 }}>
-                    <div style={{ flex: 1, background: "#1a1815", border: "1px solid #211e1a", borderRadius: 8, height: 28, display: "flex", alignItems: "center", padding: "0 10px", gap: 6, maxWidth: 300 }}>
-                      <span style={{ fontSize: 11, color: "#6f6a5e" }}>🔍</span>
-                      <span style={{ fontSize: 11, color: "#6f6a5e" }}>Find an item or bin…</span>
-                    </div>
-                    <div style={{ marginLeft: "auto", display: "flex", gap: 8, alignItems: "center" }}>
-                      <div style={{ padding: "5px 12px", background: "#f0a020", borderRadius: 7, fontSize: 11, fontWeight: 600, color: "#0e0d0b", cursor: "pointer" }}>+ Add stock</div>
-                      <div style={{ width: 30, height: 30, borderRadius: "50%", background: "#161410", border: "1px solid #2a2722", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <span style={{ fontSize: 11, color: "#b8b1a3", fontWeight: 500 }}>JT</span>
-                      </div>
-                    </div>
-                  </div>
-                  {/* content */}
-                  <div style={{ flex: 1, padding: "18px 20px", overflow: "hidden", display: "flex", flexDirection: "column", gap: 10 }}>
-                    <div style={{ fontSize: 18, fontWeight: 600, color: "#f5f1e8", letterSpacing: "-0.02em" }}>Overview</div>
-                    {/* dead money banner */}
-                    <div style={{ background: "rgba(240,160,32,0.07)", border: "1px solid rgba(240,160,32,0.3)", borderRadius: 12, padding: "10px 14px", display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
-                      <div style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(240,160,32,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14 }}>⚠️</div>
-                      <div>
-                        <div style={{ fontSize: 16, color: "#f0a020", fontFamily: "monospace", fontWeight: 600, lineHeight: 1 }}>£243.00 not listed</div>
-                        <div style={{ fontSize: 11, color: "#b8b1a3", marginTop: 3 }}>2 items bought but not earning — clear the pile</div>
-                      </div>
-                    </div>
-                    {/* stat cards */}
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 8, flexShrink: 0 }}>
-                      {[
-                        { l: "Unlisted", v: "2", c: "#f0a020" },
-                        { l: "Listed", v: "8", c: "#f5f1e8" },
-                        { l: "Sold · Jul", v: "3", c: "#f5f1e8" },
-                        { l: "Profit · Jul", v: "£127.50", c: "#7fae4a" },
-                      ].map((s) => (
-                        <div key={s.l} style={{ background: "#161410", border: "1px solid #2a2722", borderRadius: 10, padding: "8px 10px" }}>
-                          <div style={{ fontSize: 10, color: "#6f6a5e", marginBottom: 3 }}>{s.l}</div>
-                          <div style={{ fontSize: 15, color: s.c, fontFamily: "monospace", fontWeight: 600 }}>{s.v}</div>
+
+                {/* bin grid */}
+                <div style={{ flex: 1, padding: "14px 18px", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, overflowY: "auto" }}>
+                  {STORAGE_BINS.map((bin) => {
+                    const empty = bin.items === 0;
+                    const hasUnlisted = bin.unlisted > 0;
+                    return (
+                      <div key={bin.id} style={{
+                        background: empty ? "#0e0d0b" : "#161410",
+                        border: `1px solid ${hasUnlisted ? "rgba(240,160,32,0.35)" : empty ? "#1a1815" : "#2a2722"}`,
+                        borderRadius: 10,
+                        padding: "10px 12px",
+                        opacity: empty ? 0.45 : 1,
+                        position: "relative",
+                        overflow: "hidden",
+                      }}>
+                        {hasUnlisted && (
+                          <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "linear-gradient(90deg, #f0a020, transparent)" }} />
+                        )}
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+                          <div style={{ width: 36, height: 26, borderRadius: 6, background: hasUnlisted ? "rgba(240,160,32,0.12)" : "rgba(255,255,255,0.04)", border: `1px solid ${hasUnlisted ? "rgba(240,160,32,0.3)" : "#2a2722"}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <span style={{ fontSize: 11, fontFamily: "monospace", fontWeight: 700, color: hasUnlisted ? "#f0a020" : "#b8b1a3" }}>{bin.id}</span>
+                          </div>
+                          {hasUnlisted && (
+                            <span style={{ fontSize: 9, background: "rgba(240,160,32,0.12)", color: "#f0a020", border: "1px solid rgba(240,160,32,0.25)", borderRadius: 4, padding: "2px 5px", fontWeight: 500 }}>
+                              {bin.unlisted} unlisted
+                            </span>
+                          )}
                         </div>
-                      ))}
-                    </div>
-                    {/* item list */}
-                    <div style={{ background: "#161410", border: "1px solid #2a2722", borderRadius: 12, overflow: "hidden", flex: 1 }}>
-                      <div style={{ display: "flex", gap: 2, padding: "6px 8px", borderBottom: "1px solid #211e1a" }}>
-                        {[["unlisted · 2", false], ["listed · 8", true], ["sold · 3", false]].map(([l, a]) => (
-                          <div key={String(l)} style={{ padding: "5px 12px", borderRadius: 7, fontSize: 11, fontWeight: a ? 500 : 400, color: a ? "#f5f1e8" : "#6f6a5e", background: a ? "#1a1815" : "transparent" }}>{String(l)}</div>
-                        ))}
+                        {empty ? (
+                          <div style={{ fontSize: 10, color: "#3a3730", textAlign: "center", padding: "4px 0" }}>empty</div>
+                        ) : (
+                          <>
+                            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                              <span style={{ fontSize: 10, color: "#6f6a5e" }}>{bin.items} item{bin.items !== 1 ? "s" : ""}</span>
+                              <span style={{ fontSize: 10, fontFamily: "monospace", color: "#7fae4a", fontWeight: 600 }}>£{bin.value}</span>
+                            </div>
+                            <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                              {bin.names.slice(0, 2).map((name) => (
+                                <div key={name} style={{ fontSize: 9, color: "#4a4640", background: "#0e0d0b", borderRadius: 4, padding: "2px 6px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{name}</div>
+                              ))}
+                              {bin.names.length > 2 && (
+                                <div style={{ fontSize: 9, color: "#3a3730", padding: "0 6px" }}>+{bin.names.length - 2} more</div>
+                              )}
+                            </div>
+                          </>
+                        )}
                       </div>
-                      {MOCK_ITEMS.map((it) => <MockItemRow key={it.name} item={it} />)}
-                    </div>
-                  </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* gradient fade to next section */}
-        <div className="absolute inset-x-0 bottom-0 h-52 bg-gradient-to-t from-ink via-ink/80 to-transparent pointer-events-none" />
+        {/* gradient fade into next section */}
+        <div className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-ink via-ink/85 to-transparent pointer-events-none" />
       </div>
     </section>
   );
