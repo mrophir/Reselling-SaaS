@@ -335,9 +335,10 @@ function Hero() {
 
       {/* ── storage map dashboard preview ── */}
       <div className="rise relative max-w-5xl mx-auto" style={{ animationDelay: "0.35s" }}>
+        <a href="/signup" className="block group" title="Start for free — no card needed">
         <div style={{ perspective: "1600px" }}>
           <div
-            className="rounded-t-2xl border border-b-0 border-line/40 overflow-hidden shadow-[0_-16px_80px_rgba(0,0,0,0.75)]"
+            className="rounded-t-2xl border border-b-0 border-line/40 overflow-hidden shadow-[0_-16px_80px_rgba(0,0,0,0.75)] group-hover:border-amber/30 transition-colors duration-300"
             style={{ transform: "rotateX(6deg) scale(0.975)", transformOrigin: "center bottom" }}
           >
             {/* Mobile */}
@@ -448,6 +449,14 @@ function Hero() {
             </div>
           </div>
         </div>
+        {/* hover CTA overlay */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" style={{ zIndex: 10 }}>
+          <div className="bg-amber text-ink font-semibold px-6 py-3 rounded-xl text-sm flex items-center gap-2 shadow-xl shadow-black/40">
+            Start for free
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 16, height: 16 }}><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+        </div>
+        </a>
 
         {/* gradient fade into next section */}
         <div className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-ink via-ink/85 to-transparent pointer-events-none" />
@@ -655,12 +664,20 @@ function DashboardMockup() {
         {/* Mobile: phone frame */}
         <div className="md:hidden">
           <Reveal>
-            <PhoneMockup />
+            <a href="/signup" className="block group relative" title="Start for free — no card needed">
+              <PhoneMockup />
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-[2.5rem]" style={{ background: "rgba(10,9,8,0.55)" }}>
+                <div className="bg-amber text-ink font-semibold px-5 py-2.5 rounded-xl text-sm flex items-center gap-2 shadow-xl">
+                  Start for free <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 14, height: 14 }}><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </div>
+              </div>
+            </a>
           </Reveal>
         </div>
 
         {/* Desktop: laptop frame */}
         <Reveal>
+          <a href="/signup" className="block group relative" title="Start for free — no card needed">
           <div className="hidden md:block mx-auto" style={{ maxWidth: 980 }}>
             {/* lid / screen */}
             <div
@@ -784,6 +801,14 @@ function DashboardMockup() {
               <div style={{ width: 220, height: 10, background: "#1a1815", borderRadius: "0 0 12px 12px" }} />
             </div>
           </div>
+          {/* hover CTA overlay */}
+          <div className="absolute inset-0 hidden md:flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-2xl" style={{ background: "rgba(10,9,8,0.5)" }}>
+            <div className="bg-amber text-ink font-semibold px-6 py-3 rounded-xl text-sm flex items-center gap-2 shadow-xl shadow-black/40">
+              Start for free
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 16, height: 16 }}><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </div>
+          </div>
+          </a>
         </Reveal>
         </div>{/* end hidden md:block */}
     </section>
