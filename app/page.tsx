@@ -943,6 +943,104 @@ function Features() {
   );
 }
 
+/* ---------- analytics extension ---------- */
+
+function AnalyticsSection() {
+  const bullets = [
+    ["Est. resale value", "Average price of matching live listings, filtered by size and condition."],
+    ["List at & Offer at", "75th percentile for an ambitious ask, 25th for a quick-sale price."],
+    ["Bargain / Fair / Overpriced", "Instant flag when a listing is ≤85% or ≥115% of the market rate."],
+    ["Sell speed estimate", "Demand signal derived from favourites-per-day on comparable listings."],
+    ["100% private", "Every calculation runs locally in your browser — nothing sent to any server."],
+  ];
+
+  return (
+    <section id="analytics" className="px-6 py-16 md:py-28 border-t border-line overflow-hidden">
+      <div className="mx-auto max-w-6xl">
+        <div className="grid md:grid-cols-[1fr_1.15fr] gap-14 md:gap-20 items-center">
+
+          {/* ── left: description ── */}
+          <div>
+            <SectionEyebrow>Sellganise Analytics</SectionEyebrow>
+            <h2 className="font-display font-medium text-[clamp(2rem,4.5vw,3rem)] leading-[1.05] tracking-tight mb-5">
+              Know if it&apos;s a bargain<br className="hidden sm:block" /> before you buy it.
+            </h2>
+            <p className="text-paper-dim text-lg leading-relaxed mb-8">
+              A free Chrome extension that lives inside Vinted UK. On every listing it scans comparable sold and live items, strips outlier prices, and injects a live market card — so you know in seconds whether something is worth buying to resell.
+            </p>
+
+            <ul className="space-y-4 mb-10">
+              {bullets.map(([title, desc]) => (
+                <li key={title} className="flex gap-3 text-[14px]">
+                  <span className="mt-0.5 w-4 h-4 shrink-0 rounded-full bg-moss/15 border border-moss/25 grid place-items-center">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-2.5 h-2.5 text-moss">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                  </span>
+                  <span className="text-paper-dim">
+                    <span className="text-paper font-medium">{title}</span> — {desc}
+                  </span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="flex flex-wrap items-center gap-4">
+              <a
+                href="/dashboard"
+                className="btn-shine inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber text-ink font-semibold text-sm hover:bg-paper transition-colors"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Get the extension free
+              </a>
+              <span className="text-xs text-paper-faint">Chrome only · Vinted UK · no account required</span>
+            </div>
+          </div>
+
+          {/* ── right: screenshots ── */}
+          <Reveal>
+            {/* Mobile: stacked */}
+            <div className="md:hidden space-y-4">
+              <div className="rounded-2xl overflow-hidden border border-line shadow-2xl shadow-black/60">
+                <img src="/analytics-card.png" alt="Sellganise Analytics extension card showing market price data for a Vinted listing" className="w-full block" />
+              </div>
+              <div className="rounded-2xl overflow-hidden border border-line shadow-xl shadow-black/40">
+                <img src="/analytics-vinted.png" alt="Vinted listing page with Sellganise Analytics extension active in sidebar" className="w-full block" />
+              </div>
+            </div>
+
+            {/* Desktop: Vinted screenshot with analytics card floating over it */}
+            <div className="hidden md:block relative">
+              {/* add right padding to make room for the floating card */}
+              <div className="pr-[46%]">
+                <div className="rounded-2xl overflow-hidden border border-line shadow-2xl shadow-black/60">
+                  <img
+                    src="/analytics-vinted.png"
+                    alt="Vinted listing page with Sellganise Analytics extension active"
+                    className="w-full block"
+                  />
+                </div>
+              </div>
+              {/* analytics card floating on the right */}
+              <div className="absolute top-0 right-0 w-[44%] rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-black/80 ring-1 ring-white/5">
+                <img
+                  src="/analytics-card.png"
+                  alt="Sellganise Analytics card — estimated resale value, pricing suggestions and sell speed"
+                  className="w-full block"
+                />
+              </div>
+              {/* subtle glow behind the card */}
+              <div className="absolute top-6 right-0 w-[44%] h-48 bg-amber/[0.06] blur-3xl pointer-events-none rounded-full" />
+            </div>
+          </Reveal>
+
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* ---------- who it's for ---------- */
 
 function Who() {
@@ -1475,6 +1573,7 @@ export default function Page() {
       <Problem />
       <DashboardMockup />
       <Features />
+      <AnalyticsSection />
       <Who />
       <Versus />
       <CaseStudy />
