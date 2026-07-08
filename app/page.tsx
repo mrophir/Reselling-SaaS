@@ -243,88 +243,94 @@ function Hero() {
           style={{ background: "radial-gradient(ellipse 50% 50% at 50% 0%, rgba(240,160,32,0.06) 0%, transparent 70%)" }} />
       </div>
 
-      {/* ── floating sold card (left) ── */}
-      <div className="absolute hidden lg:block" style={{ left: "calc(50% - 520px)", top: "260px", animation: "rise 0.6s ease both 0.5s" }}>
-        <div style={{ background: "#161410", border: "1px solid #2a2722", borderRadius: 14, padding: "12px 14px", width: 200, boxShadow: "0 8px 40px rgba(0,0,0,0.5)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-            <div style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(127,174,74,0.15)", border: "1px solid rgba(127,174,74,0.3)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#7fae4a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
-            <div>
-              <div style={{ fontSize: 11, fontWeight: 600, color: "#f5f1e8" }}>Just sold</div>
-              <div style={{ fontSize: 10, color: "#6f6a5e" }}>Vinted · 2 mins ago</div>
-            </div>
-            <div style={{ marginLeft: "auto", width: 7, height: 7, borderRadius: "50%", background: "#7fae4a", boxShadow: "0 0 6px #7fae4a" }} />
-          </div>
-          <div style={{ borderTop: "1px solid #2a2722", paddingTop: 8 }}>
-            <div style={{ fontSize: 11, color: "#b8b1a3", marginBottom: 4 }}>Nike Air Max 90</div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <span style={{ fontSize: 10, color: "#6f6a5e" }}>Paid £45 · Sold £89</span>
-              <span style={{ fontSize: 12, fontFamily: "monospace", fontWeight: 700, color: "#7fae4a" }}>+£44</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* ── 3-col grid: [sold card] [text] [bin card] ── */}
+      <div className="relative mx-auto max-w-7xl pb-14 md:pb-20">
+        <div className="grid grid-cols-1 xl:grid-cols-[220px_1fr_200px] gap-6 items-center">
 
-      {/* ── floating bin card (right) ── */}
-      <div className="absolute hidden lg:block" style={{ right: "calc(50% - 520px)", top: "250px", animation: "rise 0.6s ease both 0.6s" }}>
-        <div style={{ background: "#161410", border: "1px solid #2a2722", borderRadius: 14, padding: "12px 14px", width: 180, boxShadow: "0 8px 40px rgba(0,0,0,0.5)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-            <div style={{ width: 32, height: 28, borderRadius: 7, background: "rgba(240,160,32,0.12)", border: "1px solid rgba(240,160,32,0.3)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <span style={{ fontSize: 11, fontFamily: "monospace", fontWeight: 700, color: "#f0a020" }}>B3</span>
-            </div>
-            <div style={{ fontSize: 11, fontWeight: 600, color: "#f5f1e8" }}>Storage Bin</div>
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
-            <div style={{ background: "#0e0d0b", borderRadius: 8, padding: "6px 8px", textAlign: "center" }}>
-              <div style={{ fontSize: 14, fontWeight: 600, color: "#f5f1e8", fontFamily: "monospace" }}>6</div>
-              <div style={{ fontSize: 9, color: "#6f6a5e", marginTop: 1 }}>items</div>
-            </div>
-            <div style={{ background: "#0e0d0b", borderRadius: 8, padding: "6px 8px", textAlign: "center" }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: "#7fae4a", fontFamily: "monospace" }}>£244</div>
-              <div style={{ fontSize: 9, color: "#6f6a5e", marginTop: 1 }}>value</div>
+          {/* left — sold card */}
+          <div className="hidden xl:flex justify-end rise" style={{ animationDelay: "0.5s" }}>
+            <div style={{ background: "#161410", border: "1px solid #2a2722", borderRadius: 14, padding: "12px 14px", width: 200, boxShadow: "0 8px 40px rgba(0,0,0,0.5)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                <div style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(127,174,74,0.15)", border: "1px solid rgba(127,174,74,0.3)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#7fae4a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: "#f5f1e8" }}>Just sold</div>
+                  <div style={{ fontSize: 10, color: "#6f6a5e" }}>Vinted · 2 mins ago</div>
+                </div>
+                <div style={{ marginLeft: "auto", width: 7, height: 7, borderRadius: "50%", background: "#7fae4a", boxShadow: "0 0 6px #7fae4a" }} />
+              </div>
+              <div style={{ borderTop: "1px solid #2a2722", paddingTop: 8 }}>
+                <div style={{ fontSize: 11, color: "#b8b1a3", marginBottom: 4 }}>Nike Air Max 90</div>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <span style={{ fontSize: 10, color: "#6f6a5e" }}>Paid £45 · Sold £89</span>
+                  <span style={{ fontSize: 12, fontFamily: "monospace", fontWeight: 700, color: "#7fae4a" }}>+£44</span>
+                </div>
+              </div>
             </div>
           </div>
+
+          {/* centre — text */}
+          <div className="text-center">
+            {/* eyebrow pill */}
+            <div className="rise inline-flex items-center gap-2 rounded-full border border-line bg-ink-card/80 px-4 py-2 mb-8 md:mb-10 text-xs">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber shrink-0" style={{ animation: "blink 1.6s infinite" }} />
+              <span className="text-paper-dim">Stop losing track of your reselling stock</span>
+            </div>
+
+            {/* typewriter headline */}
+            <h1 className="font-display font-medium leading-[1.05] md:leading-[0.97] tracking-tight text-[clamp(2.2rem,5.5vw,4.2rem)] min-h-[2.3em] md:min-h-[2em]">
+              <span className="text-amber">
+                {t2}
+                <span className="cursor-blink inline-block w-[3px] h-[0.82em] bg-amber rounded-sm align-middle ml-1 translate-y-[-0.05em]" />
+              </span>
+            </h1>
+
+            {/* subtext */}
+            <p className="rise mt-6 md:mt-7 text-base md:text-lg text-paper-dim max-w-xl mx-auto leading-relaxed" style={{ animationDelay: "0.12s" }}>
+              A live view of everything you own, exactly where it&apos;s stored, and what you&apos;re actually making — from source to sold.
+            </p>
+
+            {/* CTA */}
+            <div className="rise mt-8 md:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3" style={{ animationDelay: "0.17s" }}>
+              <a href="/signup" className="btn-shine w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-amber text-ink font-semibold text-base hover:bg-paper transition-colors">
+                Start for free
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              </a>
+              <a href="#vs" className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-4 rounded-xl border border-line text-paper hover:border-paper-faint hover:-translate-y-0.5 transition-all duration-200 text-base">
+                Why not a spreadsheet?
+              </a>
+            </div>
+
+            {/* trust */}
+            <p className="rise mt-4 text-xs text-paper-faint" style={{ animationDelay: "0.21s" }}>
+              No credit card required &nbsp;·&nbsp; Free plan available &nbsp;·&nbsp; Cancel anytime
+            </p>
+          </div>
+
+          {/* right — bin card */}
+          <div className="hidden xl:flex justify-start rise" style={{ animationDelay: "0.6s" }}>
+            <div style={{ background: "#161410", border: "1px solid #2a2722", borderRadius: 14, padding: "12px 14px", width: 180, boxShadow: "0 8px 40px rgba(0,0,0,0.5)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                <div style={{ width: 32, height: 28, borderRadius: 7, background: "rgba(240,160,32,0.12)", border: "1px solid rgba(240,160,32,0.3)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <span style={{ fontSize: 11, fontFamily: "monospace", fontWeight: 700, color: "#f0a020" }}>B3</span>
+                </div>
+                <div style={{ fontSize: 11, fontWeight: 600, color: "#f5f1e8" }}>Storage Bin</div>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+                <div style={{ background: "#0e0d0b", borderRadius: 8, padding: "6px 8px", textAlign: "center" }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#f5f1e8", fontFamily: "monospace" }}>6</div>
+                  <div style={{ fontSize: 9, color: "#6f6a5e", marginTop: 1 }}>items</div>
+                </div>
+                <div style={{ background: "#0e0d0b", borderRadius: 8, padding: "6px 8px", textAlign: "center" }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "#7fae4a", fontFamily: "monospace" }}>£244</div>
+                  <div style={{ fontSize: 9, color: "#6f6a5e", marginTop: 1 }}>value</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
-      </div>
-
-      {/* ── centred text ── */}
-      <div className="relative mx-auto max-w-3xl text-center pb-14 md:pb-20">
-
-        {/* eyebrow pill */}
-        <div className="rise inline-flex items-center gap-2 rounded-full border border-line bg-ink-card/80 px-4 py-2 mb-8 md:mb-10 text-xs">
-          <span className="w-1.5 h-1.5 rounded-full bg-amber shrink-0" style={{ animation: "blink 1.6s infinite" }} />
-          <span className="text-paper-dim">Stop losing track of your reselling stock</span>
-        </div>
-
-        {/* typewriter headline */}
-        <h1 className="font-display font-medium leading-[1.05] md:leading-[0.97] tracking-tight text-[clamp(2.2rem,6.5vw,5rem)] min-h-[2.3em] md:min-h-[2em]">
-          <span className="text-amber">
-            {t2}
-            <span className="cursor-blink inline-block w-[3px] h-[0.82em] bg-amber rounded-sm align-middle ml-1 translate-y-[-0.05em]" />
-          </span>
-        </h1>
-
-        {/* subtext */}
-        <p className="rise mt-6 md:mt-7 text-base md:text-lg text-paper-dim max-w-xl mx-auto leading-relaxed" style={{ animationDelay: "0.12s" }}>
-          A live view of everything you own, exactly where it&apos;s stored, and what you&apos;re actually making — from source to sold.
-        </p>
-
-        {/* CTA */}
-        <div className="rise mt-8 md:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3" style={{ animationDelay: "0.17s" }}>
-          <a href="/signup" className="btn-shine w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-amber text-ink font-semibold text-base hover:bg-paper transition-colors">
-            Start for free
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-          </a>
-          <a href="#vs" className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-4 rounded-xl border border-line text-paper hover:border-paper-faint hover:-translate-y-0.5 transition-all duration-200 text-base">
-            Why not a spreadsheet?
-          </a>
-        </div>
-
-        {/* trust */}
-        <p className="rise mt-4 text-xs text-paper-faint" style={{ animationDelay: "0.21s" }}>
-          No credit card required &nbsp;·&nbsp; Free plan available &nbsp;·&nbsp; Cancel anytime
-        </p>
       </div>
 
       {/* ── storage map dashboard preview ── */}
