@@ -315,7 +315,7 @@ function Hero() {
                 <div style={{ width: 32, height: 28, borderRadius: 7, background: "rgba(240,160,32,0.12)", border: "1px solid rgba(240,160,32,0.3)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                   <span style={{ fontSize: 11, fontFamily: "monospace", fontWeight: 700, color: "#f0a020" }}>B3</span>
                 </div>
-                <div style={{ fontSize: 11, fontWeight: 600, color: "#f5f1e8" }}>Storage Bin</div>
+                <div style={{ fontSize: 11, fontWeight: 600, color: "#f5f1e8" }}>Storage</div>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
                 <div style={{ background: "#0e0d0b", borderRadius: 8, padding: "6px 8px", textAlign: "center" }}>
@@ -372,7 +372,7 @@ function Hero() {
                 <div style={{ height: 46, borderBottom: "1px solid #1e1c18", display: "flex", alignItems: "center", padding: "0 18px", gap: 10, flexShrink: 0 }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: "#f5f1e8", letterSpacing: "-0.01em" }}>Storage map</div>
                   <div style={{ marginLeft: "auto", display: "flex", gap: 6 }}>
-                    <div style={{ padding: "4px 10px", background: "#f0a020", borderRadius: 6, fontSize: 10, fontWeight: 600, color: "#0a0908" }}>+ New bin</div>
+                    <div style={{ padding: "4px 10px", background: "#f0a020", borderRadius: 6, fontSize: 10, fontWeight: 600, color: "#0a0908" }}>+ New storage</div>
                     <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#161410", border: "1px solid #2a2722", display: "flex", alignItems: "center", justifyContent: "center" }}>
                       <span style={{ fontSize: 10, color: "#b8b1a3", fontWeight: 500 }}>JT</span>
                     </div>
@@ -382,7 +382,7 @@ function Hero() {
                 {/* summary bar */}
                 <div style={{ padding: "10px 18px", borderBottom: "1px solid #1e1c18", display: "flex", gap: 12, flexShrink: 0 }}>
                   {[
-                    { l: "Total bins", v: "9" },
+                    { l: "Total locations", v: "9" },
                     { l: "Total items", v: "26" },
                     { l: "Total value", v: "£872" },
                     { l: "Unlisted value", v: "£243", warn: true },
@@ -813,7 +813,7 @@ function Strip() {
 
 function Problem() {
   const items = [
-    { k: "01", h: "The unlisted pile grows", b: "You source 60 items on a good weekend. Forty get listed. Twenty sit in a bin for three months, paid for, earning nothing. You forget they exist." },
+    { k: "01", h: "The unlisted pile grows", b: "You source 60 items on a good weekend. Forty get listed. Twenty sit in storage for three months, paid for, earning nothing. You forget they exist." },
     { k: "02", h: "It sells and you can't find it", b: "A notification hits at 9pm. Now you're tearing through 40 boxes hunting one jumper, because your spreadsheet just says 'grey hoodie' and nothing else." },
     { k: "03", h: "You never really know your profit", b: "Fees, postage, sourcing cost, platform cuts. By the time you net it out in your head, the number's wrong. So you stop checking." },
   ];
@@ -893,7 +893,7 @@ function StorageTab() {
       {bins.map((bin) => (
         <div key={bin.id} className={`rounded-xl border p-3 ${bin.items.length ? "border-amber/25 bg-amber/[0.04]" : "border-line-soft bg-ink"}`}>
           <div className="flex items-center gap-1.5 mb-2">
-            <span className="text-[10px] font-mono font-medium text-amber">Bin {bin.id}</span>
+            <span className="text-[10px] font-mono font-medium text-amber">{bin.id}</span>
             {bin.items.length > 0 && <span className="text-[9px] bg-amber/15 text-amber px-1 rounded font-mono">{bin.items.length}</span>}
           </div>
           <div className="space-y-1">
@@ -1026,7 +1026,7 @@ const FEATURE_TABS = [
     label: "Storage map",
     icon: "⊞",
     heading: "Know exactly where everything is.",
-    body: "Assign each item to a physical bin. When something sells at midnight, open Sellganise, search the item, and see its exact location in seconds — no digging.",
+    body: "Assign each item to a physical storage location. When something sells at midnight, open Sellganise, search the item, and see its exact location in seconds — no digging.",
     preview: <StorageTab />,
   },
   {
@@ -1120,7 +1120,7 @@ function Features() {
 
 /* ---------- export section ---------- */
 
-const STOCK_COLS  = ["Item Code", "Name", "Condition", "Size", "Paid (£)", "Status", "Platform", "Bin", "Notes"];
+const STOCK_COLS  = ["Item Code", "Name", "Condition", "Size", "Paid (£)", "Status", "Platform", "Storage", "Notes"];
 const SOLD_COLS   = ["Item", "Platform", "Paid (£)", "Sold For (£)", "Profit (£)", "Margin (%)", "Month"];
 const STOCK_ROWS  = [
   ["SG-001", "North Face Puffer",  "Excellent", "L",  "22.00", "Listed",   "Vinted",  "A1", ""],
@@ -1192,13 +1192,13 @@ function ExportSection() {
                 </div>
                 <div>
                   <h3 className="font-display text-lg font-medium mb-1">Stock list export</h3>
-                  <p className="text-paper-dim text-sm leading-relaxed">Every item you own — condition, storage bin, platform, and what you paid — in one clean file.</p>
+                  <p className="text-paper-dim text-sm leading-relaxed">Every item you own — condition, storage location, platform, and what you paid — in one clean file.</p>
                 </div>
               </div>
               <div className="p-5 flex-1">
                 <SpreadsheetPreview cols={STOCK_COLS} rows={STOCK_ROWS} accentCol={4} />
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {["Item code", "Name & condition", "Size", "Paid", "Stage", "Platform", "Storage bin", "Notes"].map((t) => (
+                  {["Item code", "Name & condition", "Size", "Paid", "Stage", "Platform", "Storage", "Notes"].map((t) => (
                     <span key={t} className="text-[11px] px-2.5 py-1 rounded-full bg-ink-soft border border-line text-paper-faint">{t}</span>
                   ))}
                 </div>
@@ -1336,7 +1336,7 @@ function AnalyticsSection() {
 function Who() {
   const rows = [
     { h: "The weekend sourcer", b: "You hit car boots and charity shops hard, come home with 40-60 items, and the logging never quite happens. Sellganise makes adding stock a tap, not a chore.", tag: "200-500 items" },
-    { h: "The full-time flipper", b: "This is your income. You're across four platforms with stock in 30+ bins, and a single lost item is real money. Retrieval and profit tracking pay for themselves.", tag: "500-2,000 items" },
+    { h: "The full-time flipper", b: "This is your income. You're across four platforms with stock in 30+ storage locations, and a single lost item is real money. Retrieval and profit tracking pay for themselves.", tag: "500-2,000 items" },
     { h: "The scaling operator", b: "You've outgrown the spreadsheet, maybe added help, and need the numbers clean for tax. The monthly archives and aging flags keep the whole operation honest.", tag: "2,000+ items" },
   ];
   return (
@@ -1372,7 +1372,7 @@ function Who() {
 function Versus() {
   const rows = [
     { f: "Adding a weekend haul", sheet: "Pinch-zoom into a phone grid, type every field", app: "Tap to add: name, cost, condition, done in seconds" },
-    { f: "Finding an item when it sells", sheet: "Ctrl+F a name you half-remember", app: "Tap the item and see its bin instantly" },
+    { f: "Finding an item when it sells", sheet: "Ctrl+F a name you half-remember", app: "Tap the item and see its storage location instantly" },
     { f: "Knowing what's not listed", sheet: "Nothing tells you. The pile just grows", app: "A live alert shouts your dead money" },
     { f: "Working out net profit", sheet: "A formula you built and forgot to update", app: "Calculated on sale, fees current per platform" },
     { f: "Tax time", sheet: "A late-night scramble to reconcile tabs", app: "Monthly totals, ready to export" },
@@ -1518,10 +1518,10 @@ function CaseStudy() {
                 "I tried fixing it with more columns. A found column. A separate tab for sold. By January I had four tabs and none of them agreed on how many items I had. Tax time was embarrassing. I'd genuinely lost £340 of stock and had no clue what my actual margin was."
               </p>
               <blockquote className="border-l-2 border-amber pl-5 text-paper font-medium">
-                "First thing Sellganise showed me: I had £612 of unlisted stock sitting in three bins I'd half-forgotten. I listed all of it that week. That alone paid for a year of the subscription."
+                "First thing Sellganise showed me: I had £612 of unlisted stock sitting in three storage locations I'd half-forgotten. I listed all of it that week. That alone paid for a year of the subscription."
               </blockquote>
               <p>
-                "The bin map changed everything. I got a Vinted notification at 11pm. Opened Sellganise, searched the item: Bin C3, top layer. Done in 20 seconds. On the spreadsheet that would have been a full-box dig at midnight."
+                "The storage map changed everything. I got a Vinted notification at 11pm. Opened Sellganise, searched the item: Storage C3, top layer. Done in 20 seconds. On the spreadsheet that would have been a full-box dig at midnight."
               </p>
             </div>
           </div>
@@ -1546,7 +1546,7 @@ const REVIEWS = [
     platform: "Depop & eBay",
     items: "~300 items",
     stars: 5,
-    text: "The bin map is genuinely life-changing. When something sells at midnight I'm not ripping boxes apart anymore. I tap the item and it tells me exactly where it is. Can't believe I didn't have this sooner.",
+    text: "The storage map is genuinely life-changing. When something sells at midnight I'm not ripping boxes apart anymore. I tap the item and it tells me exactly where it is. Can't believe I didn't have this sooner.",
   },
   {
     name: "Priya K.",
