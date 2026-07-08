@@ -250,6 +250,32 @@ function ToastContainer({ toasts, onDismiss }: { toasts: Toast[]; onDismiss: (id
 
 const EMPTY_FORM = { name: "", paid: "", cond: "good" as CondKey, bin: "", itemCode: "", notes: "", size: "" };
 
+function getRecentMonths(count: number): string[] {
+  const months = [];
+  const now = new Date();
+  for (let i = 0; i < count; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    months.push(d.toLocaleString("en-GB", { month: "long", year: "numeric" }));
+  }
+  return months;
+}
+
+function parseSoldList(raw: string): { name: string; paid: number; soldFor: number }[] {
+  return raw
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .flatMap((line) => {
+      const m = line.match(/^(.+?)\s*[-–]\s*£?([\d]+(?:[.,]\d+)?)\s*[-–]\s*£?([\d]+(?:[.,]\d+)?)[.\s]*$/);
+      if (!m) return [];
+      const name = m[1].trim();
+      const paid = parseFloat(m[2].replace(",", "."));
+      const soldFor = parseFloat(m[3].replace(",", "."));
+      if (!name || isNaN(paid) || isNaN(soldFor)) return [];
+      return [{ name, paid, soldFor }];
+    });
+}
+
 function parsePasteList(raw: string): { name: string; paid: number }[] {
   return raw
     .split("\n")
@@ -809,6 +835,131 @@ function SellModal({ item, onClose, onConfirm }: {
           <button type="submit" className="flex-1 py-2.5 rounded-xl bg-moss text-ink text-sm font-medium hover:brightness-110 transition-all">Save sale</button>
         </div>
       </form>
+    </ModalShell>
+  );
+}
+
+/* ---------- bulk sold modal ---------- */
+
+function BulkSoldModal({ onClose, onAdd }: {
+  onClose: () => void;
+  onAdd: (records: SaleRecord[]) => void;
+}) {
+  const [pasteText, setPasteText]   = useState("");
+  const [platform, setPlatform]     = useState("");
+  const [month, setMonth]           = useState(CURRENT_MONTH);
+  const [error, setError]           = useState("");
+  const pasteRef                    = useRef<HTMLTextAreaElement>(null);
+  useEscClose(onClose);
+
+  useEffect(() => { pasteRef.current?.focus(); }, []);
+
+  const parsed      = parseSoldList(pasteText);
+  const recentMonths = getRecentMonths(24);
+  const totalProfit  = parsed.reduce((s, p) => s + (p.soldFor - p.paid), 0);
+
+  function submit() {
+    if (parsed.length === 0) { setError("No items found. Use the format: Item name - £paid - £soldFor"); return; }
+    const now = Date.now();
+    const records: SaleRecord[] = parsed.map((p, i) => ({
+      id: now + i,
+      itemName: p.name,
+      paid: p.paid,
+      soldFor: p.soldFor,
+      profit: p.soldFor - p.paid,
+      month,
+      platform: platform || undefined,
+    }));
+    onAdd(records);
+    onClose();
+  }
+
+  const field = "w-full bg-ink border border-line rounded-xl px-3.5 py-2.5 text-sm text-paper outline-none focus:border-amber/60 transition-colors placeholder:text-paper-faint";
+
+  return (
+    <ModalShell onClose={onClose}>
+      <div className="flex items-center justify-between px-6 py-5 border-b border-line">
+        <div>
+          <h2 className="font-display font-medium text-lg">Import sold list</h2>
+          <p className="text-paper-faint text-xs mt-0.5">Paste an existing batch of sales in one go</p>
+        </div>
+        <button onClick={onClose} className="grid place-items-center w-8 h-8 rounded-lg text-paper-faint hover:text-paper hover:bg-ink-soft transition-colors"><IconClose /></button>
+      </div>
+
+      <div className="px-6 py-5 space-y-4">
+        <div>
+          <label className="block text-sm text-paper-dim mb-1.5">Paste your sold list</label>
+          <p className="text-xs text-paper-faint mb-2">One item per line: <span className="font-mono text-amber">Item name - £paid - £soldFor</span></p>
+          <textarea
+            ref={pasteRef}
+            className={`${field} resize-none font-mono text-xs leading-relaxed`}
+            rows={8}
+            placeholder={"Carhartt beanie - £2 - £18\nNike Air Force 1 - £12 - £45.99\nLevi jeans - £5 - £28"}
+            value={pasteText}
+            onChange={(e) => { setPasteText(e.target.value); setError(""); }}
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-sm text-paper-dim mb-1.5">Month</label>
+            <select className={field} value={month} onChange={(e) => setMonth(e.target.value)}>
+              {recentMonths.map((m) => <option key={m} value={m}>{m}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm text-paper-dim mb-1.5">Platform <span className="text-paper-faint">(optional)</span></label>
+            <select className={field} value={platform} onChange={(e) => setPlatform(e.target.value)}>
+              <option value="">Not specified</option>
+              {SALE_PLATFORMS.map((p) => <option key={p} value={p}>{p}</option>)}
+            </select>
+          </div>
+        </div>
+
+        {/* live preview */}
+        {parsed.length > 0 && (
+          <div className="rounded-xl border border-line bg-ink-soft overflow-hidden">
+            <div className="px-3.5 py-2 border-b border-line flex items-center justify-between">
+              <span className="text-xs font-mono uppercase tracking-wider text-paper-faint">Preview</span>
+              <span className="text-xs font-medium" style={{ color: totalProfit >= 0 ? "var(--color-moss)" : "var(--color-rust)" }}>
+                {parsed.length} sale{parsed.length === 1 ? "" : "s"} · {totalProfit >= 0 ? "+" : ""}{gbp(totalProfit)} profit
+              </span>
+            </div>
+            <div className="grid grid-cols-[1fr_auto_auto_auto] gap-x-4 px-3.5 py-1.5 text-[10px] font-mono uppercase tracking-wider text-paper-faint border-b border-line">
+              <span>Item</span><span>Paid</span><span>Sold</span><span>Profit</span>
+            </div>
+            <ul className="divide-y divide-line max-h-48 overflow-y-auto">
+              {parsed.map((p, i) => {
+                const profit = p.soldFor - p.paid;
+                return (
+                  <li key={i} className="grid grid-cols-[1fr_auto_auto_auto] gap-x-4 px-3.5 py-2 text-sm items-center">
+                    <span className="text-paper truncate pr-2">{p.name}</span>
+                    <span className="text-paper-faint font-mono text-xs">{gbp(p.paid)}</span>
+                    <span className="text-amber font-mono text-xs">{gbp(p.soldFor)}</span>
+                    <span className="font-mono text-xs font-medium" style={{ color: profit >= 0 ? "var(--color-moss)" : "var(--color-rust)" }}>
+                      {profit >= 0 ? "+" : ""}{gbp(profit)}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
+
+        {error && <p className="text-sm text-rust">{error}</p>}
+
+        <div className="flex gap-3 pt-1">
+          <button type="button" onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-line text-sm text-paper-dim hover:text-paper hover:border-paper-faint transition-colors">Cancel</button>
+          <button
+            type="button"
+            onClick={submit}
+            disabled={parsed.length === 0}
+            className="flex-1 py-2.5 rounded-xl bg-moss text-ink text-sm font-medium hover:brightness-110 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            {parsed.length > 0 ? `Add ${parsed.length} sale${parsed.length === 1 ? "" : "s"}` : "Add sales"}
+          </button>
+        </div>
+      </div>
     </ModalShell>
   );
 }
@@ -1693,10 +1844,11 @@ function EditSaleModal({ record, onSave, onClose }: { record: SaleRecord; onSave
 
 /* ---------- archives ---------- */
 
-function Archives({ saleRecords, onDeleteSale, onEditSale }: {
+function Archives({ saleRecords, onDeleteSale, onEditSale, onBulkSold }: {
   saleRecords: SaleRecord[];
   onDeleteSale: (id: number) => void;
   onEditSale: (record: SaleRecord) => void;
+  onBulkSold: () => void;
 }) {
   const [openMonth, setOpenMonth]         = useState<string | null>(null);
   const [editTarget, setEditTarget]       = useState<SaleRecord | null>(null);
@@ -1763,19 +1915,30 @@ function Archives({ saleRecords, onDeleteSale, onEditSale }: {
           onClose={() => setEditTarget(null)}
         />
       )}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6 gap-3 flex-wrap">
         <div>
           <h1 className="font-display text-2xl font-medium">Monthly archives</h1>
           <p className="text-paper-dim text-sm mt-1">Your sales grouped by month — tax-ready P&amp;L</p>
         </div>
-        {months.length > 0 && (
+        <div className="flex items-center gap-2 shrink-0">
           <button
-            onClick={exportAll}
-            className="flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg border border-line text-paper-dim hover:text-paper hover:border-paper-faint transition-colors shrink-0"
+            onClick={onBulkSold}
+            className="flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg bg-moss/15 text-moss border border-moss/30 hover:bg-moss/25 transition-colors"
           >
-            <IconDownload /> Export all
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Import sold list
           </button>
-        )}
+          {months.length > 0 && (
+            <button
+              onClick={exportAll}
+              className="flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg border border-line text-paper-dim hover:text-paper hover:border-paper-faint transition-colors"
+            >
+              <IconDownload /> Export all
+            </button>
+          )}
+        </div>
       </div>
 
       {months.length === 0 ? (
@@ -2135,8 +2298,9 @@ export default function DashboardPage() {
 
   const [navKey, setNavKey]       = useState<NavKey>("overview");
   const [stage, setStage]         = useState<Stage>("unlisted");
-  const [addModalOpen, setAddModalOpen]     = useState(false);
+  const [addModalOpen, setAddModalOpen]         = useState(false);
   const [storageModalOpen, setStorageModalOpen] = useState(false);
+  const [bulkSoldOpen, setBulkSoldOpen]         = useState(false);
   const [sellTarget, setSellTarget]         = useState<Item | null>(null);
   const [items, setItems]                   = useState<Item[]>([]);
   const [saleRecords, setSaleRecords]       = useState<SaleRecord[]>([]);
@@ -2339,6 +2503,11 @@ export default function DashboardPage() {
     addToast(`Sale record for "${updated.itemName}" updated`);
   }
 
+  function addManySales(records: SaleRecord[]) {
+    setSaleRecords((prev) => [...records, ...prev]);
+    addToast(`${records.length} sale${records.length === 1 ? "" : "s"} imported`, "success");
+  }
+
   const liveProfit = saleRecords.reduce((s, r) => s + r.profit, 0);
   const liveSold   = saleRecords.length;
 
@@ -2355,12 +2524,15 @@ export default function DashboardPage() {
           storageLocations={storageLocations}
         />
       )}
-      {sellTarget   && (
+      {sellTarget && (
         <SellModal
           item={sellTarget}
           onClose={() => setSellTarget(null)}
           onConfirm={(price, platform, costs) => confirmSale(sellTarget, price, platform, costs)}
         />
+      )}
+      {bulkSoldOpen && (
+        <BulkSoldModal onClose={() => setBulkSoldOpen(false)} onAdd={addManySales} />
       )}
 
       {/* sidebar */}
@@ -2506,7 +2678,7 @@ export default function DashboardPage() {
           {navKey === "stock"      && <Stock items={items} onSell={setSellTarget} onToggleListed={toggleListed} onEdit={setEditTarget} onRemove={removeItem} onUnsell={unsellItem} query={query} storageLocations={storageLocations} onAssignBin={assignBin} currentTier={currentTier} onBulkList={bulkList} onBulkUnlist={bulkUnlist} onBulkRemove={bulkRemove} onBulkAssignBin={bulkAssignBin} />}
           {navKey === "storage"    && <StorageMap items={items} storageLocations={storageLocations} onAddStorage={() => setStorageModalOpen(true)} onRemoveItem={unassignFromStorage} />}
           {navKey === "calculator" && <ProfitCalculator />}
-          {navKey === "archives"   && <Archives saleRecords={saleRecords} onDeleteSale={deleteSale} onEditSale={editSale} />}
+          {navKey === "archives"   && <Archives saleRecords={saleRecords} onDeleteSale={deleteSale} onEditSale={editSale} onBulkSold={() => setBulkSoldOpen(true)} />}
           {navKey === "analytics"  && <AnalyticsExtension />}
         </main>
       </div>
