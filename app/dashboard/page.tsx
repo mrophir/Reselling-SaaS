@@ -65,14 +65,6 @@ const CURRENT_MONTH = new Date().toLocaleString("en-GB", { month: "long", year: 
 const SALE_PLATFORMS = ["Vinted", "eBay", "Depop", "Facebook Marketplace", "Other"] as const;
 const LISTING_PLATFORMS = ["Vinted", "eBay", "Depop", "Facebook", "Other"] as const;
 
-const SEED_ITEMS: Item[] = [
-  { id: 1, code: "IT-0231", name: "Carhartt beanie",       cond: "excellent", paid: 2,  stage: "unlisted", age: 4  },
-  { id: 2, code: "IT-0229", name: "Levi 501 — vintage",    cond: "fair",      paid: 5,  stage: "unlisted", age: 94 },
-  { id: 3, code: "IT-0228", name: "Nike fleece hoodie",    cond: "good",      paid: 4,  stage: "unlisted", age: 12 },
-  { id: 4, code: "IT-0225", name: "The North Face puffer", cond: "good",      paid: 12, stage: "listed",   platform: ["Vinted"], bin: "A1" },
-  { id: 5, code: "IT-0224", name: "Adidas track top",      cond: "excellent", paid: 3,  stage: "listed",   platform: ["eBay"],   bin: "A2" },
-  { id: 6, code: "IT-0221", name: "Ralph Lauren shirt",    cond: "good",      paid: 4,  stage: "listed",   platform: ["Depop", "Vinted"],  bin: "B1" },
-];
 
 type NavKey = "overview" | "stock" | "storage" | "calculator" | "archives" | "analytics";
 
@@ -2359,7 +2351,7 @@ export default function DashboardPage() {
     try {
       const s = localStorage.getItem("sellganise-items");
       const parsed: Item[] = s ? JSON.parse(s) : [];
-      setItems(parsed.length > 0 ? parsed : SEED_ITEMS);
+      setItems(parsed);
       const r = localStorage.getItem("sellganise-sales");
       if (r) setSaleRecords(JSON.parse(r));
       const l = localStorage.getItem("sellganise-locations");
