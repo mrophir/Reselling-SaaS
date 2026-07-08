@@ -838,6 +838,15 @@ function Problem() {
             </Reveal>
           ))}
         </div>
+        <Reveal>
+          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a href="/signup" className="btn-shine inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-amber text-ink font-semibold text-sm hover:bg-paper transition-colors">
+              Fix it — start for free
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </a>
+            <span className="text-xs text-paper-faint">No credit card required</span>
+          </div>
+        </Reveal>
       </div>
     </section>
   );
@@ -1224,14 +1233,20 @@ function ExportSection() {
           </Reveal>
         </div>
 
-        {/* bottom trust line */}
+        {/* bottom trust line + CTA */}
         <Reveal>
-          <p className="text-center text-sm text-paper-faint mt-8">
-            Works with&nbsp;
-            <span className="text-paper-dim">Excel · Google Sheets · Numbers · LibreOffice</span>
-            &nbsp;·&nbsp;
-            <span className="text-paper-dim">Export any time, no upgrade required</span>
-          </p>
+          <div className="mt-10 flex flex-col items-center gap-4 text-center">
+            <a href="/signup" className="btn-shine inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-amber text-ink font-semibold text-sm hover:bg-paper transition-colors">
+              Start exporting for free
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </a>
+            <p className="text-sm text-paper-faint">
+              Works with&nbsp;
+              <span className="text-paper-dim">Excel · Google Sheets · Numbers · LibreOffice</span>
+              &nbsp;·&nbsp;
+              <span className="text-paper-dim">No upgrade required</span>
+            </p>
+          </div>
         </Reveal>
       </div>
     </section>
@@ -1405,6 +1420,15 @@ function Versus() {
                 </div>
               </div>
             ))}
+          </div>
+        </Reveal>
+        <Reveal>
+          <div className="mt-12 flex flex-col sm:flex-row items-center gap-4">
+            <a href="/signup" className="btn-shine w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-amber text-ink font-semibold text-base hover:bg-paper transition-colors">
+              Ditch the spreadsheet — start free
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </a>
+            <span className="text-sm text-paper-faint">No credit card · Cancel anytime</span>
           </div>
         </Reveal>
       </div>
@@ -1664,6 +1688,22 @@ function Reviews() {
           >
             →
           </button>
+        </div>
+
+        {/* post-review CTA */}
+        <div className="mt-14 rounded-2xl border border-amber/20 bg-amber/[0.05] px-8 py-10 text-center">
+          <p className="text-paper-dim text-sm mb-3">Join resellers already using Sellganise</p>
+          <h3 className="font-display text-2xl md:text-3xl font-medium mb-6">Ready to see your real numbers?</h3>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <a href="/signup" className="btn-shine w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-amber text-ink font-semibold text-base hover:bg-paper transition-colors">
+              Start for free
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </a>
+            <a href="/login" className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-4 rounded-xl border border-line text-paper hover:border-paper-faint transition-colors text-base">
+              Log in
+            </a>
+          </div>
+          <p className="mt-4 text-xs text-paper-faint">No credit card required · Free plan available · Cancel anytime</p>
         </div>
       </div>
     </section>
