@@ -1843,7 +1843,7 @@ function Footer() {
           <div className="flex gap-6 flex-wrap justify-center">
             <a href="#features" className="hover:text-paper transition-colors">Features</a>
             <a href="#vs" className="hover:text-paper transition-colors">vs Spreadsheet</a>
-            <a href="#case-study" className="hover:text-paper transition-colors">Case study</a>
+            <Link href="/blog" className="hover:text-paper transition-colors">Blog</Link>
             <Link href="/pricing" className="hover:text-paper transition-colors">Pricing</Link>
             <Link href="/privacy" className="hover:text-paper transition-colors">Privacy Policy</Link>
             <Link href="/terms" className="hover:text-paper transition-colors">Terms of Service</Link>
