@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { ThemeToggle } from "../components/ThemeToggle";
-import { hasFeature, type TierKey } from "../../lib/tiers";
+import { hasFeature, canAddItem, TIERS, type TierKey } from "../../lib/tiers";
 import { createClient } from "@/lib/supabase/client";
 import { deleteAccount } from "./actions";
 
@@ -2590,6 +2590,49 @@ function SettingsSection({ userName, userEmail, onNameChange }: { userName: stri
   );
 }
 
+/* ---------- upgrade modal ---------- */
+
+function UpgradeModal({ onClose }: { onClose: () => void }) {
+  useEscClose(onClose);
+  return (
+    <ModalShell onClose={onClose}>
+      <div className="flex items-center justify-between px-6 py-5 border-b border-line">
+        <div>
+          <h2 className="font-display font-medium text-lg">You've hit your item limit</h2>
+          <p className="text-paper-faint text-xs mt-0.5">Free plan includes up to 50 items</p>
+        </div>
+        <button onClick={onClose} className="grid place-items-center w-8 h-8 rounded-lg text-paper-faint hover:text-paper hover:bg-ink-soft transition-colors"><IconClose /></button>
+      </div>
+      <div className="px-6 py-6 space-y-5">
+        <div className="rounded-xl border border-amber/25 bg-amber/[0.06] p-4">
+          <p className="text-sm text-paper-dim leading-relaxed">
+            You have <span className="text-paper font-medium">50 items</span> in your inventory — the maximum on the free plan. Upgrade to Pro to add unlimited stock and unlock advanced features.
+          </p>
+        </div>
+        <div className="space-y-2">
+          {["Unlimited stock items", "Monthly profit archives", "CSV export", "Advanced analytics", "Multi-platform tracking"].map((f) => (
+            <div key={f} className="flex items-center gap-2.5 text-sm text-paper-dim">
+              <span className="w-4 h-4 rounded-full bg-moss/20 text-moss text-[10px] grid place-items-center shrink-0 font-bold">✓</span>
+              {f}
+            </div>
+          ))}
+        </div>
+        <div className="pt-1 space-y-2">
+          <button
+            onClick={onClose}
+            className="w-full py-3 rounded-xl bg-amber text-ink text-sm font-medium hover:bg-paper transition-colors"
+          >
+            Upgrade to Pro — £19.99/mo
+          </button>
+          <button onClick={onClose} className="w-full py-2 text-xs text-paper-faint hover:text-paper transition-colors">
+            Maybe later
+          </button>
+        </div>
+      </div>
+    </ModalShell>
+  );
+}
+
 /* ---------- page ---------- */
 
 export default function DashboardPage() {
@@ -2618,6 +2661,7 @@ export default function DashboardPage() {
   const [userInitials, setUserInitials]   = useState("?");
   const [userName, setUserName]           = useState("");
   const [userId, setUserId]               = useState<string | null>(null);
+  const [upgradeOpen, setUpgradeOpen]     = useState(false);
 
   function clearNotifications(alertIds: number[]) {
     setDismissedAlertIds((prev) => [...new Set([...prev, ...alertIds])]);
@@ -2692,6 +2736,7 @@ export default function DashboardPage() {
   }
 
   async function addItem(item: Item) {
+    if (!canAddItem(currentTier, items.length)) { setUpgradeOpen(true); return; }
     setItems((prev) => [item, ...prev]);
     addToast(`${item.name} added to stock`);
     if (!userId) return;
@@ -2706,11 +2751,16 @@ export default function DashboardPage() {
   }
 
   async function addManyItems(newItems: Item[]) {
-    setItems((prev) => [...newItems, ...prev]);
-    addToast(`${newItems.length} item${newItems.length === 1 ? "" : "s"} added to stock`, "info");
+    const cap = TIERS[currentTier].itemCap;
+    const remaining = cap === Infinity ? newItems.length : Math.max(0, cap - items.length);
+    if (remaining === 0) { setUpgradeOpen(true); return; }
+    const toAdd = newItems.slice(0, remaining);
+    if (toAdd.length < newItems.length) addToast(`Free plan limit: ${toAdd.length} of ${newItems.length} items added. Upgrade for unlimited.`, "warning");
+    setItems((prev) => [...toAdd, ...prev]);
+    addToast(`${toAdd.length} item${toAdd.length === 1 ? "" : "s"} added to stock`, "info");
     if (!userId) return;
     const { data, error } = await createClient().from("items").insert(
-      newItems.map((item) => ({
+      toAdd.map((item) => ({
         user_id: userId!, code: item.code, name: item.name, cond: item.cond,
         paid: item.paid, stage: item.stage, bin: item.bin ?? null,
         notes: item.notes ?? null, size: item.size ?? null, platform: item.platform ?? null,
@@ -2721,7 +2771,7 @@ export default function DashboardPage() {
     if (data) {
       const dbIds = data as { id: number }[];
       setItems((prev) => {
-        const tempIds = newItems.map((i) => i.id);
+        const tempIds = toAdd.map((i) => i.id);
         return prev.map((i) => {
           const pos = tempIds.indexOf(i.id);
           if (pos !== -1 && dbIds[pos]) return { ...i, id: dbIds[pos].id };
@@ -3000,6 +3050,7 @@ export default function DashboardPage() {
         </div>
       )}
       {addModalOpen && <AddStockModal onClose={() => setAddModalOpen(false)} onAdd={addItem} onAddMany={addManyItems} storageLocations={storageLocations} />}
+      {upgradeOpen && <UpgradeModal onClose={() => setUpgradeOpen(false)} />}
       {storageModalOpen && <AddStorageModal onClose={() => setStorageModalOpen(false)} onAdd={addStorageLocation} />}
       {editTarget && (
         <EditStockModal
@@ -3038,15 +3089,25 @@ export default function DashboardPage() {
         <div className="p-3 border-t border-line">
           <div className="rounded-lg bg-ink-card border border-line-soft p-3 mb-3">
             <div className="flex items-center justify-between text-xs mb-2">
-              <span className="text-paper-faint">{items.length} / 500 items</span>
-              <span className="text-amber">Reseller</span>
+              <span className="text-paper-faint">
+                {items.length} / {TIERS[currentTier].itemCap === Infinity ? "∞" : TIERS[currentTier].itemCap} items
+              </span>
+              <span className="text-amber">{TIERS[currentTier].name}</span>
             </div>
             <div className="h-1.5 rounded-full bg-line overflow-hidden">
-              <div className="h-full bg-amber rounded-full transition-all duration-500" style={{ width: `${Math.min(items.length / 500 * 100, 100)}%` }} />
+              <div
+                className="h-full bg-amber rounded-full transition-all duration-500"
+                style={{ width: TIERS[currentTier].itemCap === Infinity ? "0%" : `${Math.min(items.length / TIERS[currentTier].itemCap * 100, 100)}%` }}
+              />
             </div>
-            <button className="mt-3 w-full text-center text-xs py-1.5 rounded-md border border-line-soft text-paper-dim hover:text-paper hover:border-paper-faint transition-colors">
-              Upgrade to Operator
-            </button>
+            {currentTier === "starter" && (
+              <button
+                onClick={() => setUpgradeOpen(true)}
+                className="mt-3 w-full text-center text-xs py-1.5 rounded-md border border-amber/30 text-amber hover:bg-amber/10 transition-colors"
+              >
+                Upgrade to Pro
+              </button>
+            )}
           </div>
         </div>
       </aside>
@@ -3086,7 +3147,7 @@ export default function DashboardPage() {
               <button onClick={() => setQuery("")} className="text-paper-faint hover:text-paper transition-colors shrink-0"><IconClose /></button>
             )}
           </div>
-          <button onClick={() => setAddModalOpen(true)} className="flex items-center gap-2 text-sm font-medium px-3.5 py-2 rounded-lg bg-amber text-ink hover:bg-paper transition-colors shrink-0">
+          <button onClick={() => { if (!canAddItem(currentTier, items.length)) { setUpgradeOpen(true); return; } setAddModalOpen(true); }} className="flex items-center gap-2 text-sm font-medium px-3.5 py-2 rounded-lg bg-amber text-ink hover:bg-paper transition-colors shrink-0">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             <span className="hidden sm:block">Add stock</span>
           </button>
