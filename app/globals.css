@@ -43,7 +43,18 @@ html.light .bg-amber { color: #1a1816 !important; }
 /* on hover the same buttons flip to bg-paper (#1a1816 dark) — restore light text */
 html.light .hover\:bg-paper:hover { color: #eeecea !important; }
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  overflow-x: hidden;
+  max-width: 100vw;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-family: var(--font-sans);
+}
 
 /* ---- blog article prose ---- */
 .prose-sellganise h2 { font-family: var(--font-display); font-size: 1.5rem; font-weight: 500; color: var(--color-paper); margin-top: 2.5rem; margin-bottom: 1rem; line-height: 1.2; }
@@ -52,12 +63,6 @@ html { scroll-behavior: smooth; }
 .prose-sellganise a:hover { text-decoration: underline; }
 .prose-sellganise ul { list-style: none; padding: 0; }
 .prose-sellganise li { display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.5rem; color: var(--color-paper-dim); }
-
-body {
-  background: var(--color-ink);
-  color: var(--color-paper);
-  font-family: var(--font-sans);
-}
 
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }

@@ -1889,7 +1889,7 @@ function Reveal({ children, className = "", delay = 0 }: { children: React.React
 
 export default function Page() {
   return (
-    <main className="relative">
+    <main className="relative overflow-x-hidden">
       <Nav />
       <Hero />
       <Strip />
