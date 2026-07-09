@@ -227,6 +227,7 @@ function Hero() {
     "Stock Management Just Got Easier",
     "Making Resellers More Profitable",
     "Manage Your Stock, Make More Profit",
+    "The Reseller Software Built for the UK",
   ];
 
   const { displayed: t2 } = useCyclingTypewriter(
@@ -275,7 +276,7 @@ function Hero() {
             {/* eyebrow pill */}
             <div className="rise inline-flex items-center gap-2 rounded-full border border-line bg-ink-card/80 px-4 py-2 mb-8 md:mb-10 text-xs">
               <span className="w-1.5 h-1.5 rounded-full bg-amber shrink-0" style={{ animation: "blink 1.6s infinite" }} />
-              <span className="text-paper-dim">Stop losing track of your reselling stock</span>
+              <span className="text-paper-dim">Reseller stock management software — built for UK sellers</span>
             </div>
 
             {/* typewriter headline */}
@@ -288,7 +289,7 @@ function Hero() {
 
             {/* subtext */}
             <p className="rise mt-6 md:mt-7 text-base md:text-lg text-paper-dim max-w-xl mx-auto leading-relaxed" style={{ animationDelay: "0.12s" }}>
-              A live view of everything you own, exactly where it&apos;s stored, and what you&apos;re actually making — from source to sold.
+              Sellganise is reseller inventory management software that gives you a live view of everything you own, exactly where it&apos;s stored, and what you&apos;re actually making — across Vinted, eBay, Depop and Facebook.
             </p>
 
             {/* CTA */}
@@ -813,9 +814,9 @@ function Strip() {
 
 function Problem() {
   const items = [
-    { k: "01", h: "The unlisted pile grows", b: "You source 60 items on a good weekend. Forty get listed. Twenty sit in storage for three months, paid for, earning nothing. You forget they exist." },
-    { k: "02", h: "It sells and you can't find it", b: "A notification hits at 9pm. Now you're tearing through 40 boxes hunting one jumper, because your spreadsheet just says 'grey hoodie' and nothing else." },
-    { k: "03", h: "You never really know your profit", b: "Fees, postage, sourcing cost, platform cuts. By the time you net it out in your head, the number's wrong. So you stop checking." },
+    { k: "01", h: "The unlisted pile grows", b: "You source 60 items on a good weekend. Forty get listed. Twenty sit in storage for three months, paid for, earning nothing. Without proper reseller stock management, you forget they exist." },
+    { k: "02", h: "It sells and you can't find it", b: "A notification hits at 9pm. Now you're tearing through 40 boxes hunting one jumper, because your spreadsheet just says 'grey hoodie'. Reseller inventory software fixes this." },
+    { k: "03", h: "You never really know your profit", b: "Fees, postage, sourcing cost, platform cuts across Vinted, eBay and Depop. By the time you net it out in your head, the number's wrong. So you stop checking." },
   ];
   return (
     <section id="problem" className="px-6 py-16 md:py-28">
@@ -1068,7 +1069,7 @@ function Features() {
             One job: nothing slips through the cracks.
           </h2>
           <p className="text-paper-dim max-w-xl mx-auto text-lg">
-            Five tools built around the one thing a spreadsheet can't do — actively watch the gap between bought and sold.
+            Reseller software built around the one thing a spreadsheet can&apos;t do — actively watching the gap between bought and sold, across every platform you sell on.
           </p>
         </div>
 
@@ -1343,9 +1344,12 @@ function Who() {
     <section id="who" className="px-6 py-16 md:py-28 border-t border-line">
       <div className="mx-auto max-w-6xl">
         <SectionEyebrow>Who it's built for</SectionEyebrow>
-        <h2 className="font-display font-medium text-[clamp(2rem,4.5vw,3.2rem)] leading-[1.05] tracking-tight max-w-3xl mb-16">
+        <h2 className="font-display font-medium text-[clamp(2rem,4.5vw,3.2rem)] leading-[1.05] tracking-tight max-w-3xl mb-5">
           For resellers who've outgrown "I'll remember."
         </h2>
+        <p className="text-paper-dim max-w-2xl text-lg mb-16">
+          Whether you sell on Vinted, eBay, Depop or Facebook Marketplace, Sellganise is the stock management software that keeps your reselling business organised and profitable.
+        </p>
         <div className="space-y-4">
           {rows.map((r, i) => (
             <Reveal key={r.h} delay={i * 0.1}>
@@ -1386,7 +1390,7 @@ function Versus() {
           A spreadsheet is free. So is forgetting £486 in a box.
         </h2>
         <p className="text-paper-dim max-w-2xl text-lg mb-14">
-          A grid stores what you type and does nothing else. Sellganise is built for the messy, physical reality of a stockroom and it actively watches the gaps a spreadsheet can't.
+          A spreadsheet stores what you type and does nothing else. Sellganise is dedicated reseller software built for the messy, physical reality of a stockroom — it actively watches the gaps no spreadsheet or generic stock management tool can.
         </p>
         <Reveal>
           {/* Mobile: stacked cards showing Sellganise advantage */}
@@ -1827,23 +1831,27 @@ function CTA() {
 function Footer() {
   return (
     <footer className="border-t border-line px-6 py-12">
-      <div className="mx-auto max-w-6xl flex flex-col md:flex-row items-center justify-between gap-6 text-sm text-paper-faint">
-        <div className="flex items-center gap-2.5">
-          <span className="relative grid place-items-center w-6 h-6 rounded-[5px] bg-amber overflow-hidden">
-            <span className="relative w-[2.5px] h-3 rounded-full bg-ink" />
-          </span>
-          <span className="font-display text-paper">Sellganise</span>
+      <div className="mx-auto max-w-6xl space-y-8">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6 text-sm text-paper-faint">
+          <div className="flex items-center gap-2.5">
+            <span className="relative grid place-items-center w-6 h-6 rounded-[5px] bg-amber overflow-hidden">
+              <span className="relative w-[2.5px] h-3 rounded-full bg-ink" />
+            </span>
+            <span className="font-display text-paper">Sellganise</span>
+          </div>
+          <p>Reseller stock management software. © {new Date().getFullYear()}</p>
+          <div className="flex gap-6 flex-wrap justify-center">
+            <a href="#features" className="hover:text-paper transition-colors">Features</a>
+            <a href="#vs" className="hover:text-paper transition-colors">vs Spreadsheet</a>
+            <a href="#case-study" className="hover:text-paper transition-colors">Case study</a>
+            <Link href="/pricing" className="hover:text-paper transition-colors">Pricing</Link>
+            <Link href="/privacy" className="hover:text-paper transition-colors">Privacy Policy</Link>
+            <Link href="/terms" className="hover:text-paper transition-colors">Terms of Service</Link>
+          </div>
         </div>
-        <p>Inventory CRM for resellers. © {new Date().getFullYear()}</p>
-        <div className="flex gap-6 flex-wrap justify-center">
-          <a href="#features" className="hover:text-paper transition-colors">Features</a>
-          <a href="#vs" className="hover:text-paper transition-colors">vs Spreadsheet</a>
-          <a href="#case-study" className="hover:text-paper transition-colors">Case study</a>
-          <a href="#reviews" className="hover:text-paper transition-colors">Reviews</a>
-          <a href="#cta" className="hover:text-paper transition-colors">Pricing</a>
-          <Link href="/privacy" className="hover:text-paper transition-colors">Privacy Policy</Link>
-          <Link href="/terms" className="hover:text-paper transition-colors">Terms of Service</Link>
-        </div>
+        <p className="text-xs text-paper-faint/60 text-center max-w-3xl mx-auto leading-relaxed">
+          Sellganise is reseller software and inventory management built for UK sellers on Vinted, eBay, Depop and Facebook Marketplace. Track your reselling stock, monitor profit, and manage storage locations — all in one place.
+        </p>
       </div>
     </footer>
   );
