@@ -2766,9 +2766,79 @@ export default function DashboardPage() {
   const liveProfit = saleRecords.reduce((s, r) => s + r.profit, 0);
   const liveSold   = saleRecords.length;
 
+  const [migrating, setMigrating] = useState(false);
+  const hasLocalData = hydrated && items.length === 0 && typeof window !== "undefined" && !!localStorage.getItem("sellganise-items") && JSON.parse(localStorage.getItem("sellganise-items") || "[]").length > 0;
+
+  async function migrateFromLocalStorage() {
+    if (!userId || migrating) return;
+    setMigrating(true);
+    try {
+      const rawItems: Item[] = JSON.parse(localStorage.getItem("sellganise-items") || "[]");
+      const rawSales: SaleRecord[] = JSON.parse(localStorage.getItem("sellganise-sales") || "[]");
+      const rawLocs: string[] = JSON.parse(localStorage.getItem("sellganise-locations") || "[]");
+      const db = createClient();
+
+      if (rawLocs.length) {
+        await db.from("storage_locations").insert(rawLocs.map((name) => ({ user_id: userId, name }))).select();
+      }
+
+      let itemIdMap: Map<number, number> = new Map();
+      if (rawItems.length) {
+        const { data } = await db.from("items").insert(
+          rawItems.map((item) => ({
+            user_id: userId, code: item.code ?? "", name: item.name, cond: item.cond ?? "good",
+            paid: item.paid ?? 0, stage: item.stage ?? "unlisted",
+            bin: item.bin ?? null, notes: item.notes ?? null,
+            size: item.size ?? null, platform: item.platform ?? null,
+            created_at: item.createdAt ? new Date(item.createdAt).toISOString() : new Date().toISOString(),
+          }))
+        ).select("id");
+        if (data) rawItems.forEach((item, i) => { if ((data as {id:number}[])[i]) itemIdMap.set(item.id, (data as {id:number}[])[i].id); });
+      }
+
+      if (rawSales.length) {
+        await db.from("sale_records").insert(
+          rawSales.map((r) => ({
+            user_id: userId, item_id: r.itemId ? (itemIdMap.get(r.itemId) ?? null) : null,
+            item_name: r.itemName, paid: r.paid ?? 0, sold_for: r.soldFor ?? 0,
+            profit: r.profit ?? 0, month: r.month ?? CURRENT_MONTH,
+            platform: r.platform ?? null, ad_cost: r.adCost ?? null,
+            packaging_cost: r.packagingCost ?? null, equipment_cost: r.equipmentCost ?? null,
+            other_cost: r.otherCost ?? null,
+          }))
+        );
+      }
+
+      localStorage.removeItem("sellganise-items");
+      localStorage.removeItem("sellganise-sales");
+      localStorage.removeItem("sellganise-locations");
+
+      const [itemsRes, salesRes, locsRes] = await Promise.all([
+        db.from("items").select("*").eq("user_id", userId).order("created_at", { ascending: false }),
+        db.from("sale_records").select("*").eq("user_id", userId).order("created_at", { ascending: false }),
+        db.from("storage_locations").select("name").eq("user_id", userId).order("name"),
+      ]);
+      if (itemsRes.data) setItems((itemsRes.data as DbItemRow[]).map(rowToItem));
+      if (salesRes.data) setSaleRecords((salesRes.data as DbSaleRow[]).map(rowToSale));
+      if (locsRes.data) setStorageLocations((locsRes.data as { name: string }[]).map((r) => r.name));
+      addToast(`Restored ${rawItems.length} items and ${rawSales.length} sales`, "success");
+    } catch {
+      addToast("Migration failed — try again", "warning");
+    }
+    setMigrating(false);
+  }
+
   return (
     <div className="flex min-h-screen bg-ink">
       <ToastContainer toasts={toasts} onDismiss={dismissToast} />
+      {hasLocalData && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-5 py-3 rounded-xl bg-amber text-ink shadow-xl text-sm font-medium">
+          <span>Your previous data is still in this browser —</span>
+          <button onClick={migrateFromLocalStorage} disabled={migrating} className="underline underline-offset-2 font-semibold disabled:opacity-50">
+            {migrating ? "Restoring…" : "Restore it now"}
+          </button>
+        </div>
+      )}
       {addModalOpen && <AddStockModal onClose={() => setAddModalOpen(false)} onAdd={addItem} onAddMany={addManyItems} storageLocations={storageLocations} />}
       {storageModalOpen && <AddStorageModal onClose={() => setStorageModalOpen(false)} onAdd={addStorageLocation} />}
       {editTarget && (
