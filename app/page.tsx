@@ -625,7 +625,6 @@ function PhoneMockup() {
 }
 
 function DashboardMockup() {
-  // inner canvas is 1120×610; we scale it into a 900px-wide screen area
   const INNER_W = 1120;
   const INNER_H = 610;
   const SCREEN_W = 900;
@@ -633,11 +632,29 @@ function DashboardMockup() {
   const screenH = Math.round(INNER_H * scale);
 
   const navItems = [
-    { label: "Overview",         active: true  },
+    { label: "Overview",         active: false },
     { label: "Stock",            active: false },
     { label: "Storage map",      active: false },
     { label: "Calculator",       active: false },
-    { label: "Monthly archives", active: false },
+    { label: "Monthly archives", active: true  },
+  ];
+
+  const MONTH_BARS = [
+    { label: "Apr", profit: 84,  pct: 39 },
+    { label: "May", profit: 112, pct: 53 },
+    { label: "Jun", profit: 156, pct: 73 },
+    { label: "Jul", profit: 213, pct: 100 },
+  ];
+
+  const JULY_SALES = [
+    { name: "Stone Island Jumper",  platform: "Vinted", paid: 35,  sold: 95,  profit: 60,  margin: 63 },
+    { name: "CP Company Goggle",    platform: "Depop",  paid: 48,  sold: 120, profit: 72,  margin: 60 },
+    { name: "North Face Puffer",    platform: "eBay",   paid: 22,  sold: 55,  profit: 33,  margin: 60 },
+    { name: "Nike Air Max 90",      platform: "eBay",   paid: 45,  sold: 89,  profit: 44,  margin: 49 },
+    { name: "Levi 501 Jeans",       platform: "Vinted", paid: 8,   sold: 32,  profit: 24,  margin: 75 },
+    { name: "Carhartt Beanie",      platform: "Depop",  paid: 5,   sold: 18,  profit: 13,  margin: 72 },
+    { name: "Barbour Wax Jacket",   platform: "eBay",   paid: 55,  sold: 110, profit: 55,  margin: 50 },
+    { name: "Ralph Lauren Shirt",   platform: "Vinted", paid: 12,  sold: 24,  profit: 12,  margin: 50 },
   ];
 
   return (
@@ -649,49 +666,80 @@ function DashboardMockup() {
             See it in action
           </div>
           <h2 className="font-display font-medium text-[clamp(1.6rem,3.5vw,2.4rem)] leading-tight tracking-tight">
-            Your entire reselling operation,<br className="hidden sm:block" /> in one screen.
+            Every sale logged. Every penny tracked.<br className="hidden sm:block" /> Ready for tax in one click.
           </h2>
         </div>
 
-        {/* Mobile: phone frame */}
+        {/* Mobile: archives card */}
         <div className="md:hidden">
           <Reveal>
-            <PhoneMockup />
+            <div className="rounded-2xl border border-line bg-ink-card overflow-hidden">
+              {/* month header */}
+              <div className="flex items-center justify-between px-5 py-4 border-b border-line">
+                <div>
+                  <p className="text-xs font-mono text-amber uppercase tracking-wider mb-1">July 2026</p>
+                  <p className="text-2xl font-display font-medium text-moss">+£213.00</p>
+                  <p className="text-xs text-paper-faint mt-0.5">net profit · 8 items sold</p>
+                </div>
+                <div className="text-right space-y-1.5">
+                  <div><span className="text-xs text-paper-faint">Revenue</span><span className="text-sm font-mono text-paper ml-2">£438</span></div>
+                  <div><span className="text-xs text-paper-faint">Cost</span><span className="text-sm font-mono text-rust ml-2">−£225</span></div>
+                  <div><span className="text-xs text-paper-faint">Margin</span><span className="text-sm font-mono text-moss ml-2">49%</span></div>
+                </div>
+              </div>
+              {/* bar chart */}
+              <div className="px-5 py-4 border-b border-line">
+                <p className="text-[10px] font-mono uppercase tracking-wider text-paper-faint mb-3">Monthly profit</p>
+                <div className="flex items-end gap-2 h-14">
+                  {MONTH_BARS.map((m) => (
+                    <div key={m.label} className="flex-1 flex flex-col items-center gap-1">
+                      <span className="text-[9px] font-mono text-moss">£{m.profit}</span>
+                      <div className="w-full rounded-t-sm" style={{ height: `${m.pct}%`, background: m.label === "Jul" ? "#7fae4a" : "#2a2722" }} />
+                      <span className="text-[9px] text-paper-faint">{m.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {/* sold items */}
+              <div className="divide-y divide-line">
+                {JULY_SALES.slice(0, 4).map((r) => (
+                  <div key={r.name} className="flex items-center justify-between px-5 py-3 text-sm">
+                    <div className="min-w-0">
+                      <p className="text-paper truncate">{r.name}</p>
+                      <p className="text-xs text-paper-faint">{r.platform} · paid £{r.paid}</p>
+                    </div>
+                    <span className="font-mono text-moss shrink-0 ml-4">+£{r.profit}</span>
+                  </div>
+                ))}
+                <div className="px-5 py-3 text-center">
+                  <span className="text-xs text-paper-faint">+ 4 more sales this month</span>
+                </div>
+              </div>
+            </div>
           </Reveal>
         </div>
 
         {/* Desktop: laptop frame */}
         <Reveal>
           <div className="hidden md:block mx-auto" style={{ maxWidth: 980 }}>
-            {/* lid / screen */}
-            <div
-              className="rounded-2xl shadow-2xl shadow-black/70"
-              style={{ background: "#0a0908", border: "10px solid #1a1815", padding: "10px 10px 6px" }}
-            >
-              {/* camera dot */}
+            <div className="rounded-2xl shadow-2xl shadow-black/70" style={{ background: "#0a0908", border: "10px solid #1a1815", padding: "10px 10px 6px" }}>
               <div style={{ display: "flex", justifyContent: "center", marginBottom: 6 }}>
                 <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#211e1a" }} />
               </div>
-
-              {/* screen viewport */}
               <div style={{ overflow: "hidden", borderRadius: 8, height: screenH, background: "#0e0d0b", position: "relative" }}>
-                {/* inner dashboard at INNER_W × INNER_H */}
                 <div style={{ width: INNER_W, height: INNER_H, transform: `scale(${scale})`, transformOrigin: "top left", position: "absolute", top: 0, left: 0, display: "flex", fontFamily: "Inter, system-ui, sans-serif" }}>
 
-                  {/* ── sidebar ── */}
+                  {/* sidebar */}
                   <div style={{ width: 192, background: "#0e0d0b", borderRight: "1px solid #2a2722", display: "flex", flexDirection: "column", flexShrink: 0, padding: "16px 0" }}>
-                    {/* logo */}
                     <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "0 16px 20px" }}>
                       <span style={{ fontSize: 15, fontWeight: 600, color: "#f5f1e8", letterSpacing: "-0.02em" }}>Sellganise</span>
                     </div>
-                    {/* nav */}
                     {navItems.map((n) => (
                       <div key={n.label} style={{ padding: "8px 12px", margin: "1px 8px", borderRadius: 8, background: n.active ? "#1a1815" : "transparent", display: "flex", alignItems: "center", gap: 8 }}>
                         <span style={{ width: 5, height: 5, borderRadius: "50%", background: n.active ? "#f0a020" : "#2a2722" }} />
                         <span style={{ fontSize: 12, color: n.active ? "#f5f1e8" : "#6f6a5e", fontWeight: n.active ? 500 : 400 }}>{n.label}</span>
                       </div>
                     ))}
-                    {/* spacer + plan badge */}
                     <div style={{ flex: 1 }} />
                     <div style={{ margin: "0 8px", padding: "10px 12px", borderRadius: 8, border: "1px solid #2a2722", background: "#161410" }}>
                       <div style={{ fontSize: 10, color: "#6f6a5e", fontFamily: "monospace", marginBottom: 4 }}>RESELLER PLAN</div>
@@ -702,72 +750,84 @@ function DashboardMockup() {
                     </div>
                   </div>
 
-                  {/* ── main area ── */}
+                  {/* main */}
                   <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#0e0d0b", overflow: "hidden" }}>
-
-                    {/* header */}
+                    {/* topbar */}
                     <div style={{ height: 52, borderBottom: "1px solid #2a2722", display: "flex", alignItems: "center", padding: "0 20px", gap: 12, flexShrink: 0 }}>
-                      <div style={{ flex: 1, background: "#1a1815", border: "1px solid #211e1a", borderRadius: 8, height: 28, display: "flex", alignItems: "center", padding: "0 10px", gap: 6 }}>
-                        <span style={{ fontSize: 11, color: "#6f6a5e" }}>🔍</span>
-                        <span style={{ fontSize: 11, color: "#6f6a5e" }}>Search stock…</span>
-                      </div>
-                      {/* bell */}
-                      <div style={{ width: 30, height: 30, borderRadius: 7, background: "#1a1815", display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
-                        <span style={{ fontSize: 13 }}>🔔</span>
-                        <span style={{ position: "absolute", top: 5, right: 5, width: 6, height: 6, borderRadius: "50%", background: "#f0a020", border: "1.5px solid #0e0d0b" }} />
-                      </div>
-                      {/* avatar */}
-                      <div style={{ width: 30, height: 30, borderRadius: "50%", background: "#161410", border: "1px solid #2a2722", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <span style={{ fontSize: 11, color: "#b8b1a3", fontWeight: 500 }}>JT</span>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: "#f5f1e8", letterSpacing: "-0.01em" }}>Monthly archives</div>
+                      <div style={{ marginLeft: "auto", display: "flex", gap: 8, alignItems: "center" }}>
+                        <div style={{ padding: "4px 10px", background: "#f0a020", borderRadius: 6, fontSize: 10, fontWeight: 600, color: "#0a0908" }}>Export CSV</div>
+                        <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#161410", border: "1px solid #2a2722", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <span style={{ fontSize: 10, color: "#b8b1a3", fontWeight: 500 }}>JT</span>
+                        </div>
                       </div>
                     </div>
 
-                    {/* content */}
-                    <div style={{ flex: 1, padding: "16px 20px", overflow: "hidden" }}>
+                    <div style={{ flex: 1, padding: "14px 20px", overflow: "hidden", display: "flex", flexDirection: "column", gap: 12 }}>
 
-                      <div style={{ fontSize: 18, fontWeight: 600, color: "#f5f1e8", marginBottom: 12, letterSpacing: "-0.02em" }}>Overview</div>
-
-                      {/* dead money banner */}
-                      <div style={{ background: "rgba(240,160,32,0.07)", border: "1px solid rgba(240,160,32,0.3)", borderRadius: 12, padding: "10px 14px", display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                          <div style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(240,160,32,0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            <span style={{ fontSize: 14 }}>⚠️</span>
-                          </div>
-                          <div>
-                            <div style={{ fontSize: 16, color: "#f0a020", fontFamily: "monospace", fontWeight: 600, lineHeight: 1 }}>£243.00 not listed</div>
-                            <div style={{ fontSize: 11, color: "#b8b1a3", marginTop: 3 }}>2 items bought but not earning — clear the pile</div>
-                          </div>
-                        </div>
-                        <div style={{ background: "#f0a020", color: "#0e0d0b", borderRadius: 8, padding: "5px 12px", fontSize: 11, fontWeight: 600, whiteSpace: "nowrap" }}>Clear the pile</div>
+                      {/* month tabs */}
+                      <div style={{ display: "flex", gap: 4 }}>
+                        {["Apr 2026", "May 2026", "Jun 2026", "Jul 2026"].map((m) => {
+                          const active = m === "Jul 2026";
+                          return (
+                            <div key={m} style={{ padding: "5px 12px", borderRadius: 8, fontSize: 11, fontWeight: active ? 500 : 400, color: active ? "#f5f1e8" : "#6f6a5e", background: active ? "#1a1815" : "transparent", border: `1px solid ${active ? "#2a2722" : "transparent"}`, whiteSpace: "nowrap" }}>
+                              {m}
+                            </div>
+                          );
+                        })}
                       </div>
 
-                      {/* stat cards */}
-                      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 8, marginBottom: 12 }}>
-                        {[
-                          { l: "Unlisted",     v: "2",       c: "#f0a020" },
-                          { l: "Listed",       v: "8",       c: "#f5f1e8" },
-                          { l: "Sold · Jul",   v: "3",       c: "#f5f1e8" },
-                          { l: "Profit · Jul", v: "£127.50", c: "#7fae4a" },
-                        ].map((s) => (
-                          <div key={s.l} style={{ background: "#161410", border: "1px solid #2a2722", borderRadius: 10, padding: "8px 10px" }}>
-                            <div style={{ fontSize: 10, color: "#6f6a5e", marginBottom: 3 }}>{s.l}</div>
-                            <div style={{ fontSize: 16, color: s.c, fontFamily: "monospace", fontWeight: 600 }}>{s.v}</div>
-                          </div>
-                        ))}
-                      </div>
-
-                      {/* stage tabs + item list */}
-                      <div style={{ background: "#161410", border: "1px solid #2a2722", borderRadius: 12, overflow: "hidden" }}>
-                        {/* tabs */}
-                        <div style={{ display: "flex", alignItems: "center", gap: 2, padding: "6px 8px", borderBottom: "1px solid #211e1a" }}>
-                          {[["unlisted · 2", false], ["listed · 8", true], ["sold · 3", false]].map(([label, active]) => (
-                            <div key={String(label)} style={{ padding: "5px 12px", borderRadius: 7, fontSize: 11, fontWeight: active ? 500 : 400, color: active ? "#f5f1e8" : "#6f6a5e", background: active ? "#1a1815" : "transparent", whiteSpace: "nowrap" }}>
-                              {String(label)}
+                      {/* summary + bar chart row */}
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 220px", gap: 10 }}>
+                        {/* stat cards */}
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 8 }}>
+                          {[
+                            { l: "Revenue",    v: "£438",  c: "#f5f1e8" },
+                            { l: "Stock cost", v: "£225",  c: "#d8602f" },
+                            { l: "Net profit", v: "£213",  c: "#7fae4a" },
+                            { l: "Avg margin", v: "59%",   c: "#7fae4a" },
+                          ].map((s) => (
+                            <div key={s.l} style={{ background: "#161410", border: `1px solid ${s.l === "Net profit" ? "rgba(127,174,74,0.3)" : "#2a2722"}`, borderRadius: 10, padding: "8px 10px" }}>
+                              <div style={{ fontSize: 9, color: "#6f6a5e", marginBottom: 4 }}>{s.l}</div>
+                              <div style={{ fontSize: 16, color: s.c, fontFamily: "monospace", fontWeight: 600 }}>{s.v}</div>
                             </div>
                           ))}
                         </div>
+                        {/* mini bar chart */}
+                        <div style={{ background: "#161410", border: "1px solid #2a2722", borderRadius: 10, padding: "8px 12px" }}>
+                          <div style={{ fontSize: 9, color: "#6f6a5e", marginBottom: 8 }}>PROFIT TREND</div>
+                          <div style={{ display: "flex", alignItems: "flex-end", gap: 8, height: 44 }}>
+                            {MONTH_BARS.map((m) => (
+                              <div key={m.label} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 3, height: "100%" }}>
+                                <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "flex-end", width: "100%" }}>
+                                  <div style={{ width: "100%", borderRadius: "3px 3px 0 0", background: m.label === "Jul" ? "#7fae4a" : "#2a2722", height: `${m.pct}%` }} />
+                                </div>
+                                <span style={{ fontSize: 8, color: m.label === "Jul" ? "#7fae4a" : "#4a4640", fontFamily: "monospace" }}>{m.label}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* sold items table */}
+                      <div style={{ background: "#161410", border: "1px solid #2a2722", borderRadius: 12, overflow: "hidden", flex: 1 }}>
+                        {/* table header */}
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 80px 60px 60px 60px 60px", gap: 0, padding: "7px 14px", borderBottom: "1px solid #211e1a" }}>
+                          {["Item", "Platform", "Paid", "Sold", "Profit", "Margin"].map((h) => (
+                            <div key={h} style={{ fontSize: 9, color: "#4a4640", fontFamily: "monospace", textTransform: "uppercase", letterSpacing: "0.08em" }}>{h}</div>
+                          ))}
+                        </div>
                         {/* rows */}
-                        {MOCK_ITEMS.map((it) => <MockItemRow key={it.name} item={it} />)}
+                        {JULY_SALES.map((r, i) => (
+                          <div key={r.name} style={{ display: "grid", gridTemplateColumns: "1fr 80px 60px 60px 60px 60px", padding: "7px 14px", borderTop: i === 0 ? "none" : "1px solid #1a1815", alignItems: "center" }}>
+                            <span style={{ fontSize: 11, color: "#f5f1e8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", paddingRight: 8 }}>{r.name}</span>
+                            <span style={{ fontSize: 10, color: "#b8b1a3", fontFamily: "monospace" }}>{r.platform}</span>
+                            <span style={{ fontSize: 10, color: "#6f6a5e", fontFamily: "monospace" }}>£{r.paid}</span>
+                            <span style={{ fontSize: 10, color: "#b8b1a3", fontFamily: "monospace" }}>£{r.sold}</span>
+                            <span style={{ fontSize: 11, color: "#7fae4a", fontFamily: "monospace", fontWeight: 500 }}>+£{r.profit}</span>
+                            <span style={{ fontSize: 10, color: "#7fae4a", fontFamily: "monospace" }}>{r.margin}%</span>
+                          </div>
+                        ))}
                       </div>
 
                     </div>
@@ -775,18 +835,16 @@ function DashboardMockup() {
                 </div>
               </div>
             </div>
-
-            {/* stand neck */}
+            {/* stand */}
             <div style={{ display: "flex", justifyContent: "center" }}>
               <div style={{ width: 120, height: 20, background: "#1a1815" }} />
             </div>
-            {/* stand base */}
             <div style={{ display: "flex", justifyContent: "center" }}>
               <div style={{ width: 220, height: 10, background: "#1a1815", borderRadius: "0 0 12px 12px" }} />
             </div>
           </div>
         </Reveal>
-        </div>{/* end hidden md:block */}
+        </div>
     </section>
   );
 }
