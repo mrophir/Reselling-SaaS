@@ -11,6 +11,9 @@ export async function GET(request: NextRequest) {
     const { error } = await supabase.auth.verifyOtp({ type: type as "email", token_hash: tokenHash });
 
     if (!error) {
+      if (type === "recovery") {
+        return NextResponse.redirect(new URL("/auth/reset", request.url));
+      }
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
   }

@@ -20,6 +20,20 @@ export async function signIn(formData: FormData) {
   redirect("/dashboard");
 }
 
+export async function forgotPassword(formData: FormData) {
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase.auth.resetPasswordForEmail(
+      formData.get("email") as string,
+      { redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/confirm?type=recovery` }
+    );
+    if (error) return { error: error.message };
+    return { success: "Check your email for a password reset link." };
+  } catch {
+    return { error: "Something went wrong. Please try again." };
+  }
+}
+
 export async function signUp(formData: FormData) {
   try {
     const supabase = await createClient();
