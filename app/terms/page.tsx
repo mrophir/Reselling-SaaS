@@ -100,7 +100,7 @@ export default function TermsPage() {
               "Provide accurate, current, and complete registration information",
               "Maintain and promptly update your account information",
               "Keep your password confidential and not share it with any third party",
-              "Notify us immediately at support@sellganise.com of any suspected unauthorised access",
+              "Notify us immediately at sellganise@gmail.com of any suspected unauthorised access",
               "Accept responsibility for all activity that occurs under your account",
             ].map((item) => (
               <li key={item} className="flex items-start gap-2.5 text-sm">
@@ -270,7 +270,7 @@ export default function TermsPage() {
         <Section title="13. Termination">
           <p>
             <strong className="text-paper">By you:</strong> You may close your account at any time via account settings or by emailing{" "}
-            <a href="mailto:support@sellganise.com" className="text-amber hover:underline">support@sellganise.com</a>.
+            <a href="mailto:sellganise@gmail.com" className="text-amber hover:underline">sellganise@gmail.com</a>.
             Closing your account cancels any active subscription at the end of the current billing period.
           </p>
           <p>
@@ -290,7 +290,7 @@ export default function TermsPage() {
           </p>
           <p>
             Before commencing legal proceedings, we encourage you to contact us at{" "}
-            <a href="mailto:legal@sellganise.com" className="text-amber hover:underline">legal@sellganise.com</a>{" "}
+            <a href="mailto:sellganise@gmail.com" className="text-amber hover:underline">sellganise@gmail.com</a>{" "}
             to attempt to resolve the dispute informally.
           </p>
         </Section>
@@ -331,9 +331,9 @@ export default function TermsPage() {
         <Section title="18. Contact">
           <p>For questions about these Terms:</p>
           <div className="mt-3 p-5 rounded-xl bg-ink-card border border-line text-sm space-y-2">
-            <p><span className="text-paper-faint w-20 inline-block">Email</span><a href="mailto:legal@sellganise.com" className="text-amber hover:underline">legal@sellganise.com</a></p>
-            <p><span className="text-paper-faint w-20 inline-block">Support</span><a href="mailto:support@sellganise.com" className="text-amber hover:underline">support@sellganise.com</a></p>
-            <p><span className="text-paper-faint w-20 inline-block">Privacy</span><a href="mailto:privacy@sellganise.com" className="text-amber hover:underline">privacy@sellganise.com</a></p>
+            <p><span className="text-paper-faint w-20 inline-block">Email</span><a href="mailto:sellganise@gmail.com" className="text-amber hover:underline">sellganise@gmail.com</a></p>
+            <p><span className="text-paper-faint w-20 inline-block">Support</span><a href="mailto:sellganise@gmail.com" className="text-amber hover:underline">sellganise@gmail.com</a></p>
+            <p><span className="text-paper-faint w-20 inline-block">Privacy</span><a href="mailto:sellganise@gmail.com" className="text-amber hover:underline">sellganise@gmail.com</a></p>
           </div>
         </Section>
 
@@ -341,7 +341,7 @@ export default function TermsPage() {
           <p>© {new Date().getFullYear()} Sellganise. All rights reserved.</p>
           <div className="flex gap-5">
             <Link href="/privacy" className="hover:text-paper transition-colors">Privacy Policy</Link>
-            <a href="mailto:legal@sellganise.com" className="hover:text-paper transition-colors">legal@sellganise.com</a>
+            <a href="mailto:sellganise@gmail.com" className="hover:text-paper transition-colors">sellganise@gmail.com</a>
           </div>
         </div>
       </main>

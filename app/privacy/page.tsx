@@ -68,7 +68,7 @@ export default function PrivacyPage() {
           </p>
           <p>
             For all data protection queries, contact us at:{" "}
-            <a href="mailto:privacy@sellganise.com" className="text-amber hover:underline">privacy@sellganise.com</a>
+            <a href="mailto:sellganise@gmail.com" className="text-amber hover:underline">sellganise@gmail.com</a>
           </p>
         </Section>
 
@@ -136,7 +136,7 @@ export default function PrivacyPage() {
           </div>
           <p className="mt-4 text-sm">
             You may request deletion of your account at any time via your account settings or by emailing{" "}
-            <a href="mailto:privacy@sellganise.com" className="text-amber hover:underline">privacy@sellganise.com</a>.
+            <a href="mailto:sellganise@gmail.com" className="text-amber hover:underline">sellganise@gmail.com</a>.
             Billing records are retained for legal compliance and cannot be deleted early.
           </p>
         </Section>
@@ -180,7 +180,7 @@ export default function PrivacyPage() {
           </div>
           <p className="mt-4">
             To exercise any right, email{" "}
-            <a href="mailto:privacy@sellganise.com" className="text-amber hover:underline">privacy@sellganise.com</a>{" "}
+            <a href="mailto:sellganise@gmail.com" className="text-amber hover:underline">sellganise@gmail.com</a>{" "}
             with "Data Rights Request" in the subject line. We may ask you to verify your identity before proceeding.
           </p>
         </Section>
@@ -217,7 +217,7 @@ export default function PrivacyPage() {
         <Section title="10. Children's privacy">
           <p>
             Sellganise is intended for adults aged 18 and over. We do not knowingly collect personal data from anyone under 13. If you believe we have inadvertently collected data from a child, contact us at{" "}
-            <a href="mailto:privacy@sellganise.com" className="text-amber hover:underline">privacy@sellganise.com</a>{" "}
+            <a href="mailto:sellganise@gmail.com" className="text-amber hover:underline">sellganise@gmail.com</a>{" "}
             and we will delete it promptly.
           </p>
         </Section>
@@ -231,7 +231,7 @@ export default function PrivacyPage() {
         <Section title="12. How to complain">
           <p>
             If you are unhappy with how we handle your personal data, please contact us first at{" "}
-            <a href="mailto:privacy@sellganise.com" className="text-amber hover:underline">privacy@sellganise.com</a>{" "}
+            <a href="mailto:sellganise@gmail.com" className="text-amber hover:underline">sellganise@gmail.com</a>{" "}
             and we will do our best to resolve the issue.
           </p>
           <p>
@@ -249,7 +249,7 @@ export default function PrivacyPage() {
           <p>© {new Date().getFullYear()} Sellganise. All rights reserved.</p>
           <div className="flex gap-5">
             <Link href="/terms" className="hover:text-paper transition-colors">Terms of Service</Link>
-            <a href="mailto:privacy@sellganise.com" className="hover:text-paper transition-colors">privacy@sellganise.com</a>
+            <a href="mailto:sellganise@gmail.com" className="hover:text-paper transition-colors">sellganise@gmail.com</a>
           </div>
         </div>
       </main>
