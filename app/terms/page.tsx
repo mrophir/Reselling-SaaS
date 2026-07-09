@@ -47,7 +47,7 @@ export default function TermsPage() {
 
         <Section title="1. Agreement to these Terms">
           <p>
-            These Terms of Service ("Terms") constitute a legally binding agreement between you ("you", "user") and <strong className="text-paper">Sellganise Ltd</strong> ("Sellganise", "we", "us"), a company registered in England and Wales, governing your access to and use of the Sellganise web application and related services (collectively, "the Service").
+            These Terms of Service ("Terms") constitute a legally binding agreement between you ("you", "user") and <strong className="text-paper">Sellganise</strong> ("Sellganise", "we", "us"), a company registered in England and Wales, governing your access to and use of the Sellganise web application and related services (collectively, "the Service").
           </p>
           <p>
             By registering for an account, accessing, or using the Service, you confirm that you have read, understood, and agree to these Terms and our{" "}
@@ -183,7 +183,7 @@ export default function TermsPage() {
 
         <Section title="8. Intellectual property">
           <p>
-            All software, design, trademarks, trade names, logos, and content that form part of the Sellganise Service (excluding your data) are owned by or licensed to Sellganise Ltd and are protected by intellectual property laws.
+            All software, design, trademarks, trade names, logos, and content that form part of the Sellganise Service (excluding your data) are owned by or licensed to Sellganise and are protected by intellectual property laws.
           </p>
           <p>You may not:</p>
           <ul className="list-none space-y-2 mt-2">
@@ -246,7 +246,7 @@ export default function TermsPage() {
 
         <Section title="12. Indemnification">
           <p>
-            You agree to indemnify, defend, and hold harmless Sellganise Ltd and its officers, directors, employees, and agents from and against any claims, liabilities, damages, losses, and expenses (including reasonable legal fees) arising out of or in connection with:
+            You agree to indemnify, defend, and hold harmless Sellganise and its officers, directors, employees, and agents from and against any claims, liabilities, damages, losses, and expenses (including reasonable legal fees) arising out of or in connection with:
           </p>
           <ul className="list-none space-y-1.5 mt-3">
             {[
@@ -335,7 +335,7 @@ export default function TermsPage() {
         </Section>
 
         <div className="mt-12 pt-8 border-t border-line flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between text-sm text-paper-faint">
-          <p>© {new Date().getFullYear()} Sellganise Ltd. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Sellganise. All rights reserved.</p>
           <div className="flex gap-5">
             <Link href="/privacy" className="hover:text-paper transition-colors">Privacy Policy</Link>
             <a href="mailto:legal@sellganise.com" className="hover:text-paper transition-colors">legal@sellganise.com</a>

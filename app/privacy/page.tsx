@@ -53,7 +53,7 @@ export default function PrivacyPage() {
 
         <Section title="1. Who we are">
           <p>
-            Sellganise ("we", "us", "our") is operated by <strong className="text-paper">Sellganise Ltd</strong>, a company registered in England and Wales. We are the data controller for personal data collected through sellganise.com and our associated services.
+            Sellganise ("we", "us", "our") is operated by <strong className="text-paper">Sellganise</strong>, a company registered in England and Wales. We are the data controller for personal data collected through sellganise.com and our associated services.
           </p>
           <p>
             We are registered with the Information Commissioner's Office (ICO). Our registration reference and registered office details are available on request.
@@ -238,7 +238,7 @@ export default function PrivacyPage() {
         </Section>
 
         <div className="mt-12 pt-8 border-t border-line flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between text-sm text-paper-faint">
-          <p>© {new Date().getFullYear()} Sellganise Ltd. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Sellganise. All rights reserved.</p>
           <div className="flex gap-5">
             <Link href="/terms" className="hover:text-paper transition-colors">Terms of Service</Link>
             <a href="mailto:privacy@sellganise.com" className="hover:text-paper transition-colors">privacy@sellganise.com</a>
