@@ -1,4 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description: "Sellganise privacy policy — how we collect, use and protect your personal data under UK GDPR.",
+  alternates: { canonical: "https://sellganise.com/privacy" },
+  robots: { index: true, follow: false },
+};
 
 function LegalNav() {
   return (

@@ -1,4 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Terms of Service",
+  description: "Sellganise terms of service — read our terms before using the platform.",
+  alternates: { canonical: "https://sellganise.com/terms" },
+  robots: { index: true, follow: false },
+};
 
 function LegalNav() {
   return (

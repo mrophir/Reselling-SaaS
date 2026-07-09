@@ -1,5 +1,17 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { getTier, formatItemCap, type FeatureFlag } from "../../lib/tiers";
+
+export const metadata: Metadata = {
+  title: "Pricing",
+  description: "Start free with 50 items. Upgrade to Pro for £19.99/mo — unlimited stock, monthly archives, CSV export, and advanced analytics. No hidden fees, cancel anytime.",
+  alternates: { canonical: "https://sellganise.com/pricing" },
+  openGraph: {
+    title: "Sellganise Pricing — Free plan + Pro at £19.99/mo",
+    description: "Start free with 50 items. Upgrade to Pro for unlimited stock, monthly archives, CSV export and advanced analytics.",
+    url: "https://sellganise.com/pricing",
+  },
+};
 
 const FEATURE_LABELS: Record<FeatureFlag, string> = {
   pipeline: "3-stage pipeline (Unlisted / Listed / Sold)",
