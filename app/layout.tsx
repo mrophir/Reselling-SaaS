@@ -43,13 +43,13 @@ export const metadata: Metadata = {
     siteName: "Sellganise",
     title: "Sellganise — Stock Management for Resellers",
     description: "Track your reselling stock across Vinted, eBay, Depop and Facebook. Know exactly what you own, where it is, and what you're making.",
-    images: [{ url: "/og.png", width: 1200, height: 630, alt: "Sellganise — Stock Management for Resellers" }],
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Sellganise — Stock Management for Resellers" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Sellganise — Stock Management for Resellers",
     description: "Track your reselling stock across Vinted, eBay, Depop and Facebook. Know exactly what you own, where it is, and what you're making.",
-    images: ["/og.png"],
+    images: ["/opengraph-image"],
   },
   alternates: {
     canonical: APP_URL,
