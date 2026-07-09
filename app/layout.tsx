@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { CookieBanner } from "./components/CookieBanner";
 import "@fontsource/inter/400.css";
 import "@fontsource/inter/500.css";
 import "@fontsource/space-grotesk/500.css";
@@ -100,7 +101,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        {children}
+        <CookieBanner />
+      </body>
     </html>
   );
 }
