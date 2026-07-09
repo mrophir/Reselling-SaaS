@@ -2618,12 +2618,12 @@ function UpgradeModal({ onClose }: { onClose: () => void }) {
           ))}
         </div>
         <div className="pt-1 space-y-2">
-          <button
-            onClick={onClose}
-            className="w-full py-3 rounded-xl bg-amber text-ink text-sm font-medium hover:bg-paper transition-colors"
+          <a
+            href="/pricing"
+            className="block text-center w-full py-3 rounded-xl bg-amber text-ink text-sm font-medium hover:bg-paper transition-colors"
           >
             Upgrade to Pro — £19.99/mo
-          </button>
+          </a>
           <button onClick={onClose} className="w-full py-2 text-xs text-paper-faint hover:text-paper transition-colors">
             Maybe later
           </button>
