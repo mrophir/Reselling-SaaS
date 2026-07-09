@@ -278,7 +278,7 @@ function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: (id: number)
 
 function ToastContainer({ toasts, onDismiss }: { toasts: Toast[]; onDismiss: (id: number) => void }) {
   return (
-    <div className="fixed bottom-6 right-6 z-[100] flex flex-col gap-2 items-end pointer-events-none">
+    <div className="fixed bottom-24 md:bottom-6 right-4 md:right-6 z-[100] flex flex-col gap-2 items-end pointer-events-none">
       {toasts.map((t) => <ToastItem key={t.id} toast={t} onDismiss={onDismiss} />)}
     </div>
   );
@@ -3042,9 +3042,9 @@ export default function DashboardPage() {
     <div className="flex min-h-screen bg-ink">
       <ToastContainer toasts={toasts} onDismiss={dismissToast} />
       {hasLocalData && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-5 py-3 rounded-xl bg-amber text-ink shadow-xl text-sm font-medium">
-          <span>Your previous data is still in this browser —</span>
-          <button onClick={migrateFromLocalStorage} disabled={migrating} className="underline underline-offset-2 font-semibold disabled:opacity-50">
+        <div className="fixed bottom-24 md:bottom-6 left-1/2 -translate-x-1/2 z-50 flex flex-col sm:flex-row items-center gap-1 sm:gap-3 px-4 sm:px-5 py-3 rounded-xl bg-amber text-ink shadow-xl text-sm font-medium text-center w-[calc(100vw-3rem)] sm:w-auto max-w-sm sm:max-w-none">
+          <span>Previous data found in this browser —</span>
+          <button onClick={migrateFromLocalStorage} disabled={migrating} className="underline underline-offset-2 font-semibold disabled:opacity-50 whitespace-nowrap">
             {migrating ? "Restoring…" : "Restore it now"}
           </button>
         </div>
@@ -3115,7 +3115,7 @@ export default function DashboardPage() {
       {/* mobile bottom tab bar */}
       <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-ink/95 backdrop-blur-md border-t border-line flex items-stretch">
         {NAV.map((n) => {
-          const shortLabel: Record<NavKey, string> = { overview: "Overview", stock: "Stock", storage: "Storage", calculator: "Calc", archives: "Archives", analytics: "Analytics", settings: "Settings" };
+          const shortLabel: Record<NavKey, string> = { overview: "Home", stock: "Stock", storage: "Map", calculator: "Calc", archives: "Archive", analytics: "Ext", settings: "More" };
           return (
             <button
               key={n.key}
@@ -3138,7 +3138,7 @@ export default function DashboardPage() {
           <div className="flex items-center gap-2.5 flex-1 min-w-0 max-w-[420px]">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] text-paper-faint shrink-0"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <input
-              placeholder="Find an item or bin…"
+              placeholder="Search…"
               className="bg-transparent border-none outline-none text-sm text-paper placeholder:text-paper-faint w-full"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -3180,7 +3180,7 @@ export default function DashboardPage() {
               />
             )}
           </div>
-          <ThemeToggle />
+          <ThemeToggle className="hidden md:grid" />
           <div ref={userMenuRef} className="relative shrink-0">
             <button
               onClick={() => setUserMenuOpen((o) => !o)}

@@ -342,7 +342,7 @@ function Hero() {
             style={{ transform: "rotateX(6deg) scale(0.975)", transformOrigin: "center bottom" }}
           >
             {/* Mobile */}
-            <div className="md:hidden bg-ink py-6 px-8 flex justify-center">
+            <div className="md:hidden bg-ink py-6 px-4 sm:px-8 flex justify-center">
               <PhoneMockup />
             </div>
 

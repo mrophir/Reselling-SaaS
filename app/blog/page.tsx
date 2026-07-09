@@ -23,11 +23,12 @@ export default function BlogIndex() {
         <Link href="/" className="font-display text-[17px] font-medium tracking-tight hover:text-amber transition-colors">
           Sellganise
         </Link>
-        <div className="flex items-center gap-5 text-sm text-paper-faint">
-          <Link href="/pricing" className="hover:text-paper transition-colors">Pricing</Link>
-          <Link href="/login" className="hover:text-paper transition-colors">Log in</Link>
-          <Link href="/signup" className="px-4 py-2 rounded-lg bg-amber text-ink font-medium hover:bg-paper transition-colors text-sm">
-            Get started free
+        <div className="flex items-center gap-4 text-sm text-paper-faint">
+          <Link href="/pricing" className="hidden sm:block hover:text-paper transition-colors">Pricing</Link>
+          <Link href="/login" className="hidden sm:block hover:text-paper transition-colors">Log in</Link>
+          <Link href="/signup" className="px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg bg-amber text-ink font-medium hover:bg-paper transition-colors text-sm whitespace-nowrap">
+            <span className="hidden sm:inline">Get started free</span>
+            <span className="sm:hidden">Sign up</span>
           </Link>
         </div>
       </header>
