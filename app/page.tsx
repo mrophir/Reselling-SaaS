@@ -660,15 +660,17 @@ function DashboardMockup() {
   return (
     <section className="px-6 py-12 md:py-16 overflow-hidden">
       <div className="mx-auto max-w-6xl">
-        <div className="text-center mb-8 md:mb-10">
-          <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-[0.18em] text-amber mb-4">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber" />
-            See it in action
+        <Reveal variant="fade">
+          <div className="text-center mb-8 md:mb-10">
+            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-[0.18em] text-amber mb-4">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber" />
+              See it in action
+            </div>
+            <h2 className="font-display font-medium text-[clamp(1.6rem,3.5vw,2.4rem)] leading-tight tracking-tight">
+              Every sale logged. Every penny tracked.<br className="hidden sm:block" /> Ready for tax in one click.
+            </h2>
           </div>
-          <h2 className="font-display font-medium text-[clamp(1.6rem,3.5vw,2.4rem)] leading-tight tracking-tight">
-            Every sale logged. Every penny tracked.<br className="hidden sm:block" /> Ready for tax in one click.
-          </h2>
-        </div>
+        </Reveal>
 
         {/* Mobile: archives card */}
         <div className="md:hidden">
@@ -879,13 +881,15 @@ function Problem() {
   return (
     <section id="problem" className="px-6 py-16 md:py-28">
       <div className="mx-auto max-w-6xl">
-        <div className="text-center mb-14">
-        <SectionEyebrow center>The reseller's tax</SectionEyebrow>
-        <h2 className="font-display font-medium text-[clamp(2rem,4.5vw,3.2rem)] leading-[1.05] tracking-tight">
-          Volume doesn't kill resellers.{" "}
-          <span className="text-paper-dim">Losing track does.</span>
-        </h2>
-        </div>
+        <Reveal variant="slideRight">
+          <div className="text-center mb-14">
+            <SectionEyebrow center>The reseller's tax</SectionEyebrow>
+            <h2 className="font-display font-medium text-[clamp(2rem,4.5vw,3.2rem)] leading-[1.05] tracking-tight">
+              Volume doesn't kill resellers.{" "}
+              <span className="text-paper-dim">Losing track does.</span>
+            </h2>
+          </div>
+        </Reveal>
         <div className="grid md:grid-cols-3 gap-px bg-line rounded-2xl overflow-hidden border border-line">
           {items.map((it, i) => (
             <Reveal key={it.k} delay={i * 0.13}>
@@ -897,7 +901,7 @@ function Problem() {
             </Reveal>
           ))}
         </div>
-        <Reveal>
+        <Reveal variant="pop">
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
             <a href="/signup" className="btn-shine inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-amber text-ink font-semibold text-sm hover:bg-paper transition-colors">
               Fix it — start for free
@@ -1121,17 +1125,20 @@ function Features() {
   return (
     <section id="features" className="px-6 py-16 md:py-28 border-t border-line">
       <div className="mx-auto max-w-6xl">
-        <div className="text-center mb-14">
-          <SectionEyebrow center>What it does</SectionEyebrow>
-          <h2 className="font-display font-medium text-[clamp(2rem,4.5vw,3.2rem)] leading-[1.05] tracking-tight mb-5">
-            One job: nothing slips through the cracks.
-          </h2>
-          <p className="text-paper-dim max-w-xl mx-auto text-lg">
-            Reseller software built around the one thing a spreadsheet can&apos;t do — actively watching the gap between bought and sold, across every platform you sell on.
-          </p>
-        </div>
+        <Reveal variant="flip">
+          <div className="text-center mb-14">
+            <SectionEyebrow center>What it does</SectionEyebrow>
+            <h2 className="font-display font-medium text-[clamp(2rem,4.5vw,3.2rem)] leading-[1.05] tracking-tight mb-5">
+              One job: nothing slips through the cracks.
+            </h2>
+            <p className="text-paper-dim max-w-xl mx-auto text-lg">
+              Reseller software built around the one thing a spreadsheet can&apos;t do — actively watching the gap between bought and sold, across every platform you sell on.
+            </p>
+          </div>
+        </Reveal>
 
         {/* tab bar */}
+        <Reveal variant="slideLeft">
         <div className="flex gap-2 overflow-x-auto pb-2 justify-center mb-6 scrollbar-none">
           {FEATURE_TABS.map((t, i) => (
             <button
@@ -1148,6 +1155,7 @@ function Features() {
             </button>
           ))}
         </div>
+        </Reveal>
 
         {/* tab panel */}
         <Reveal key={tab.key}>
@@ -1226,7 +1234,7 @@ function ExportSection() {
   return (
     <section className="px-6 py-16 md:py-24 border-t border-line">
       <div className="mx-auto max-w-6xl">
-        <Reveal>
+        <Reveal variant="fade">
           <div className="text-center mb-12">
             <SectionEyebrow center>Export</SectionEyebrow>
             <h2 className="font-display font-medium text-[clamp(1.9rem,4vw,3rem)] leading-[1.05] tracking-tight mb-4">
@@ -1240,7 +1248,7 @@ function ExportSection() {
 
         <div className="grid md:grid-cols-2 gap-6">
           {/* Stock export card */}
-          <Reveal>
+          <Reveal variant="slideRight">
             <div className="rounded-2xl border border-line bg-ink-card overflow-hidden h-full flex flex-col">
               <div className="p-6 border-b border-line flex items-start gap-4">
                 <div className="w-10 h-10 rounded-xl bg-amber/10 border border-amber/20 flex items-center justify-center shrink-0">
@@ -1266,7 +1274,7 @@ function ExportSection() {
           </Reveal>
 
           {/* Monthly sold export card */}
-          <Reveal>
+          <Reveal variant="slideLeft" delay={0.1}>
             <div className="rounded-2xl border border-line bg-ink-card overflow-hidden h-full flex flex-col">
               <div className="p-6 border-b border-line flex items-start gap-4">
                 <div className="w-10 h-10 rounded-xl bg-moss/10 border border-moss/20 flex items-center justify-center shrink-0">
@@ -1293,7 +1301,7 @@ function ExportSection() {
         </div>
 
         {/* bottom trust line + CTA */}
-        <Reveal>
+        <Reveal variant="pop">
           <div className="mt-10 flex flex-col items-center gap-4 text-center">
             <a href="/signup" className="btn-shine inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-amber text-ink font-semibold text-sm hover:bg-paper transition-colors">
               Start exporting for free
@@ -1329,6 +1337,7 @@ function AnalyticsSection() {
         <div className="grid md:grid-cols-2 gap-14 md:gap-20 items-center">
 
           {/* ── left: description ── */}
+          <Reveal variant="slideRight">
           <div>
             <SectionEyebrow>Sellganise Analytics</SectionEyebrow>
             <h2 className="font-display font-medium text-[clamp(2rem,4.5vw,3rem)] leading-[1.05] tracking-tight mb-5">
@@ -1366,9 +1375,10 @@ function AnalyticsSection() {
               <span className="text-xs text-paper-faint">Chrome only · Vinted UK · no account required</span>
             </div>
           </div>
+          </Reveal>
 
           {/* ── right: screenshot ── */}
-          <Reveal>
+          <Reveal variant="slideLeft" delay={0.1}>
             <div className="relative flex justify-center">
               {/* ambient glow behind card */}
               <div className="absolute inset-0 bg-amber/[0.07] blur-3xl pointer-events-none rounded-full scale-75" />
@@ -1401,13 +1411,15 @@ function Who() {
   return (
     <section id="who" className="px-6 py-16 md:py-28 border-t border-line">
       <div className="mx-auto max-w-6xl">
-        <SectionEyebrow>Who it's built for</SectionEyebrow>
-        <h2 className="font-display font-medium text-[clamp(2rem,4.5vw,3.2rem)] leading-[1.05] tracking-tight max-w-3xl mb-5">
-          For resellers who've outgrown "I'll remember."
-        </h2>
-        <p className="text-paper-dim max-w-2xl text-lg mb-16">
-          Whether you sell on Vinted, eBay, Depop or Facebook Marketplace, Sellganise is the stock management software that keeps your reselling business organised and profitable.
-        </p>
+        <Reveal variant="fade">
+          <SectionEyebrow>Who it's built for</SectionEyebrow>
+          <h2 className="font-display font-medium text-[clamp(2rem,4.5vw,3.2rem)] leading-[1.05] tracking-tight max-w-3xl mb-5">
+            For resellers who've outgrown "I'll remember."
+          </h2>
+          <p className="text-paper-dim max-w-2xl text-lg mb-16">
+            Whether you sell on Vinted, eBay, Depop or Facebook Marketplace, Sellganise is the stock management software that keeps your reselling business organised and profitable.
+          </p>
+        </Reveal>
         <div className="space-y-4">
           {rows.map((r, i) => (
             <Reveal key={r.h} delay={i * 0.1}>
@@ -1443,14 +1455,16 @@ function Versus() {
   return (
     <section id="vs" className="px-6 py-16 md:py-28 border-t border-line">
       <div className="mx-auto max-w-6xl">
-        <SectionEyebrow>Sellganise vs the spreadsheet</SectionEyebrow>
-        <h2 className="font-display font-medium text-[clamp(2rem,4.5vw,3.2rem)] leading-[1.05] tracking-tight max-w-3xl mb-5">
-          A spreadsheet is free. So is forgetting £486 in a box.
-        </h2>
-        <p className="text-paper-dim max-w-2xl text-lg mb-14">
-          A spreadsheet stores what you type and does nothing else. Sellganise is dedicated reseller software built for the messy, physical reality of a stockroom — it actively watches the gaps no spreadsheet or generic stock management tool can.
-        </p>
-        <Reveal>
+        <Reveal variant="slideRight">
+          <SectionEyebrow>Sellganise vs the spreadsheet</SectionEyebrow>
+          <h2 className="font-display font-medium text-[clamp(2rem,4.5vw,3.2rem)] leading-[1.05] tracking-tight max-w-3xl mb-5">
+            A spreadsheet is free. So is forgetting £486 in a box.
+          </h2>
+          <p className="text-paper-dim max-w-2xl text-lg mb-14">
+            A spreadsheet stores what you type and does nothing else. Sellganise is dedicated reseller software built for the messy, physical reality of a stockroom — it actively watches the gaps no spreadsheet or generic stock management tool can.
+          </p>
+        </Reveal>
+        <Reveal variant="pop">
           {/* Mobile: stacked cards showing Sellganise advantage */}
           <div className="md:hidden space-y-3">
             {rows.map((r) => (
@@ -1484,7 +1498,7 @@ function Versus() {
             ))}
           </div>
         </Reveal>
-        <Reveal>
+        <Reveal variant="fade">
           <div className="mt-12 flex flex-col sm:flex-row items-center gap-4">
             <a href="/signup" className="btn-shine w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-amber text-ink font-semibold text-base hover:bg-paper transition-colors">
               Ditch the spreadsheet — start free
@@ -1518,14 +1532,17 @@ function CaseStudy() {
   return (
     <section id="case-study" className="px-6 py-16 md:py-28 border-t border-line">
       <div className="mx-auto max-w-6xl">
-        <SectionEyebrow>Case study</SectionEyebrow>
-        <h2 className="font-display font-medium text-[clamp(2rem,4.5vw,3.2rem)] leading-[1.05] tracking-tight max-w-3xl mb-5">
-          From a 900-row Google Sheet{" "}
-          <span className="text-paper-dim">to knowing exactly where every item is.</span>
-        </h2>
-        <p className="text-paper-dim text-lg max-w-2xl mb-16">
-          Marcus runs a full-time vintage clothing operation across eBay and Vinted. Here's what happened when he dropped the spreadsheet.
-        </p>
+        <Reveal variant="flip">
+          <SectionEyebrow>Case study</SectionEyebrow>
+          <h2 className="font-display font-medium text-[clamp(2rem,4.5vw,3.2rem)] leading-[1.05] tracking-tight max-w-3xl mb-5">
+            From a 900-row Google Sheet{" "}
+            <span className="text-paper-dim">to knowing exactly where every item is.</span>
+          </h2>
+          <p className="text-paper-dim text-lg max-w-2xl mb-16">
+            Marcus runs a full-time vintage clothing operation across eBay and Vinted. Here's what happened when he dropped the spreadsheet.
+          </p>
+        </Reveal>
+        <Reveal>
         <div className="grid md:grid-cols-2 gap-px bg-line rounded-2xl overflow-hidden border border-line mb-8">
           <div className="bg-ink-card p-8">
             <p className="font-mono text-xs uppercase tracking-widest text-paper-faint mb-6">Before: spreadsheet</p>
@@ -1550,7 +1567,8 @@ function CaseStudy() {
             </div>
           </div>
         </div>
-        <Reveal>
+        </Reveal>
+        <Reveal variant="slideLeft">
           <div className="grid md:grid-cols-[1fr_1.5fr] gap-10 rounded-2xl border border-line bg-ink-card p-8 md:p-10 items-start">
             <div>
               <div className="w-14 h-14 rounded-2xl bg-amber/20 border border-amber/30 grid place-items-center font-display text-2xl font-medium text-amber mb-5">
@@ -1695,10 +1713,13 @@ function Reviews() {
   return (
     <section id="reviews" className="px-6 py-16 md:py-28 border-t border-line">
       <div className="mx-auto max-w-6xl">
-        <SectionEyebrow center>What resellers say</SectionEyebrow>
-        <h2 className="font-display font-medium text-[clamp(1.8rem,4vw,2.8rem)] leading-[1.08] tracking-tight text-center mb-16">
-          Trusted by resellers who mean business.
-        </h2>
+        <Reveal variant="spin">
+          <SectionEyebrow center>What resellers say</SectionEyebrow>
+          <h2 className="font-display font-medium text-[clamp(1.8rem,4vw,2.8rem)] leading-[1.08] tracking-tight text-center mb-16">
+            Trusted by resellers who mean business.
+          </h2>
+        </Reveal>
+        <Reveal variant="fade">
         <div className="flex items-stretch gap-5">
           <div
             className="hidden md:flex flex-1 opacity-40 hover:opacity-60 transition-opacity cursor-pointer scale-[0.97] origin-right"
@@ -1751,8 +1772,10 @@ function Reviews() {
             →
           </button>
         </div>
+        </Reveal>
 
         {/* post-review CTA */}
+        <Reveal variant="pop">
         <div className="mt-14 rounded-2xl border border-amber/20 bg-amber/[0.05] px-8 py-10 text-center">
           <p className="text-paper-dim text-sm mb-3">Join resellers already using Sellganise</p>
           <h3 className="font-display text-2xl md:text-3xl font-medium mb-6">Ready to see your real numbers?</h3>
@@ -1767,6 +1790,7 @@ function Reviews() {
           </div>
           <p className="mt-4 text-xs text-paper-faint">No credit card required · Free plan available · Cancel anytime</p>
         </div>
+        </Reveal>
       </div>
     </section>
   );
@@ -1799,15 +1823,17 @@ function CTA() {
   return (
     <section id="cta" className="px-6 py-16 md:py-28 border-t border-line">
       <div className="mx-auto max-w-6xl">
-        <div className="text-center mb-16">
-          <SectionEyebrow center>Pricing</SectionEyebrow>
-          <h2 className="font-display font-medium text-[clamp(2.2rem,5vw,3.6rem)] leading-[1.02] tracking-tight mb-5">
-            Simple pricing. No surprises.
-          </h2>
-          <p className="text-paper-dim text-lg max-w-xl mx-auto">
-            Start free, log your first haul, see how it works. Upgrade when it's earning its keep.
-          </p>
-        </div>
+        <Reveal variant="flip">
+          <div className="text-center mb-16">
+            <SectionEyebrow center>Pricing</SectionEyebrow>
+            <h2 className="font-display font-medium text-[clamp(2.2rem,5vw,3.6rem)] leading-[1.02] tracking-tight mb-5">
+              Simple pricing. No surprises.
+            </h2>
+            <p className="text-paper-dim text-lg max-w-xl mx-auto">
+              Start free, log your first haul, see how it works. Upgrade when it's earning its keep.
+            </p>
+          </div>
+        </Reveal>
 
         <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto items-stretch">
 
@@ -1876,9 +1902,11 @@ function CTA() {
           </Reveal>
 
         </div>
-        <p className="text-center text-sm text-paper-faint mt-10">
-          All prices in GBP · Secure billing via Stripe · Cancel anytime
-        </p>
+        <Reveal variant="fade">
+          <p className="text-center text-sm text-paper-faint mt-10">
+            All prices in GBP · Secure billing via Stripe · Cancel anytime
+          </p>
+        </Reveal>
       </div>
     </section>
   );
@@ -1926,17 +1954,65 @@ function SectionEyebrow({ children, center = false }: { children: React.ReactNod
   );
 }
 
-function Reveal({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+type RevealVariant = "fadeUp" | "fade" | "pop" | "slideLeft" | "slideRight" | "spin" | "flip";
+
+function Reveal({ children, className = "", delay = 0, variant = "fadeUp" }: {
+  children: React.ReactNode;
+  className?: string;
+  delay?: number;
+  variant?: RevealVariant;
+}) {
   const { ref, seen } = useInView<HTMLDivElement>(0.15);
+  const sp = `cubic-bezier(0.16,1,0.3,1)`;
+  const bounce = `cubic-bezier(0.34,1.56,0.64,1)`;
+  const t75 = `0.75s ${sp} ${delay}s`;
+  const t70 = `0.7s ${sp} ${delay}s`;
+  const t55 = `0.55s ${bounce} ${delay}s`;
+
+  const variants: Record<RevealVariant, { hidden: React.CSSProperties; visible: React.CSSProperties; transition: string }> = {
+    fadeUp: {
+      hidden:  { opacity: 0, transform: "translateY(22px) scale(0.98)" },
+      visible: { opacity: 1, transform: "translateY(0) scale(1)" },
+      transition: `opacity ${t75}, transform ${t75}`,
+    },
+    fade: {
+      hidden:  { opacity: 0 },
+      visible: { opacity: 1 },
+      transition: `opacity 0.9s ease ${delay}s`,
+    },
+    pop: {
+      hidden:  { opacity: 0, transform: "scale(0.86)" },
+      visible: { opacity: 1, transform: "scale(1)" },
+      transition: `opacity ${t55}, transform ${t55}`,
+    },
+    slideLeft: {
+      hidden:  { opacity: 0, transform: "translateX(54px)" },
+      visible: { opacity: 1, transform: "translateX(0)" },
+      transition: `opacity ${t70}, transform ${t70}`,
+    },
+    slideRight: {
+      hidden:  { opacity: 0, transform: "translateX(-54px)" },
+      visible: { opacity: 1, transform: "translateX(0)" },
+      transition: `opacity ${t70}, transform ${t70}`,
+    },
+    spin: {
+      hidden:  { opacity: 0, transform: "rotate(-7deg) scale(0.92)" },
+      visible: { opacity: 1, transform: "rotate(0deg) scale(1)" },
+      transition: `opacity ${t75}, transform ${t75}`,
+    },
+    flip: {
+      hidden:  { opacity: 0, transform: "perspective(700px) rotateX(14deg) scale(0.97)" },
+      visible: { opacity: 1, transform: "perspective(700px) rotateX(0deg) scale(1)" },
+      transition: `opacity ${t75}, transform ${t75}`,
+    },
+  };
+
+  const s = variants[variant];
   return (
     <div
       ref={ref}
       className={className}
-      style={{
-        opacity: seen ? 1 : 0,
-        transform: seen ? "translateY(0) scale(1)" : "translateY(22px) scale(0.98)",
-        transition: `opacity 0.75s cubic-bezier(0.16,1,0.3,1) ${delay}s, transform 0.75s cubic-bezier(0.16,1,0.3,1) ${delay}s`,
-      }}
+      style={{ ...(seen ? s.visible : s.hidden), transition: s.transition }}
     >
       {children}
     </div>

@@ -3,7 +3,8 @@
 import { Suspense, useState, useTransition } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { signIn, signUp, forgotPassword } from "./actions";
+import { signIn, forgotPassword } from "./actions";
+import { signUp } from "../signup/actions";
 
 function LoginForm() {
   const searchParams = useSearchParams();
