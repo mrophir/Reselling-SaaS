@@ -128,10 +128,6 @@ export default function TermsPage() {
               <p className="text-sm">You may cancel at any time via your account settings. Cancellation takes effect at the end of the current billing period. We do not provide pro-rata refunds for partial months of use, except as required by law.</p>
             </div>
             <div>
-              <p className="text-sm font-medium text-paper mb-1">14-day cooling-off period (UK consumers)</p>
-              <p className="text-sm">Under the Consumer Contracts (Information, Cancellation and Additional Charges) Regulations 2013, you have a 14-day right to cancel from the date of your first purchase. If you have used the Service during this period, we may charge a proportionate amount for the service received.</p>
-            </div>
-            <div>
               <p className="text-sm font-medium text-paper mb-1">Failed payments</p>
               <p className="text-sm">If a payment fails, we will notify you and retry. If payment remains outstanding after 7 days, your account may be downgraded to the free tier until payment is resolved. Outstanding amounts remain due.</p>
             </div>
@@ -298,7 +294,6 @@ export default function TermsPage() {
           <ul className="list-none space-y-2 mt-3">
             {[
               "Consumer Rights Act 2015 — services must be provided with reasonable care and skill, within a reasonable time, and at a reasonable price where no price is agreed.",
-              "Consumer Contracts Regulations 2013 — you have a 14-day right to cancel from the date of first purchase (see Section 5).",
               "Consumer Protection from Unfair Trading Regulations 2008 — we will not engage in misleading or aggressive commercial practices.",
             ].map((item) => (
               <li key={item} className="flex items-start gap-2.5 text-sm">
