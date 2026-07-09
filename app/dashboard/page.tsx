@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { ThemeToggle } from "../components/ThemeToggle";
 import { hasFeature, type TierKey } from "../../lib/tiers";
 import { createClient } from "@/lib/supabase/client";
+import { deleteAccount } from "./actions";
 
 /* ---------- types & data ---------- */
 
@@ -103,7 +104,7 @@ const SALE_PLATFORMS = ["Vinted", "eBay", "Depop", "Facebook Marketplace", "Othe
 const LISTING_PLATFORMS = ["Vinted", "eBay", "Depop", "Facebook", "Other"] as const;
 
 
-type NavKey = "overview" | "stock" | "storage" | "calculator" | "archives" | "analytics";
+type NavKey = "overview" | "stock" | "storage" | "calculator" | "archives" | "analytics" | "settings";
 
 const NAV: { key: NavKey; label: string; icon: React.ReactNode }[] = [
   {
@@ -157,6 +158,14 @@ const NAV: { key: NavKey; label: string; icon: React.ReactNode }[] = [
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] shrink-0">
         <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+      </svg>
+    ),
+  },
+  {
+    key: "settings", label: "Settings",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] shrink-0">
+        <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
       </svg>
     ),
   },
@@ -2430,6 +2439,157 @@ function AnalyticsExtension() {
   );
 }
 
+/* ---------- settings ---------- */
+
+function SettingsSection({ userName, userEmail, onNameChange }: { userName: string; userEmail: string; onNameChange: (name: string) => void }) {
+  const [nameVal, setNameVal]       = useState(userName);
+  const [emailVal, setEmailVal]     = useState(userEmail);
+  const [currentPw, setCurrentPw]   = useState("");
+  const [newPw, setNewPw]           = useState("");
+  const [confirmPw, setConfirmPw]   = useState("");
+  const [saving, setSaving]         = useState<string | null>(null);
+  const [msg, setMsg]               = useState<{ key: string; text: string; ok: boolean } | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState("");
+  const [deleting, setDeleting]     = useState(false);
+
+  function flash(key: string, text: string, ok: boolean) {
+    setMsg({ key, text, ok });
+    setTimeout(() => setMsg(null), 4000);
+  }
+
+  async function saveName() {
+    if (!nameVal.trim() || nameVal === userName) return;
+    setSaving("name");
+    const { error } = await createClient().auth.updateUser({ data: { full_name: nameVal.trim() } });
+    setSaving(null);
+    if (error) flash("name", error.message, false);
+    else { onNameChange(nameVal.trim()); flash("name", "Name updated", true); }
+  }
+
+  async function saveEmail() {
+    if (!emailVal.trim() || emailVal === userEmail) return;
+    setSaving("email");
+    const { error } = await createClient().auth.updateUser({ email: emailVal.trim() });
+    setSaving(null);
+    if (error) flash("email", error.message, false);
+    else flash("email", "Confirmation sent to your new email address", true);
+  }
+
+  async function savePassword() {
+    if (!newPw || newPw !== confirmPw) { flash("pw", "Passwords do not match", false); return; }
+    if (newPw.length < 8) { flash("pw", "Password must be at least 8 characters", false); return; }
+    setSaving("pw");
+    const { error } = await createClient().auth.updateUser({ password: newPw });
+    setSaving(null);
+    if (error) flash("pw", error.message, false);
+    else { setCurrentPw(""); setNewPw(""); setConfirmPw(""); flash("pw", "Password updated", true); }
+  }
+
+  async function handleDelete() {
+    if (deleteConfirm !== "DELETE") return;
+    setDeleting(true);
+    await deleteAccount();
+  }
+
+  function Feedback({ k }: { k: string }) {
+    if (!msg || msg.key !== k) return null;
+    return <p className={`text-xs mt-2 ${msg.ok ? "text-moss" : "text-rust"}`}>{msg.text}</p>;
+  }
+
+  return (
+    <div className="max-w-[620px] space-y-8">
+      <div>
+        <h1 className="text-xl font-semibold">Settings</h1>
+        <p className="text-paper-faint text-sm mt-1">Manage your account and subscription</p>
+      </div>
+
+      {/* Profile */}
+      <section className="rounded-xl border border-line bg-ink-card p-6 space-y-5">
+        <h2 className="text-sm font-semibold text-paper-dim uppercase tracking-wider">Profile</h2>
+        <div className="space-y-1">
+          <label className="text-xs text-paper-faint">Display name</label>
+          <div className="flex gap-2">
+            <input value={nameVal} onChange={(e) => setNameVal(e.target.value)}
+              className="flex-1 bg-ink border border-line rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber transition-colors" />
+            <button onClick={saveName} disabled={saving === "name" || !nameVal.trim() || nameVal === userName}
+              className="px-4 py-2 rounded-lg bg-amber text-ink text-sm font-medium hover:bg-amber-deep transition-colors disabled:opacity-40">
+              {saving === "name" ? "Saving…" : "Save"}
+            </button>
+          </div>
+          <Feedback k="name" />
+        </div>
+        <div className="space-y-1">
+          <label className="text-xs text-paper-faint">Email address</label>
+          <div className="flex gap-2">
+            <input type="email" value={emailVal} onChange={(e) => setEmailVal(e.target.value)}
+              className="flex-1 bg-ink border border-line rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber transition-colors" />
+            <button onClick={saveEmail} disabled={saving === "email" || !emailVal.trim() || emailVal === userEmail}
+              className="px-4 py-2 rounded-lg bg-amber text-ink text-sm font-medium hover:bg-amber-deep transition-colors disabled:opacity-40">
+              {saving === "email" ? "Saving…" : "Save"}
+            </button>
+          </div>
+          <Feedback k="email" />
+        </div>
+      </section>
+
+      {/* Security */}
+      <section className="rounded-xl border border-line bg-ink-card p-6 space-y-5">
+        <h2 className="text-sm font-semibold text-paper-dim uppercase tracking-wider">Security</h2>
+        <div className="space-y-3">
+          <div className="space-y-1">
+            <label className="text-xs text-paper-faint">New password</label>
+            <input type="password" value={newPw} onChange={(e) => setNewPw(e.target.value)} placeholder="Min. 8 characters"
+              className="w-full bg-ink border border-line rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber transition-colors" />
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs text-paper-faint">Confirm new password</label>
+            <input type="password" value={confirmPw} onChange={(e) => setConfirmPw(e.target.value)}
+              className="w-full bg-ink border border-line rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber transition-colors" />
+          </div>
+          <button onClick={savePassword} disabled={saving === "pw" || !newPw || !confirmPw}
+            className="px-4 py-2 rounded-lg bg-amber text-ink text-sm font-medium hover:bg-amber-deep transition-colors disabled:opacity-40">
+            {saving === "pw" ? "Saving…" : "Update password"}
+          </button>
+          <Feedback k="pw" />
+        </div>
+      </section>
+
+      {/* Subscription */}
+      <section className="rounded-xl border border-line bg-ink-card p-6 space-y-4">
+        <h2 className="text-sm font-semibold text-paper-dim uppercase tracking-wider">Subscription</h2>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium">Starter plan</p>
+            <p className="text-xs text-paper-faint mt-0.5">Up to 500 items · Free</p>
+          </div>
+          <span className="text-xs px-2.5 py-1 rounded-full bg-amber/10 text-amber font-medium">Active</span>
+        </div>
+        <div className="pt-2 border-t border-line">
+          <p className="text-xs text-paper-faint mb-3">Upgrade to Operator for unlimited items, bulk tools, and priority support.</p>
+          <button className="px-4 py-2 rounded-lg border border-amber text-amber text-sm font-medium hover:bg-amber/10 transition-colors">
+            Upgrade to Operator
+          </button>
+        </div>
+      </section>
+
+      {/* Danger zone */}
+      <section className="rounded-xl border border-rust/30 bg-ink-card p-6 space-y-4">
+        <h2 className="text-sm font-semibold text-rust uppercase tracking-wider">Danger zone</h2>
+        <p className="text-sm text-paper-faint">Permanently delete your account and all data. This cannot be undone.</p>
+        <div className="space-y-2">
+          <label className="text-xs text-paper-faint">Type <span className="font-mono text-paper">DELETE</span> to confirm</label>
+          <input value={deleteConfirm} onChange={(e) => setDeleteConfirm(e.target.value)}
+            className="w-full bg-ink border border-line rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-rust transition-colors font-mono" />
+          <button onClick={handleDelete} disabled={deleteConfirm !== "DELETE" || deleting}
+            className="px-4 py-2 rounded-lg bg-rust/10 border border-rust/40 text-rust text-sm font-medium hover:bg-rust/20 transition-colors disabled:opacity-40">
+            {deleting ? "Deleting…" : "Delete my account"}
+          </button>
+        </div>
+      </section>
+    </div>
+  );
+}
+
 /* ---------- page ---------- */
 
 export default function DashboardPage() {
@@ -2894,7 +3054,7 @@ export default function DashboardPage() {
       {/* mobile bottom tab bar */}
       <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-ink/95 backdrop-blur-md border-t border-line flex items-stretch">
         {NAV.map((n) => {
-          const shortLabel: Record<NavKey, string> = { overview: "Overview", stock: "Stock", storage: "Storage", calculator: "Calc", archives: "Archives", analytics: "Analytics" };
+          const shortLabel: Record<NavKey, string> = { overview: "Overview", stock: "Stock", storage: "Storage", calculator: "Calc", archives: "Archives", analytics: "Analytics", settings: "Settings" };
           return (
             <button
               key={n.key}
@@ -3005,6 +3165,7 @@ export default function DashboardPage() {
           {navKey === "calculator" && <ProfitCalculator />}
           {navKey === "archives"   && <Archives saleRecords={saleRecords} onDeleteSale={deleteSale} onEditSale={editSale} onBulkSold={() => setBulkSoldOpen(true)} />}
           {navKey === "analytics"  && <AnalyticsExtension />}
+          {navKey === "settings"   && <SettingsSection userName={userName} userEmail={userEmail} onNameChange={(n) => { setUserName(n); const initials = n.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2) || n[0]?.toUpperCase() || "?"; setUserInitials(initials); }} />}
         </main>
       </div>
     </div>
