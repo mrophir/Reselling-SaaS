@@ -195,7 +195,7 @@ function Nav() {
             </nav>
             <div className="px-4 py-4 flex flex-col gap-2">
               <a href="/signup" onClick={() => setMenuOpen(false)} className="block w-full text-center py-3.5 rounded-xl bg-amber text-ink font-medium text-sm hover:bg-paper transition-colors">
-                Sign up free — no card needed
+                Sign up free, no card needed
               </a>
               <a href="/login" onClick={() => setMenuOpen(false)} className="block w-full text-center py-2.5 rounded-xl border border-line text-paper font-medium text-sm hover:border-paper-faint transition-colors">
                 Log in
@@ -289,7 +289,7 @@ function Hero() {
 
             {/* subtext */}
             <p className="rise mt-6 md:mt-7 text-base md:text-lg text-paper-dim max-w-xl mx-auto leading-relaxed" style={{ animationDelay: "0.12s" }}>
-              Sellganise is reseller inventory management software that gives you a live view of everything you own, exactly where it&apos;s stored, and what you&apos;re actually making — across Vinted, eBay, Depop and Facebook.
+              Sellganise is reseller inventory management software that gives you a live view of everything you own, exactly where it&apos;s stored, and what you&apos;re actually making across Vinted, eBay, Depop and Facebook.
             </p>
 
             {/* CTA */}
@@ -904,7 +904,7 @@ function Problem() {
         <Reveal variant="pop">
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
             <a href="/signup" className="btn-shine inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-amber text-ink font-semibold text-sm hover:bg-paper transition-colors">
-              Fix it — start for free
+              Start for free
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
             </a>
             <span className="text-xs text-paper-faint">No credit card required</span>
@@ -1089,7 +1089,7 @@ const FEATURE_TABS = [
     label: "Storage map",
     icon: "⊞",
     heading: "Know exactly where everything is.",
-    body: "Assign each item to a physical storage location. When something sells at midnight, open Sellganise, search the item, and see its exact location in seconds — no digging.",
+    body: "Assign each item to a physical storage location. When something sells at midnight, open Sellganise, search the item, and see its exact location in seconds. No digging.",
     preview: <StorageTab />,
   },
   {
@@ -1097,7 +1097,7 @@ const FEATURE_TABS = [
     label: "Profit calculator",
     icon: "£",
     heading: "Know your number before you list.",
-    body: "2026 UK fees built in for Vinted, eBay, Depop, and Facebook. Toggle who pays postage, see net profit and ROI update live — no more guessing your margin.",
+    body: "2026 UK fees built in for Vinted, eBay, Depop, and Facebook. Toggle who pays postage, see net profit and ROI update live. No more guessing your margin.",
     preview: <ProfitTab />,
   },
   {
@@ -1113,7 +1113,7 @@ const FEATURE_TABS = [
     label: "Monthly archives",
     icon: "▤",
     heading: "Tax-ready P&L, every month.",
-    body: "Sales group into clean monthly views with revenue, cost, and margin. Export a single month or every month in one CSV — one file, handed straight to your accountant.",
+    body: "Sales group into clean monthly views with revenue, cost, and margin. Export a single month or every month in one CSV. One file, handed straight to your accountant.",
     preview: <ArchivesTab />,
   },
 ] as const;
@@ -1132,7 +1132,7 @@ function Features() {
               One job: nothing slips through the cracks.
             </h2>
             <p className="text-paper-dim max-w-xl mx-auto text-lg">
-              Reseller software built around the one thing a spreadsheet can&apos;t do — actively watching the gap between bought and sold, across every platform you sell on.
+              Reseller software built around the one thing a spreadsheet can&apos;t do: actively watching the gap between bought and sold, across every platform you sell on.
             </p>
           </div>
         </Reveal>
@@ -1241,7 +1241,7 @@ function ExportSection() {
               Your data, always yours.
             </h2>
             <p className="text-paper-dim max-w-lg mx-auto text-lg">
-              One click exports everything to CSV — open in Excel, Google Sheets, or Numbers. No lock-in, ever.
+              One click exports everything to CSV. Open in Excel, Google Sheets, or Numbers. No lock-in, ever.
             </p>
           </div>
         </Reveal>
@@ -1328,7 +1328,7 @@ function AnalyticsSection() {
     ["List at & Offer at", "75th percentile for an ambitious ask, 25th for a quick-sale price."],
     ["Bargain / Fair / Overpriced", "Instant flag when a listing is ≤85% or ≥115% of the market rate."],
     ["Sell speed estimate", "Demand signal derived from favourites-per-day on comparable listings."],
-    ["100% private", "Every calculation runs locally in your browser — nothing sent to any server."],
+    ["100% private", "Every calculation runs locally in your browser. Nothing sent to any server."],
   ];
 
   return (
@@ -1344,7 +1344,7 @@ function AnalyticsSection() {
               Know if it&apos;s a bargain<br className="hidden sm:block" /> before you buy it.
             </h2>
             <p className="text-paper-dim text-lg leading-relaxed mb-8">
-              A free Chrome extension that lives inside Vinted UK. On every listing it scans comparable sold and live items, strips outlier prices, and injects a live market card — so you know in seconds whether something is worth buying to resell.
+              A free Chrome extension that lives inside Vinted UK. On every listing it scans comparable sold and live items, strips outlier prices, and injects a live market card so you know in seconds whether something is worth buying to resell.
             </p>
 
             <ul className="space-y-4 mb-10">
@@ -1461,7 +1461,7 @@ function Versus() {
             A spreadsheet is free. So is forgetting £486 in a box.
           </h2>
           <p className="text-paper-dim max-w-2xl text-lg mb-14">
-            A spreadsheet stores what you type and does nothing else. Sellganise is dedicated reseller software built for the messy, physical reality of a stockroom — it actively watches the gaps no spreadsheet or generic stock management tool can.
+            A spreadsheet stores what you type and does nothing else. Sellganise is dedicated reseller software built for the messy, physical reality of a stockroom. It actively watches the gaps no spreadsheet or generic stock management tool can.
           </p>
         </Reveal>
         <Reveal variant="pop">
@@ -1501,7 +1501,7 @@ function Versus() {
         <Reveal variant="fade">
           <div className="mt-12 flex flex-col sm:flex-row items-center gap-4">
             <a href="/signup" className="btn-shine w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-amber text-ink font-semibold text-base hover:bg-paper transition-colors">
-              Ditch the spreadsheet — start free
+              Ditch the spreadsheet. Start free
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
             </a>
             <span className="text-sm text-paper-faint">No credit card · Cancel anytime</span>
@@ -1802,7 +1802,7 @@ const FEATURE_LABELS: Record<FeatureFlag, string> = {
   pipeline: "3-stage pipeline (Unlisted / Listed / Sold)",
   leak_alert: "Not listed yet leak alert",
   bin_lookup: "Storage map & instant retrieval",
-  basic_profit: "Profit calculator (2026 UK fees — Vinted, eBay, Depop, Facebook)",
+  basic_profit: "Profit calculator (2026 UK fees: Vinted, eBay, Depop, Facebook)",
   monthly_archives: "Monthly archives",
   aging_flags: "Aging flags on dead stock",
   tax_export: "Tax-ready CSV export",
@@ -1810,7 +1810,7 @@ const FEATURE_LABELS: Record<FeatureFlag, string> = {
   bulk_actions: "Bulk actions",
   advanced_reporting: "Advanced reporting",
   csv_import: "CSV import",
-  analytics_extension: "Sellganise Analytics Chrome extension — live market price data on every Vinted listing",
+  analytics_extension: "Sellganise Analytics Chrome extension: live market price data on every Vinted listing",
 };
 
 const FREE_FEATURES: FeatureFlag[] = ["pipeline", "leak_alert", "bin_lookup", "basic_profit"];
@@ -1859,7 +1859,7 @@ function CTA() {
                 ))}
               </ul>
               <a href="/signup" className="block text-center px-5 py-3.5 rounded-xl border border-line text-paper font-medium text-sm hover:border-paper-faint hover:bg-ink-soft transition-colors">
-                Start free — no card needed
+                Start free, no card needed
               </a>
             </div>
           </Reveal>
@@ -1936,7 +1936,7 @@ function Footer() {
           </div>
         </div>
         <p className="text-xs text-paper-faint/60 text-center max-w-3xl mx-auto leading-relaxed">
-          Sellganise is reseller software and inventory management built for UK sellers on Vinted, eBay, Depop and Facebook Marketplace. Track your reselling stock, monitor profit, and manage storage locations — all in one place.
+          Sellganise is reseller software and inventory management built for UK sellers on Vinted, eBay, Depop and Facebook Marketplace. Track your reselling stock, monitor profit, and manage storage locations all in one place.
         </p>
       </div>
     </footer>

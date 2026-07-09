@@ -71,7 +71,7 @@ export default function BlogIndex() {
         {/* coming soon note */}
         {POSTS.some((p) => new Date(p.date) > new Date()) && (
           <p className="mt-10 text-sm text-paper-faint text-center">
-            More articles coming weekly — bookmark this page or{" "}
+            More articles coming weekly. Bookmark this page or{" "}
             <Link href="/signup" className="text-amber hover:underline">sign up free</Link>{" "}
             to stay in the loop.
           </p>

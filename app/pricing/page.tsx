@@ -17,7 +17,7 @@ const FEATURE_LABELS: Record<FeatureFlag, string> = {
   pipeline: "3-stage pipeline (Unlisted / Listed / Sold)",
   leak_alert: "Not listed yet leak alert",
   bin_lookup: "Storage map & instant retrieval",
-  basic_profit: "Profit calculator (2026 UK fees — Vinted, eBay, Depop, Facebook)",
+  basic_profit: "Profit calculator (2026 UK fees: Vinted, eBay, Depop, Facebook)",
   monthly_archives: "Monthly archives",
   aging_flags: "Aging flags on dead stock",
   tax_export: "Tax-ready CSV export",
@@ -25,7 +25,7 @@ const FEATURE_LABELS: Record<FeatureFlag, string> = {
   bulk_actions: "Bulk actions",
   advanced_reporting: "Advanced reporting",
   csv_import: "CSV import",
-  analytics_extension: "Sellganise Analytics Chrome extension — live market price data on every Vinted listing",
+  analytics_extension: "Sellganise Analytics Chrome extension: live market price data on every Vinted listing",
 };
 
 const FREE_FEATURES: FeatureFlag[] = ["pipeline", "leak_alert", "bin_lookup", "basic_profit"];
@@ -89,7 +89,7 @@ export default function PricingPage() {
               ))}
             </ul>
             <Link href="/signup" className="block text-center px-5 py-3.5 rounded-xl border border-line text-paper font-medium text-sm hover:border-paper-faint hover:bg-ink-soft transition-colors">
-              Start free — no card needed
+              Start free, no card needed
             </Link>
           </div>
 
@@ -138,9 +138,9 @@ export default function PricingPage() {
         <div className="max-w-2xl mx-auto mt-20 space-y-6">
           <h2 className="font-display text-2xl font-medium tracking-tight text-center mb-10">Common questions</h2>
           {[
-            { q: "Can I cancel anytime?", a: "Yes — cancel from your account settings with one click. You keep access until the end of your billing period. No questions asked." },
+            { q: "Can I cancel anytime?", a: "Yes. Cancel from your account settings with one click. You keep access until the end of your billing period. No questions asked." },
             { q: "What happens when I hit 50 items on the free plan?", a: "You won't be able to add more items until you upgrade. Your existing data stays safe and nothing is deleted." },
-            { q: "Is my data safe?", a: "Yes. All data is stored securely in Supabase with row-level security — only you can access your inventory. We never sell your data." },
+            { q: "Is my data safe?", a: "Yes. All data is stored securely in Supabase with row-level security. Only you can access your inventory. We never sell your data." },
             { q: "Do I need a card to sign up?", a: "No. The free plan is genuinely free with no card required. You only need payment details when upgrading to Pro." },
             { q: "What is the Analytics Chrome extension?", a: "A browser extension that overlays live resale price estimates directly on Vinted listings so you can spot bargains instantly." },
           ].map(({ q, a }) => (

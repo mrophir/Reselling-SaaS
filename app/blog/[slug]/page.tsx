@@ -86,7 +86,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         <div className="mt-16 rounded-2xl border border-amber/30 bg-amber/[0.06] p-8 text-center">
           <p className="font-display text-xl font-medium mb-2">Ready to get organised?</p>
           <p className="text-paper-dim text-sm mb-6">
-            Sellganise is free to start — track up to 50 items with no card needed.
+            Sellganise is free to start. Track up to 50 items with no card needed.
           </p>
           <Link
             href="/signup"
