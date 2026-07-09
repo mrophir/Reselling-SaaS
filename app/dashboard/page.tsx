@@ -61,6 +61,43 @@ interface SaleRecord {
   otherCost?: number;
 }
 
+// --- Supabase row shapes ---
+interface DbItemRow {
+  id: number; user_id: string; code: string; name: string;
+  cond: string; paid: number; stage: string;
+  bin: string | null; platform: string[] | null;
+  notes: string | null; size: string | null; created_at: string;
+}
+interface DbSaleRow {
+  id: number; user_id: string; item_id: number | null;
+  item_name: string; paid: number; sold_for: number; profit: number;
+  month: string; platform: string | null;
+  ad_cost: number | null; packaging_cost: number | null;
+  equipment_cost: number | null; other_cost: number | null;
+  created_at: string;
+}
+function rowToItem(r: DbItemRow): Item {
+  const createdAt = r.created_at ? new Date(r.created_at).getTime() : Date.now();
+  return {
+    id: r.id, code: r.code, name: r.name,
+    cond: (r.cond as CondKey) ?? "good",
+    paid: Number(r.paid), stage: (r.stage as Stage) ?? "unlisted",
+    bin: r.bin ?? undefined, platform: r.platform ?? undefined,
+    notes: r.notes ?? undefined, size: r.size ?? undefined,
+    createdAt, age: Math.floor((Date.now() - createdAt) / 86400000),
+  };
+}
+function rowToSale(r: DbSaleRow): SaleRecord {
+  return {
+    id: r.id, itemId: r.item_id ?? undefined,
+    itemName: r.item_name, paid: Number(r.paid),
+    soldFor: Number(r.sold_for), profit: Number(r.profit),
+    month: r.month, platform: r.platform ?? undefined,
+    adCost: r.ad_cost ?? undefined, packagingCost: r.packaging_cost ?? undefined,
+    equipmentCost: r.equipment_cost ?? undefined, otherCost: r.other_cost ?? undefined,
+  };
+}
+
 const CURRENT_MONTH = new Date().toLocaleString("en-GB", { month: "long", year: "numeric" });
 const SALE_PLATFORMS = ["Vinted", "eBay", "Depop", "Facebook Marketplace", "Other"] as const;
 const LISTING_PLATFORMS = ["Vinted", "eBay", "Depop", "Facebook", "Other"] as const;
@@ -2420,6 +2457,7 @@ export default function DashboardPage() {
   const [userEmail, setUserEmail]         = useState("");
   const [userInitials, setUserInitials]   = useState("?");
   const [userName, setUserName]           = useState("");
+  const [userId, setUserId]               = useState<string | null>(null);
 
   function clearNotifications(alertIds: number[]) {
     setDismissedAlertIds((prev) => [...new Set([...prev, ...alertIds])]);
@@ -2447,6 +2485,7 @@ export default function DashboardPage() {
   useEffect(() => {
     createClient().auth.getUser().then(({ data: { user } }) => {
       if (!user) return;
+      setUserId(user.id);
       const email = user.email ?? "";
       const name = (user.user_metadata?.full_name as string) ?? email.split("@")[0] ?? "";
       const initials = name.split(" ").map((w: string) => w[0]).join("").toUpperCase().slice(0, 2) || email[0]?.toUpperCase() || "?";
@@ -2456,39 +2495,33 @@ export default function DashboardPage() {
     });
   }, []);
 
-  // Load persisted state from localStorage on first mount
+  // Load data from Supabase when user is authenticated
   useEffect(() => {
-    try {
-      const s = localStorage.getItem("sellganise-items");
-      const parsed: Item[] = s ? JSON.parse(s) : [];
-      setItems(parsed);
-      const r = localStorage.getItem("sellganise-sales");
-      if (r) setSaleRecords(JSON.parse(r));
-      const l = localStorage.getItem("sellganise-locations");
-      if (l) setStorageLocations(JSON.parse(l));
-    } catch {}
-    setHydrated(true);
-  }, []);
-
-  // Persist items whenever they change (after initial load)
-  useEffect(() => {
-    if (!hydrated) return;
-    localStorage.setItem("sellganise-items", JSON.stringify(items));
-  }, [items, hydrated]);
-
-  useEffect(() => {
-    if (!hydrated) return;
-    localStorage.setItem("sellganise-sales", JSON.stringify(saleRecords));
-  }, [saleRecords, hydrated]);
-
-  useEffect(() => {
-    if (!hydrated) return;
-    localStorage.setItem("sellganise-locations", JSON.stringify(storageLocations));
-  }, [storageLocations, hydrated]);
+    if (!userId) return;
+    const db = createClient();
+    Promise.all([
+      db.from("items").select("*").eq("user_id", userId).order("created_at", { ascending: false }),
+      db.from("sale_records").select("*").eq("user_id", userId).order("created_at", { ascending: false }),
+      db.from("storage_locations").select("name").eq("user_id", userId).order("name"),
+    ]).then(([itemsRes, salesRes, locsRes]) => {
+      if (itemsRes.data) setItems((itemsRes.data as DbItemRow[]).map(rowToItem));
+      if (salesRes.data) setSaleRecords((salesRes.data as DbSaleRow[]).map(rowToSale));
+      if (locsRes.data) setStorageLocations((locsRes.data as { name: string }[]).map((r) => r.name));
+      setHydrated(true);
+    });
+  }, [userId]);
 
   function editItem(updated: Item) {
     setItems((prev) => prev.map((i) => i.id === updated.id ? updated : i));
     addToast(`${updated.name} updated`);
+    if (!userId) return;
+    createClient().from("items").update({
+      code: updated.code, name: updated.name, cond: updated.cond,
+      paid: updated.paid, stage: updated.stage,
+      bin: updated.bin ?? null, notes: updated.notes ?? null,
+      size: updated.size ?? null, platform: updated.platform ?? null,
+    }).eq("id", updated.id).eq("user_id", userId)
+      .then(({ error }) => { if (error) addToast("Failed to save changes", "warning"); });
   }
 
   function addToast(message: string, type: Toast["type"] = "success") {
@@ -2498,54 +2531,112 @@ export default function DashboardPage() {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }
 
-  function addItem(item: Item) {
+  async function addItem(item: Item) {
     setItems((prev) => [item, ...prev]);
     addToast(`${item.name} added to stock`);
+    if (!userId) return;
+    const { data, error } = await createClient().from("items").insert({
+      user_id: userId, code: item.code, name: item.name, cond: item.cond,
+      paid: item.paid, stage: item.stage, bin: item.bin ?? null,
+      notes: item.notes ?? null, size: item.size ?? null, platform: item.platform ?? null,
+      created_at: item.createdAt ? new Date(item.createdAt).toISOString() : new Date().toISOString(),
+    }).select("id").single();
+    if (error) { addToast("Failed to save item", "warning"); return; }
+    if (data) setItems((prev) => prev.map((i) => i.id === item.id ? { ...i, id: (data as { id: number }).id } : i));
   }
 
-  function addManyItems(newItems: Item[]) {
+  async function addManyItems(newItems: Item[]) {
     setItems((prev) => [...newItems, ...prev]);
     addToast(`${newItems.length} item${newItems.length === 1 ? "" : "s"} added to stock`, "info");
+    if (!userId) return;
+    const { data, error } = await createClient().from("items").insert(
+      newItems.map((item) => ({
+        user_id: userId!, code: item.code, name: item.name, cond: item.cond,
+        paid: item.paid, stage: item.stage, bin: item.bin ?? null,
+        notes: item.notes ?? null, size: item.size ?? null, platform: item.platform ?? null,
+        created_at: item.createdAt ? new Date(item.createdAt).toISOString() : new Date().toISOString(),
+      }))
+    ).select("id");
+    if (error) { addToast("Failed to save items", "warning"); return; }
+    if (data) {
+      const dbIds = data as { id: number }[];
+      setItems((prev) => {
+        const tempIds = newItems.map((i) => i.id);
+        return prev.map((i) => {
+          const pos = tempIds.indexOf(i.id);
+          if (pos !== -1 && dbIds[pos]) return { ...i, id: dbIds[pos].id };
+          return i;
+        });
+      });
+    }
   }
 
-  function addStorageLocation(name: string) {
-    setStorageLocations((prev) => prev.includes(name) ? prev : [...prev, name]);
+  async function addStorageLocation(name: string) {
+    if (storageLocations.includes(name)) return;
+    setStorageLocations((prev) => [...prev, name]);
     addToast(`Storage location "${name}" created`, "info");
+    if (!userId) return;
+    const { error } = await createClient().from("storage_locations").insert({ user_id: userId, name });
+    if (error) {
+      setStorageLocations((prev) => prev.filter((l) => l !== name));
+      addToast("Failed to create storage location", "warning");
+    }
   }
 
   function removeItem(id: number) {
     const target = items.find((i) => i.id === id);
     setItems((prev) => prev.filter((i) => i.id !== id));
     if (target) addToast(`${target.name} removed`, "warning");
+    if (!userId) return;
+    createClient().from("items").delete().eq("id", id).eq("user_id", userId)
+      .then(({ error }) => { if (error) addToast("Failed to remove item", "warning"); });
   }
 
   function unassignFromStorage(id: number) {
     const target = items.find((i) => i.id === id);
     setItems((prev) => prev.map((i) => i.id === id ? { ...i, bin: undefined } : i));
     if (target) addToast(`${target.name} removed from storage`);
+    if (!userId) return;
+    createClient().from("items").update({ bin: null }).eq("id", id).eq("user_id", userId)
+      .then(({ error }) => { if (error) addToast("Failed to update storage", "warning"); });
   }
 
   function assignBin(id: number, bin: string) {
     const target = items.find((i) => i.id === id);
     setItems((prev) => prev.map((i) => i.id === id ? { ...i, bin } : i));
     if (target) addToast(`${target.name} added to ${bin}`, "info");
+    if (!userId) return;
+    createClient().from("items").update({ bin }).eq("id", id).eq("user_id", userId)
+      .then(({ error }) => { if (error) addToast("Failed to assign storage", "warning"); });
   }
 
   function bulkList(ids: number[]) {
     setItems((prev) => prev.map((i) => ids.includes(i.id) ? { ...i, stage: "listed" as Stage } : i));
     addToast(`${ids.length} item${ids.length !== 1 ? "s" : ""} marked listed`);
+    if (!userId) return;
+    createClient().from("items").update({ stage: "listed" }).in("id", ids).eq("user_id", userId)
+      .then(({ error }) => { if (error) addToast("Failed to update items", "warning"); });
   }
   function bulkUnlist(ids: number[]) {
     setItems((prev) => prev.map((i) => ids.includes(i.id) ? { ...i, stage: "unlisted" as Stage } : i));
     addToast(`${ids.length} item${ids.length !== 1 ? "s" : ""} marked unlisted`, "info");
+    if (!userId) return;
+    createClient().from("items").update({ stage: "unlisted" }).in("id", ids).eq("user_id", userId)
+      .then(({ error }) => { if (error) addToast("Failed to update items", "warning"); });
   }
   function bulkRemove(ids: number[]) {
     setItems((prev) => prev.filter((i) => !ids.includes(i.id)));
     addToast(`${ids.length} item${ids.length !== 1 ? "s" : ""} removed`, "info");
+    if (!userId) return;
+    createClient().from("items").delete().in("id", ids).eq("user_id", userId)
+      .then(({ error }) => { if (error) addToast("Failed to remove items", "warning"); });
   }
   function bulkAssignBin(ids: number[], bin: string) {
     setItems((prev) => prev.map((i) => ids.includes(i.id) ? { ...i, bin } : i));
     addToast(`${ids.length} item${ids.length !== 1 ? "s" : ""} moved to ${bin}`, "info");
+    if (!userId) return;
+    createClient().from("items").update({ bin }).in("id", ids).eq("user_id", userId)
+      .then(({ error }) => { if (error) addToast("Failed to assign storage", "warning"); });
   }
 
   useEffect(() => {
@@ -2556,39 +2647,63 @@ export default function DashboardPage() {
 
   function toggleListed(item: Item, platforms?: string[]) {
     const next: Stage = item.stage === "unlisted" ? "listed" : "unlisted";
+    const newPlatform = next === "listed" ? (platforms ?? item.platform) : [];
     setItems((prev) => prev.map((i) =>
-      i.id === item.id ? { ...i, stage: next, platform: next === "listed" ? (platforms ?? i.platform) : [] } : i
+      i.id === item.id ? { ...i, stage: next, platform: newPlatform } : i
     ));
     addToast(next === "listed" ? `${item.name} marked as listed` : `${item.name} moved back to unlisted`);
+    if (!userId) return;
+    createClient().from("items").update({ stage: next, platform: newPlatform ?? null })
+      .eq("id", item.id).eq("user_id", userId)
+      .then(({ error }) => { if (error) addToast("Failed to update item", "warning"); });
   }
 
-  function confirmSale(item: Item, soldFor: number, platform: string, costs: ExtraCosts) {
+  async function confirmSale(item: Item, soldFor: number, platform: string, costs: ExtraCosts) {
     const totalExtra = costs.adCost + costs.packagingCost + costs.equipmentCost + costs.otherCost;
     const profit = soldFor - item.paid - totalExtra;
+    const tempId = -Date.now();
+    const newSale: SaleRecord = {
+      id: tempId, itemId: item.id, itemName: item.name, paid: item.paid, soldFor, profit,
+      month: CURRENT_MONTH, platform: platform || undefined,
+      adCost: costs.adCost || undefined, packagingCost: costs.packagingCost || undefined,
+      equipmentCost: costs.equipmentCost || undefined, otherCost: costs.otherCost || undefined,
+    };
     setItems((prev) => prev.map((i) => i.id === item.id ? { ...i, stage: "sold" as Stage } : i));
-    setSaleRecords((prev) => [
-      {
-        id: Date.now(), itemId: item.id, itemName: item.name, paid: item.paid, soldFor, profit,
-        month: CURRENT_MONTH, platform: platform || undefined,
-        adCost: costs.adCost || undefined,
-        packagingCost: costs.packagingCost || undefined,
-        equipmentCost: costs.equipmentCost || undefined,
-        otherCost: costs.otherCost || undefined,
-      },
-      ...prev,
-    ]);
+    setSaleRecords((prev) => [newSale, ...prev]);
     addToast(`${item.name} sold for ${gbp(soldFor)} · ${profit >= 0 ? "+" : ""}${gbp(profit)}`);
+    if (!userId) return;
+    const db = createClient();
+    const [, saleRes] = await Promise.all([
+      db.from("items").update({ stage: "sold" }).eq("id", item.id).eq("user_id", userId),
+      db.from("sale_records").insert({
+        user_id: userId, item_id: item.id, item_name: item.name,
+        paid: item.paid, sold_for: soldFor, profit, month: CURRENT_MONTH,
+        platform: platform || null,
+        ad_cost: costs.adCost || null, packaging_cost: costs.packagingCost || null,
+        equipment_cost: costs.equipmentCost || null, other_cost: costs.otherCost || null,
+      }).select("id").single(),
+    ]);
+    if (saleRes.data) {
+      const realId = (saleRes.data as { id: number }).id;
+      setSaleRecords((prev) => prev.map((r) => r.id === tempId ? { ...r, id: realId } : r));
+    }
+    if (saleRes.error) addToast("Failed to record sale", "warning");
   }
 
   function unsellItem(id: number) {
     const item = items.find((i) => i.id === id);
+    const latest = [...saleRecords].filter((r) => r.itemId === id).sort((a, b) => b.id - a.id)[0];
     setItems((prev) => prev.map((i) => i.id === id ? { ...i, stage: "unlisted" as Stage } : i));
-    // Remove the most recent sale record linked to this item
-    setSaleRecords((prev) => {
-      const latest = [...prev].filter((r) => r.itemId === id).sort((a, b) => b.id - a.id)[0];
-      return latest ? prev.filter((r) => r.id !== latest.id) : prev;
-    });
+    setSaleRecords((prev) => latest ? prev.filter((r) => r.id !== latest.id) : prev);
     if (item) addToast(`${item.name} moved back to unlisted`, "info");
+    if (!userId) return;
+    const db = createClient();
+    db.from("items").update({ stage: "unlisted" }).eq("id", id).eq("user_id", userId)
+      .then(({ error }) => { if (error) addToast("Failed to revert sale", "warning"); });
+    if (latest && latest.id > 0) {
+      db.from("sale_records").delete().eq("id", latest.id).eq("user_id", userId)
+        .then(({ error }) => { if (error) addToast("Failed to revert sale", "warning"); });
+    }
   }
 
   function deleteSale(id: number) {
@@ -2598,16 +2713,54 @@ export default function DashboardPage() {
       setItems((prev) => prev.map((i) => i.id === record.itemId ? { ...i, stage: "unlisted" as Stage } : i));
     }
     if (record) addToast(`${record.itemName} returned to stock`, "info");
+    if (!userId) return;
+    const db = createClient();
+    db.from("sale_records").delete().eq("id", id).eq("user_id", userId)
+      .then(({ error }) => { if (error) addToast("Failed to delete sale", "warning"); });
+    if (record?.itemId) {
+      db.from("items").update({ stage: "unlisted" }).eq("id", record.itemId).eq("user_id", userId)
+        .then(({ error }) => { if (error) addToast("Failed to delete sale", "warning"); });
+    }
   }
 
   function editSale(updated: SaleRecord) {
     setSaleRecords((prev) => prev.map((r) => r.id === updated.id ? updated : r));
     addToast(`Sale record for "${updated.itemName}" updated`);
+    if (!userId) return;
+    createClient().from("sale_records").update({
+      item_name: updated.itemName, paid: updated.paid, sold_for: updated.soldFor,
+      profit: updated.profit, month: updated.month, platform: updated.platform ?? null,
+      ad_cost: updated.adCost ?? null, packaging_cost: updated.packagingCost ?? null,
+      equipment_cost: updated.equipmentCost ?? null, other_cost: updated.otherCost ?? null,
+    }).eq("id", updated.id).eq("user_id", userId)
+      .then(({ error }) => { if (error) addToast("Failed to save sale record", "warning"); });
   }
 
-  function addManySales(records: SaleRecord[]) {
+  async function addManySales(records: SaleRecord[]) {
     setSaleRecords((prev) => [...records, ...prev]);
     addToast(`${records.length} sale${records.length === 1 ? "" : "s"} imported`, "success");
+    if (!userId) return;
+    const { data, error } = await createClient().from("sale_records").insert(
+      records.map((r) => ({
+        user_id: userId!, item_id: r.itemId ?? null, item_name: r.itemName,
+        paid: r.paid, sold_for: r.soldFor, profit: r.profit, month: r.month,
+        platform: r.platform ?? null, ad_cost: r.adCost ?? null,
+        packaging_cost: r.packagingCost ?? null, equipment_cost: r.equipmentCost ?? null,
+        other_cost: r.otherCost ?? null,
+      }))
+    ).select("id");
+    if (error) { addToast("Failed to import sales", "warning"); return; }
+    if (data) {
+      const dbIds = data as { id: number }[];
+      setSaleRecords((prev) => {
+        const tempIds = records.map((r) => r.id);
+        return prev.map((r) => {
+          const pos = tempIds.indexOf(r.id);
+          if (pos !== -1 && dbIds[pos]) return { ...r, id: dbIds[pos].id };
+          return r;
+        });
+      });
+    }
   }
 
   const liveProfit = saleRecords.reduce((s, r) => s + r.profit, 0);
