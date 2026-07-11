@@ -1136,7 +1136,7 @@ const FEATURE_TABS = [
     label: "Profit calculator",
     icon: "£",
     heading: "Know your number before you list.",
-    body: "2026 UK fees built in for Vinted, eBay, Depop, and Facebook. Toggle who pays postage, see net profit and ROI update live. No more guessing your margin.",
+    body: "2026 UK fees built in for Vinted, eBay, Depop, and Facebook. Toggle who pays postage, see net profit and ROI update live. No more guessing your margin. Fee rates are indicative — always verify on each platform.",
     preview: <ProfitTab />,
   },
   {

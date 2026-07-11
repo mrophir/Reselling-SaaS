@@ -133,12 +133,15 @@ export default function PricingPage() {
         <p className="text-center text-sm text-paper-faint mt-10">
           All prices in GBP · Secure billing via Stripe · Cancel anytime
         </p>
+        <p className="text-center text-xs text-paper-faint/50 mt-3 max-w-lg mx-auto">
+          Platform fee rates used in the profit calculator are indicative and based on published 2026 UK rates. Fees may change — always verify current rates on each platform before making pricing decisions.
+        </p>
 
         {/* FAQ */}
         <div className="max-w-2xl mx-auto mt-20 space-y-6">
           <h2 className="font-display text-2xl font-medium tracking-tight text-center mb-10">Common questions</h2>
           {[
-            { q: "Can I cancel anytime?", a: "Yes. Cancel from your account settings with one click. You keep access until the end of your billing period. No questions asked." },
+            { q: "Can I cancel anytime?", a: "Yes. Cancel from your account settings with one click. Your subscription ends at the close of your current billing period and you will not be charged again. You keep full access until that date. No partial refunds are issued for unused time." },
             { q: "What happens when I hit 50 items on the free plan?", a: "You won't be able to add more items until you upgrade. Your existing data stays safe and nothing is deleted." },
             { q: "Is my data safe?", a: "Yes. All data is stored securely in Supabase with row-level security. Only you can access your inventory. We never sell your data." },
             { q: "Do I need a card to sign up?", a: "No. The free plan is genuinely free with no card required. You only need payment details when upgrading to Pro." },
