@@ -2633,6 +2633,116 @@ function UpgradeModal({ onClose }: { onClose: () => void }) {
   );
 }
 
+/* ---------- onboarding ---------- */
+
+function OnboardingGuide({ onAddStock, userName }: { onAddStock: () => void; userName: string }) {
+  const firstName = userName ? userName.split(" ")[0] : "";
+
+  const steps = [
+    {
+      num: "1",
+      title: "Add your stock",
+      desc: "Log every item you buy to resell — name, price paid, and condition. Click 'Add stock' in the top right.",
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
+          <path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/>
+        </svg>
+      ),
+    },
+    {
+      num: "2",
+      title: "List it",
+      desc: "Once it's live on Vinted, eBay or Depop, tap the status badge on the item to mark it as Listed.",
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
+          <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 12l2 2 4-4"/>
+        </svg>
+      ),
+    },
+    {
+      num: "3",
+      title: "Record the sale",
+      desc: "When it sells, click 'Mark sold', enter what you got, and your profit is tracked automatically.",
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
+          <line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/>
+        </svg>
+      ),
+    },
+  ];
+
+  return (
+    <div>
+      {/* Arrow pointing to Add stock button */}
+      <div className="flex justify-end items-center gap-2 mb-4 pr-1">
+        <span className="text-xs font-medium text-amber animate-pulse">Start here</span>
+        <svg
+          viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+          strokeLinecap="round" strokeLinejoin="round"
+          className="w-5 h-5 text-amber animate-bounce"
+          style={{ transform: "rotate(-45deg)" }}
+        >
+          <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+        </svg>
+      </div>
+
+      {/* Welcome hero */}
+      <div className="rounded-2xl border border-amber/30 bg-amber/[0.06] p-8 mb-6 text-center">
+        <div className="w-14 h-14 rounded-2xl bg-amber/15 text-amber grid place-items-center mx-auto mb-4">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7">
+            <path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/>
+          </svg>
+        </div>
+        <h1 className="font-display text-2xl font-medium mb-2">
+          {firstName ? `Welcome, ${firstName}!` : "Welcome to Sellganise!"}
+        </h1>
+        <p className="text-paper-dim text-sm max-w-sm mx-auto leading-relaxed mb-6">
+          Your inventory tracker is ready. Follow the 3 steps below to log your first haul and start tracking profit.
+        </p>
+        <button
+          onClick={onAddStock}
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-amber text-ink text-sm font-medium hover:bg-paper transition-colors"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add your first item
+        </button>
+      </div>
+
+      {/* Steps */}
+      <div className="grid md:grid-cols-3 gap-3">
+        {steps.map((step, i) => (
+          <div key={step.num} className="relative">
+            <div className="rounded-2xl border border-line bg-ink-card p-6 h-full">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="w-7 h-7 rounded-full bg-amber text-ink text-xs font-bold grid place-items-center shrink-0">{step.num}</span>
+                <span className="text-amber">{step.icon}</span>
+              </div>
+              <h3 className="font-display font-medium text-paper mb-2">{step.title}</h3>
+              <p className="text-paper-dim text-sm leading-relaxed">{step.desc}</p>
+            </div>
+            {i < steps.length - 1 && (
+              <>
+                {/* Desktop arrow (between columns) */}
+                <div className="hidden md:flex absolute -right-5 top-1/2 -translate-y-1/2 z-10">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-amber">
+                    <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+                  </svg>
+                </div>
+                {/* Mobile arrow (between rows) */}
+                <div className="md:hidden flex justify-center my-2">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-amber rotate-90">
+                    <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+                  </svg>
+                </div>
+              </>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /* ---------- page ---------- */
 
 export default function DashboardPage() {
@@ -3211,7 +3321,11 @@ export default function DashboardPage() {
         </header>
 
         <main className="flex-1 p-6 pb-24 md:pb-6 max-w-[1152px] w-full mx-auto">
-          {navKey === "overview"   && <Overview items={items} stage={stage} setStage={setStage} onSell={setSellTarget} onToggleListed={toggleListed} onEdit={setEditTarget} onUnsell={unsellItem} liveProfit={liveProfit} liveSold={liveSold} query={query} storageLocations={storageLocations} onAssignBin={assignBin} />}
+          {navKey === "overview" && (
+            hydrated && items.length === 0
+              ? <OnboardingGuide onAddStock={() => setAddModalOpen(true)} userName={userName} />
+              : <Overview items={items} stage={stage} setStage={setStage} onSell={setSellTarget} onToggleListed={toggleListed} onEdit={setEditTarget} onUnsell={unsellItem} liveProfit={liveProfit} liveSold={liveSold} query={query} storageLocations={storageLocations} onAssignBin={assignBin} />
+          )}
           {navKey === "stock"      && <Stock items={items} onSell={setSellTarget} onToggleListed={toggleListed} onEdit={setEditTarget} onRemove={removeItem} onUnsell={unsellItem} query={query} storageLocations={storageLocations} onAssignBin={assignBin} currentTier={currentTier} onBulkList={bulkList} onBulkUnlist={bulkUnlist} onBulkRemove={bulkRemove} onBulkAssignBin={bulkAssignBin} />}
           {navKey === "storage"    && <StorageMap items={items} storageLocations={storageLocations} onAddStorage={() => setStorageModalOpen(true)} onRemoveItem={unassignFromStorage} />}
           {navKey === "calculator" && <ProfitCalculator />}
