@@ -1977,6 +1977,9 @@ function Footer() {
         <p className="text-xs text-paper-faint/60 text-center max-w-3xl mx-auto leading-relaxed">
           Sellganise is reseller software and inventory management built for UK sellers on Vinted, eBay, Depop and Facebook Marketplace. Track your reselling stock, monitor profit, and manage storage locations all in one place.
         </p>
+        <p className="text-xs text-paper-faint/40 text-center">
+          All trademarks, logos and brand names are the property of their respective owners. Sellganise is not affiliated with or endorsed by Vinted, eBay, Depop, Facebook or Gumtree.
+        </p>
       </div>
     </footer>
   );
