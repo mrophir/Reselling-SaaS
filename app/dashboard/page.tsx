@@ -3196,6 +3196,33 @@ export default function DashboardPage() {
             </button>
           ))}
         </nav>
+
+        {/* Resources */}
+        <div className="px-3 pb-2 border-t border-line">
+          <p className="px-3 pt-3 pb-1 text-[10px] font-mono uppercase tracking-[0.15em] text-paper-faint/50">Resources</p>
+          {([
+            {
+              label: "What's New",
+              href: "/blog",
+              icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] shrink-0"><path d="M11 5L6 9H4a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h2l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>,
+            },
+            {
+              label: "Feedback",
+              href: "mailto:sellganise@gmail.com?subject=Sellganise%20Feedback",
+              icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] shrink-0"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="12" y1="8" x2="12" y2="11"/><line x1="12" y1="14" x2="12.01" y2="14"/></svg>,
+            },
+            {
+              label: "Help Center",
+              href: "mailto:sellganise@gmail.com?subject=Help%20request",
+              icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] shrink-0"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>,
+            },
+          ] as { label: string; href: string; icon: React.ReactNode }[]).map(({ label, href, icon }) => (
+            <a key={label} href={href} className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-paper-dim hover:text-paper hover:bg-ink-card transition-colors">
+              {icon}<span>{label}</span>
+            </a>
+          ))}
+        </div>
+
         <div className="p-3 border-t border-line">
           <div className="rounded-lg bg-ink-card border border-line-soft p-3 mb-3">
             <div className="flex items-center justify-between text-xs mb-2">
