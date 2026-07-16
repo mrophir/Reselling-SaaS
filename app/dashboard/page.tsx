@@ -3284,6 +3284,7 @@ export default function DashboardPage() {
               <button onClick={() => setQuery("")} className="text-paper-faint hover:text-paper transition-colors shrink-0"><IconClose /></button>
             )}
           </div>
+          <div className="ml-auto flex items-center gap-2 shrink-0">
           <button onClick={() => { if (!canAddItem(currentTier, items.length)) { setUpgradeOpen(true); return; } setAddModalOpen(true); }} className="flex items-center gap-2 text-sm font-medium px-3.5 py-2 rounded-lg bg-amber text-ink hover:bg-paper transition-colors shrink-0">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             <span className="hidden sm:block">Add stock</span>
@@ -3344,6 +3345,7 @@ export default function DashboardPage() {
                 </div>
               </div>
             )}
+          </div>
           </div>
         </header>
 
