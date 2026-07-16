@@ -23,9 +23,10 @@ export async function signIn(formData: FormData) {
 export async function forgotPassword(formData: FormData) {
   try {
     const supabase = await createClient();
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://sellganise.com";
     const { error } = await supabase.auth.resetPasswordForEmail(
       formData.get("email") as string,
-      { redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/confirm?type=recovery` }
+      { redirectTo: `${appUrl}/auth/confirm?next=/auth/reset` }
     );
     if (error) return { error: error.message };
     return { success: "Check your email for a password reset link." };

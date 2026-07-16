@@ -9,10 +9,12 @@ import { signUp } from "../signup/actions";
 function LoginForm() {
   const searchParams = useSearchParams();
   const [mode, setMode] = useState<"signin" | "signup" | "forgot">(
-    searchParams.get("mode") === "signup" ? "signup" : "signin"
+    searchParams.get("mode") === "signup" ? "signup" : searchParams.get("error") === "reset_failed" ? "forgot" : "signin"
   );
   const [error, setError] = useState<string | null>(
-    searchParams.get("error") === "confirmation_failed"
+    searchParams.get("error") === "reset_failed"
+      ? "Reset link is invalid or has expired. Please request a new one below."
+      : searchParams.get("error") === "confirmation_failed"
       ? "Confirmation link is invalid or has expired. Please try signing up again."
       : null
   );
