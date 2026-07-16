@@ -3213,11 +3213,11 @@ export default function DashboardPage() {
             },
             {
               label: "Help Center",
-              href: "mailto:sellganise@gmail.com?subject=Help%20request",
+              href: "/help",
               icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] shrink-0"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>,
             },
           ] as { label: string; href: string; icon: React.ReactNode }[]).map(({ label, href, icon }) => (
-            <a key={label} href={href} className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-paper-dim hover:text-paper hover:bg-ink-card transition-colors">
+            <a key={label} href={href} target={href.startsWith("/help") ? "_blank" : undefined} rel={href.startsWith("/help") ? "noopener noreferrer" : undefined} className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-paper-dim hover:text-paper hover:bg-ink-card transition-colors">
               {icon}<span>{label}</span>
             </a>
           ))}
