@@ -284,6 +284,72 @@ function ToastContainer({ toasts, onDismiss }: { toasts: Toast[]; onDismiss: (id
   );
 }
 
+/* ---------- csv import helpers ---------- */
+
+function parseCsvTsv(text: string): { headers: string[]; rows: string[][] } {
+  const lines = text.trim().split(/\r?\n/).filter((l) => l.trim());
+  if (!lines.length) return { headers: [], rows: [] };
+  const tabCount = (lines[0].match(/\t/g) ?? []).length;
+  const commaCount = (lines[0].match(/,/g) ?? []).length;
+  const isTab = tabCount >= commaCount;
+  function parseRow(line: string): string[] {
+    if (isTab) return line.split("\t").map((c) => c.trim().replace(/^"|"$/g, ""));
+    const cols: string[] = []; let cur = ""; let inQ = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') { if (inQ && line[i + 1] === '"') { cur += '"'; i++; } else inQ = !inQ; }
+      else if (ch === "," && !inQ) { cols.push(cur.trim()); cur = ""; }
+      else cur += ch;
+    }
+    cols.push(cur.trim());
+    return cols;
+  }
+  return { headers: parseRow(lines[0]), rows: lines.slice(1).map(parseRow).filter((r) => r.some((c) => c)) };
+}
+
+const CSV_FIELDS = [
+  { key: "name",     label: "Item name"        },
+  { key: "paid",     label: "Price paid (£)"   },
+  { key: "size",     label: "Size"             },
+  { key: "cond",     label: "Condition"        },
+  { key: "bin",      label: "Storage location" },
+  { key: "platform", label: "Platform"         },
+  { key: "notes",    label: "Notes"            },
+  { key: "ignore",   label: "Ignore column"   },
+];
+
+function autoMapCols(headers: string[]): Record<string, string> {
+  const patterns: [string, string[]][] = [
+    ["name",     ["name", "item", "title", "product", "desc"]],
+    ["paid",     ["price", "paid", "cost", "bought", "£", "gbp", "spend", "purchase"]],
+    ["size",     ["size", "sz"]],
+    ["cond",     ["condition", "cond", "quality", "grade", "state"]],
+    ["bin",      ["bin", "location", "storage", "box", "shelf", "loc"]],
+    ["platform", ["platform", "site", "marketplace", "channel"]],
+    ["notes",    ["note", "comment", "remark", "extra", "detail", "info"]],
+  ];
+  const result: Record<string, string> = {};
+  const used = new Set<string>();
+  for (const h of headers) {
+    const lc = h.toLowerCase();
+    let mapped = "ignore";
+    for (const [field, kws] of patterns) {
+      if (!used.has(field) && kws.some((k) => lc.includes(k))) { mapped = field; used.add(field); break; }
+    }
+    result[h] = mapped;
+  }
+  if (!used.has("name")) { const first = headers.find((h) => result[h] === "ignore"); if (first) result[first] = "name"; }
+  return result;
+}
+
+function parseCsvCond(v: string): CondKey {
+  const lc = v.toLowerCase();
+  if (["excellent", "vgc", "very good", "great", "mint", "new", "bnwt", "bnwot"].some((k) => lc.includes(k))) return "excellent";
+  if (["fair", "worn", "average", "used", "ok"].some((k) => lc.includes(k))) return "fair";
+  if (["flawed", "damaged", "poor", "broken"].some((k) => lc.includes(k))) return "flawed";
+  return "good";
+}
+
 /* ---------- add stock modal ---------- */
 
 const EMPTY_FORM = { name: "", paid: "", cond: "good" as CondKey, bin: "", itemCode: "", notes: "", size: "" };
@@ -336,11 +402,16 @@ function AddStockModal({ onClose, onAdd, onAddMany, storageLocations }: {
   onAddMany: (items: Item[]) => void;
   storageLocations: string[];
 }) {
-  const [tab, setTab] = useState<"single" | "paste">("single");
+  const [tab, setTab] = useState<"single" | "paste" | "csv">("single");
   const [form, setForm] = useState(EMPTY_FORM);
   const [error, setError] = useState("");
   const [pasteText, setPasteText] = useState("");
   const [pasteBin, setPasteBin] = useState("");
+  const [csvText, setCsvText] = useState("");
+  const [csvHeaders, setCsvHeaders] = useState<string[]>([]);
+  const [csvRows, setCsvRows] = useState<string[][]>([]);
+  const [colMap, setColMap] = useState<Record<string, string>>({});
+  const [csvBin, setCsvBin] = useState("");
   const nameRef = useRef<HTMLInputElement>(null);
   const pasteRef = useRef<HTMLTextAreaElement>(null);
   useEscClose(onClose);
@@ -349,6 +420,14 @@ function AddStockModal({ onClose, onAdd, onAddMany, storageLocations }: {
     if (tab === "single") nameRef.current?.focus();
     else pasteRef.current?.focus();
   }, [tab]);
+
+  useEffect(() => {
+    if (!csvText.trim()) { setCsvHeaders([]); setCsvRows([]); setColMap({}); return; }
+    const { headers, rows } = parseCsvTsv(csvText);
+    setCsvHeaders(headers);
+    setCsvRows(rows);
+    setColMap(autoMapCols(headers));
+  }, [csvText]);
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -380,9 +459,43 @@ function AddStockModal({ onClose, onAdd, onAddMany, storageLocations }: {
     onClose();
   }
 
+  function submitCsv() {
+    if (!csvHeaders.some((h) => colMap[h] === "name")) { setError("Map a column to 'Item name' first."); return; }
+    if (!csvHeaders.some((h) => colMap[h] === "paid")) { setError("Map a column to 'Price paid' first."); return; }
+    const now = Date.now();
+    const items: Item[] = csvRows.map((row, i) => {
+      const get = (field: string) => { const idx = csvHeaders.findIndex((h) => colMap[h] === field); return idx >= 0 ? (row[idx] ?? "").trim() : ""; };
+      const name = get("name"); if (!name) return null;
+      const paid = parseFloat(get("paid").replace(/[£$€,\s]/g, "")); if (isNaN(paid) || paid < 0) return null;
+      const size = get("size") || undefined;
+      const condRaw = get("cond"); const cond: CondKey = condRaw ? parseCsvCond(condRaw) : "good";
+      const bin = get("bin") || csvBin || undefined;
+      const platform = get("platform") || undefined;
+      const notes = get("notes") || undefined;
+      return { id: now + i, code: `IT-${String(now + i).slice(-4)}`, name, cond, paid, stage: "unlisted" as Stage, age: 0, createdAt: now + i, bin, platform: platform ? [platform] : undefined, notes, size } as Item;
+    }).filter((x): x is Item => x !== null);
+    if (!items.length) { setError("No valid rows found — check that Name and Price columns have data."); return; }
+    onAddMany(items);
+    onClose();
+  }
+
   const parsed = parsePasteList(pasteText);
   const conditions: CondKey[] = ["excellent", "good", "fair", "flawed"];
   const field = "w-full bg-ink border border-line rounded-xl px-3.5 py-2.5 text-sm text-paper outline-none focus:border-amber/60 transition-colors placeholder:text-paper-faint";
+
+  const csvValidItems: Item[] = csvHeaders.length > 0 ? csvRows.map((row, i) => {
+    const get = (f: string) => { const idx = csvHeaders.findIndex((h) => colMap[h] === f); return idx >= 0 ? (row[idx] ?? "").trim() : ""; };
+    const name = get("name"); if (!name) return null;
+    const paid = parseFloat(get("paid").replace(/[£$€,\s]/g, "")); if (isNaN(paid) || paid < 0) return null;
+    const size = get("size") || undefined;
+    const condRaw = get("cond"); const cond: CondKey = condRaw ? parseCsvCond(condRaw) : "good";
+    const bin = get("bin") || csvBin || undefined;
+    const platform = get("platform") || undefined;
+    const notes = get("notes") || undefined;
+    const now = Date.now();
+    return { id: now + i, code: `IT-${String(now + i).slice(-4)}`, name, cond, paid, stage: "unlisted" as Stage, age: 0, createdAt: now + i, bin, platform: platform ? [platform] : undefined, notes, size } as Item;
+  }).filter((x): x is Item => x !== null) : [];
+  const csvPreview = csvValidItems.slice(0, 6);
 
   return (
     <ModalShell onClose={onClose}>
@@ -396,19 +509,102 @@ function AddStockModal({ onClose, onAdd, onAddMany, storageLocations }: {
 
       {/* tab toggle */}
       <div className="flex gap-1 px-6 pt-4">
-        {(["single", "paste"] as const).map((t) => (
+        {(["single", "paste", "csv"] as const).map((t) => (
           <button
             key={t}
             type="button"
             onClick={() => { setTab(t); setError(""); }}
             className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${tab === t ? "bg-amber/15 text-amber border border-amber/30" : "text-paper-faint hover:text-paper"}`}
           >
-            {t === "single" ? "Single item" : "Paste a list"}
+            {t === "single" ? "Single item" : t === "paste" ? "Paste a list" : "Spreadsheet"}
           </button>
         ))}
       </div>
 
-      {tab === "single" ? (
+      {tab === "csv" ? (
+        <div className="px-6 py-5 space-y-4">
+          <div>
+            <label className="block text-sm text-paper-dim mb-1">Paste from spreadsheet</label>
+            <p className="text-xs text-paper-faint mb-2">Copy cells from Excel or Google Sheets — first row must be column headers</p>
+            <textarea
+              className={`${field} resize-none font-mono text-xs leading-relaxed`}
+              rows={5}
+              placeholder={"Name\tPrice\tSize\tCondition\nNike Air Max 90\t45\t10\tGood\nLevi 501 Jeans\t8\t32\tFair"}
+              value={csvText}
+              onChange={(e) => { setCsvText(e.target.value); setError(""); }}
+            />
+          </div>
+
+          {csvHeaders.length > 0 && (
+            <div>
+              <p className="text-xs font-mono uppercase tracking-wider text-paper-faint mb-2">Map columns</p>
+              <div className="rounded-xl border border-line overflow-hidden divide-y divide-line">
+                {csvHeaders.map((h) => (
+                  <div key={h} className="flex items-center justify-between px-3.5 py-2 gap-3">
+                    <span className="text-sm text-paper font-mono truncate shrink-0 max-w-[45%]">{h || "(blank)"}</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 text-paper-faint shrink-0"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    <select
+                      className="ml-auto bg-ink border border-line rounded-lg px-2.5 py-1.5 text-xs text-paper outline-none focus:border-amber/60 transition-colors"
+                      value={colMap[h] ?? "ignore"}
+                      onChange={(e) => setColMap((m) => ({ ...m, [h]: e.target.value }))}
+                    >
+                      {CSV_FIELDS.map((f) => <option key={f.key} value={f.key}>{f.label}</option>)}
+                    </select>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {csvPreview.length > 0 && (
+            <div className="rounded-xl border border-line bg-ink-soft overflow-hidden">
+              <div className="px-3.5 py-2 border-b border-line flex items-center justify-between">
+                <span className="text-xs font-mono uppercase tracking-wider text-paper-faint">Preview</span>
+                <span className="text-xs text-moss font-medium">{csvValidItems.length} item{csvValidItems.length !== 1 ? "s" : ""} ready</span>
+              </div>
+              <ul className="divide-y divide-line max-h-52 overflow-y-auto">
+                {csvPreview.map((item, i) => (
+                  <li key={i} className="flex items-center gap-2 px-3.5 py-2">
+                    <span className="text-paper text-sm flex-1 min-w-0 truncate">{item.name}</span>
+                    <span className="text-amber font-mono text-xs shrink-0">£{item.paid.toFixed(2)}</span>
+                    {item.size && <span className="text-paper-faint text-xs shrink-0 font-mono">{item.size}</span>}
+                    {item.cond && item.cond !== "good" && <span className="text-paper-faint text-xs shrink-0 capitalize">{item.cond}</span>}
+                    {item.platform?.[0] && <span className="text-paper-faint text-xs shrink-0">{item.platform[0]}</span>}
+                    {item.bin && <span className="text-xs font-mono text-paper-faint shrink-0">{item.bin}</span>}
+                  </li>
+                ))}
+                {csvValidItems.length > 6 && (
+                  <li className="px-3.5 py-2 text-xs text-paper-faint">+{csvValidItems.length - 6} more rows</li>
+                )}
+              </ul>
+            </div>
+          )}
+
+          {csvHeaders.length > 0 && storageLocations.length > 0 && !csvHeaders.some((h) => colMap[h] === "bin") && (
+            <div>
+              <label className="block text-sm text-paper-dim mb-1.5">Default storage location <span className="text-paper-faint">(optional)</span></label>
+              <select className={field} value={csvBin} onChange={(e) => setCsvBin(e.target.value)}>
+                <option value="">None</option>
+                {storageLocations.map((loc) => <option key={loc} value={loc}>{loc}</option>)}
+              </select>
+            </div>
+          )}
+
+          {error && <p className="text-sm text-rust">{error}</p>}
+
+          <div className="flex gap-3 pt-1">
+            <button type="button" onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-line text-sm text-paper-dim hover:text-paper hover:border-paper-faint transition-colors">Cancel</button>
+            <button
+              type="button"
+              onClick={submitCsv}
+              disabled={csvValidItems.length === 0}
+              className="flex-1 py-2.5 rounded-xl bg-amber text-ink text-sm font-medium hover:bg-paper transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              {csvValidItems.length > 0 ? `Import ${csvValidItems.length} item${csvValidItems.length !== 1 ? "s" : ""}` : "Import"}
+            </button>
+          </div>
+        </div>
+      ) : tab === "single" ? (
         <form onSubmit={submit} className="px-6 py-5 space-y-5">
           <div>
             <label className="block text-sm text-paper-dim mb-1.5">Item name</label>
