@@ -2065,7 +2065,7 @@ export default function Page() {
     <main className="relative overflow-x-hidden">
       <Nav />
       <Hero />
-      <Strip />
+
       <Problem />
       <DashboardMockup />
       <Features />
