@@ -195,7 +195,7 @@ function Nav() {
             </nav>
             <div className="px-4 py-4 flex flex-col gap-2">
               <a href="/signup" onClick={() => setMenuOpen(false)} className="block w-full text-center py-3.5 rounded-xl bg-amber text-ink font-medium text-sm hover:bg-paper transition-colors">
-                Sign up free, no card needed
+                Sign up free
               </a>
               <a href="/login" onClick={() => setMenuOpen(false)} className="block w-full text-center py-2.5 rounded-xl border border-line text-paper font-medium text-sm hover:border-paper-faint transition-colors">
                 Log in
@@ -305,7 +305,7 @@ function Hero() {
 
             {/* trust */}
             <p className="rise mt-4 text-xs text-paper-faint" style={{ animationDelay: "0.21s" }}>
-              No credit card required &nbsp;·&nbsp; Free plan available &nbsp;·&nbsp; Cancel anytime
+              Free plan available &nbsp;·&nbsp; Cancel anytime
             </p>
           </div>
 
@@ -941,7 +941,6 @@ function Problem() {
               Start for free
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
             </a>
-            <span className="text-xs text-paper-faint">No credit card required</span>
           </div>
         </Reveal>
       </div>
@@ -1541,7 +1540,7 @@ function Versus() {
               Ditch the spreadsheet. Start free
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
             </a>
-            <span className="text-sm text-paper-faint">No credit card · Cancel anytime</span>
+            <span className="text-sm text-paper-faint">Cancel anytime</span>
           </div>
         </Reveal>
       </div>
@@ -1825,7 +1824,7 @@ function Reviews() {
               Log in
             </a>
           </div>
-          <p className="mt-4 text-xs text-paper-faint">No credit card required · Free plan available · Cancel anytime</p>
+          <p className="mt-4 text-xs text-paper-faint">Free plan available · Cancel anytime</p>
         </div>
         </Reveal>
       </div>
@@ -1896,7 +1895,7 @@ function CTA() {
                 ))}
               </ul>
               <a href="/signup" className="block text-center px-5 py-3.5 rounded-xl border border-line text-paper font-medium text-sm hover:border-paper-faint hover:bg-ink-soft transition-colors">
-                Start free, no card needed
+                Start free
               </a>
             </div>
           </Reveal>

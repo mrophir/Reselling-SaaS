@@ -156,7 +156,7 @@ export function HowToOrganiseVintedStock() {
       </p>
 
       <p>
-        If you&apos;re looking for reseller stock management software built specifically for UK Vinted sellers, <a href="https://sellganise.com" className="text-amber hover:underline">Sellganise</a> is free to start with up to 50 items — no card needed.
+        If you&apos;re looking for reseller stock management software built specifically for UK Vinted sellers, <a href="https://sellganise.com" className="text-amber hover:underline">Sellganise</a> is free to start with up to 50 items.
       </p>
 
     </article>

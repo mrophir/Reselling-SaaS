@@ -54,7 +54,7 @@ export default function SignUpPage() {
 
       <div className="rise relative w-full max-w-sm rounded-2xl border border-line bg-ink-card p-8 shadow-2xl shadow-black/40">
         <h1 className="font-display text-2xl font-medium tracking-tight mb-1">Create your account</h1>
-        <p className="text-sm text-paper-dim mb-7">Free forever. No card needed.</p>
+        <p className="text-sm text-paper-dim mb-7">Free forever. 50 items included.</p>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">

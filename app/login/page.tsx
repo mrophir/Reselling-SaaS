@@ -44,7 +44,7 @@ function LoginForm() {
         {mode === "signin"
           ? "Log in to your Sellganise account."
           : mode === "signup"
-          ? "No card needed. 50 items free forever."
+          ? "50 items free forever."
           : "Enter your email and we'll send you a reset link."}
       </p>
 
