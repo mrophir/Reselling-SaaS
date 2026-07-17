@@ -235,7 +235,7 @@ function Hero() {
   );
 
   return (
-    <section id="top" className="grain relative overflow-hidden pt-28 pb-0 md:pt-36 md:pb-0 px-6">
+    <section id="top" className="grain bg-ink relative overflow-hidden pt-28 pb-0 md:pt-36 md:pb-0 px-6">
       {/* radial spotlight glow — mimics the Tarss cone effect */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute left-1/2 -top-10 -translate-x-1/2 w-[1000px] h-[700px]"
@@ -342,7 +342,7 @@ function Hero() {
             style={{ transform: "rotateX(6deg) scale(0.975)", transformOrigin: "center bottom" }}
           >
             {/* Mobile */}
-            <div className="md:hidden bg-ink py-6 px-4 sm:px-8 flex justify-center">
+            <div className="md:hidden py-6 flex justify-center" style={{ background: "var(--color-ink)" }}>
               <PhoneMockup />
             </div>
 
