@@ -3,9 +3,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { POSTS, getPost } from "../../../lib/blog";
 import { HowToOrganiseVintedStock } from "./posts/how-to-organise-vinted-stock";
+import { HowToTrackProfitDepop } from "./posts/how-to-track-profit-depop";
 
 const CONTENT: Record<string, React.ComponentType> = {
   "how-to-organise-vinted-stock": HowToOrganiseVintedStock,
+  "how-to-track-profit-depop": HowToTrackProfitDepop,
 };
 
 export function generateStaticParams() {
