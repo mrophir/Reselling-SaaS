@@ -5,13 +5,14 @@ import { createClient } from "@/lib/supabase/server";
 export async function signUp(formData: FormData) {
   try {
     const supabase = await createClient();
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://sellganise.com";
 
     const { error } = await supabase.auth.signUp({
       email: formData.get("email") as string,
       password: formData.get("password") as string,
       options: {
         data: { full_name: formData.get("full_name") as string },
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/confirm`,
+        emailRedirectTo: `${appUrl}/auth/confirm`,
       },
     });
 

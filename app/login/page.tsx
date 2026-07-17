@@ -15,7 +15,7 @@ function LoginForm() {
     searchParams.get("error") === "reset_failed"
       ? "Reset link is invalid or has expired. Please request a new one below."
       : searchParams.get("error") === "confirmation_failed"
-      ? "Confirmation link is invalid or has expired. Please try signing up again."
+      ? "If you just confirmed your email, your account is ready — log in below. If the link didn't work, try signing up again."
       : null
   );
   const [success, setSuccess] = useState<string | null>(null);
