@@ -450,8 +450,6 @@ function Hero() {
           </div>
         </div>
 
-        {/* gradient fade into next section */}
-        <div className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-ink via-ink/85 to-transparent pointer-events-none" />
       </div>
     </section>
   );
