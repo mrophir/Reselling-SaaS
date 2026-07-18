@@ -136,6 +136,10 @@ export default function TermsPage() {
               <p className="text-sm">You may cancel at any time via your account settings. Cancellation takes effect at the end of the current billing period. We do not provide pro-rata refunds for partial months of use, except as required by law.</p>
             </div>
             <div>
+              <p className="text-sm font-medium text-paper mb-1">14-day cooling-off period</p>
+              <p className="text-sm">Under the Consumer Contracts (Information, Cancellation and Additional Charges) Regulations 2013, you have the right to cancel a digital service contract within 14 days without reason. However, by proceeding with a subscription you expressly request that we begin providing the Service immediately, and you acknowledge that you thereby lose your right to cancel under the 14-day cooling-off period once the Service has begun. This does not affect any other statutory rights you may have.</p>
+            </div>
+            <div>
               <p className="text-sm font-medium text-paper mb-1">Failed payments</p>
               <p className="text-sm">If a payment fails, we will notify you and retry. If payment remains outstanding after 7 days, your account may be downgraded to the free tier until payment is resolved. Outstanding amounts remain due.</p>
             </div>

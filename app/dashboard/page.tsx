@@ -2969,6 +2969,7 @@ function SettingsSection({ userName, userEmail, onNameChange, currentTier, onUpg
               <button onClick={onUpgrade} className="px-4 py-2 rounded-lg bg-amber text-ink text-sm font-medium hover:bg-paper transition-colors">
                 Upgrade to Pro
               </button>
+              <p className="text-[11px] text-paper-faint mt-2 leading-relaxed">By subscribing you request immediate access and waive your 14-day cooling-off right.</p>
             </>
           )}
         </div>
@@ -3026,6 +3027,9 @@ function UpgradeModal({ onClose, onUpgrade }: { onClose: () => void; onUpgrade: 
           >
             Upgrade to Pro — £19.99/mo
           </button>
+          <p className="text-[11px] text-paper-faint text-center leading-relaxed px-2">
+            By subscribing you request immediate access and waive your 14-day cooling-off right. Cancel anytime from settings.
+          </p>
           <button onClick={onClose} className="w-full py-2 text-xs text-paper-faint hover:text-paper transition-colors">
             Maybe later
           </button>
