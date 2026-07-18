@@ -396,15 +396,20 @@ function parsePasteList(raw: string): { name: string; paid: number }[] {
     });
 }
 
-function AddStockModal({ onClose, onAdd, onAddMany, storageLocations }: {
+function AddStockModal({ onClose, onAdd, onAddMany, onAddAndSold, storageLocations }: {
   onClose: () => void;
   onAdd: (item: Item) => void;
   onAddMany: (items: Item[]) => void;
+  onAddAndSold: (item: Item, sale: SaleRecord) => void;
   storageLocations: string[];
 }) {
   const [tab, setTab] = useState<"single" | "paste" | "csv">("single");
   const [form, setForm] = useState(EMPTY_FORM);
   const [error, setError] = useState("");
+  const [markSold, setMarkSold] = useState(false);
+  const [soldPrice, setSoldPrice] = useState("");
+  const [soldPlatform, setSoldPlatform] = useState("");
+  const [soldMonth, setSoldMonth] = useState(getRecentMonths(1)[0]);
   const [pasteText, setPasteText] = useState("");
   const [pasteBin, setPasteBin] = useState("");
   const [csvText, setCsvText] = useState("");
@@ -434,9 +439,17 @@ function AddStockModal({ onClose, onAdd, onAddMany, storageLocations }: {
     if (!form.name.trim()) { setError("Item name is required."); return; }
     const paid = parseFloat(form.paid);
     if (isNaN(paid) || paid < 0) { setError("Enter a valid price paid."); return; }
-    const id = Date.now();
-    const code = form.itemCode.trim() || `IT-${String(id).slice(-4)}`;
-    onAdd({ id, code, name: form.name.trim(), cond: form.cond, paid, stage: "unlisted", age: 0, createdAt: Date.now(), bin: form.bin || undefined, notes: form.notes.trim() || undefined, size: form.size || undefined });
+    const now = Date.now();
+    const code = form.itemCode.trim() || `IT-${String(now).slice(-4)}`;
+    if (markSold) {
+      const soldFor = parseFloat(soldPrice);
+      if (isNaN(soldFor) || soldFor < 0) { setError("Enter a valid sold price."); return; }
+      const item: Item = { id: now, code, name: form.name.trim(), cond: form.cond, paid, stage: "sold", age: 0, createdAt: now, bin: form.bin || undefined, notes: form.notes.trim() || undefined, size: form.size || undefined, platform: soldPlatform ? [soldPlatform] : undefined };
+      const sale: SaleRecord = { id: now, itemId: now, itemName: form.name.trim(), paid, soldFor, profit: soldFor - paid, month: soldMonth, platform: soldPlatform || undefined };
+      onAddAndSold(item, sale);
+    } else {
+      onAdd({ id: now, code, name: form.name.trim(), cond: form.cond, paid, stage: "unlisted", age: 0, createdAt: now, bin: form.bin || undefined, notes: form.notes.trim() || undefined, size: form.size || undefined });
+    }
     onClose();
   }
 
@@ -687,10 +700,56 @@ function AddStockModal({ onClose, onAdd, onAddMany, storageLocations }: {
               onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
             />
           </div>
+
+          {/* mark as sold toggle */}
+          <div className="rounded-xl border border-line bg-ink-soft px-4 py-3 space-y-3">
+            <button
+              type="button"
+              className="flex items-center gap-3 w-full text-left"
+              onClick={() => { setMarkSold((v) => !v); setError(""); }}
+            >
+              <div className={`relative w-9 h-5 rounded-full transition-colors shrink-0 ${markSold ? "bg-amber" : "bg-line"}`}>
+                <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-paper transition-transform ${markSold ? "translate-x-4" : ""}`} />
+              </div>
+              <span className="text-sm text-paper">Already sold this item</span>
+            </button>
+            {markSold && (
+              <div className="space-y-3 pt-1 border-t border-line">
+                <div className="pt-2">
+                  <label className="block text-sm text-paper-dim mb-1.5">Sold price (£)</label>
+                  <div className="relative">
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-paper-faint text-sm">£</span>
+                    <input
+                      className={`${field} pl-7`}
+                      type="number" min="0" step="0.01" placeholder="0.00"
+                      value={soldPrice}
+                      onChange={(e) => { setSoldPrice(e.target.value); setError(""); }}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm text-paper-dim mb-1.5">Platform <span className="text-paper-faint">(optional)</span></label>
+                  <select className={field} value={soldPlatform} onChange={(e) => setSoldPlatform(e.target.value)}>
+                    <option value="">Not specified</option>
+                    {SALE_PLATFORMS.map((p) => <option key={p} value={p}>{p}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm text-paper-dim mb-1.5">Month sold</label>
+                  <select className={field} value={soldMonth} onChange={(e) => setSoldMonth(e.target.value)}>
+                    {getRecentMonths(12).map((m) => <option key={m} value={m}>{m}</option>)}
+                  </select>
+                </div>
+              </div>
+            )}
+          </div>
+
           {error && <p className="text-sm text-rust">{error}</p>}
           <div className="flex gap-3 pt-1">
             <button type="button" onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-line text-sm text-paper-dim hover:text-paper hover:border-paper-faint transition-colors">Cancel</button>
-            <button type="submit" className="flex-1 py-2.5 rounded-xl bg-amber text-ink text-sm font-medium hover:bg-paper transition-colors">Add to stock</button>
+            <button type="submit" className="flex-1 py-2.5 rounded-xl bg-amber text-ink text-sm font-medium hover:bg-paper transition-colors">
+              {markSold ? "Add & record sale" : "Add to stock"}
+            </button>
           </div>
         </form>
       ) : (
@@ -1075,36 +1134,94 @@ function SellModal({ item, onClose, onConfirm }: {
 
 /* ---------- bulk sold modal ---------- */
 
+const SOLD_CSV_FIELDS = [
+  { key: "name",     label: "Item name"      },
+  { key: "paid",     label: "Price paid (£)"  },
+  { key: "soldFor",  label: "Sold price (£)"  },
+  { key: "platform", label: "Platform"        },
+  { key: "ignore",   label: "Ignore column"  },
+];
+
+function autoMapSoldCols(headers: string[]): Record<string, string> {
+  const patterns: [string, string[]][] = [
+    ["name",     ["name", "item", "title", "product", "desc"]],
+    ["paid",     ["paid", "cost", "bought", "purchase", "price paid", "buy"]],
+    ["soldFor",  ["sold", "sale", "selling", "sold for", "sold price", "sale price", "revenue", "received", "price"]],
+    ["platform", ["platform", "site", "marketplace", "channel", "where"]],
+  ];
+  const result: Record<string, string> = {};
+  const used = new Set<string>();
+  for (const h of headers) {
+    const lc = h.toLowerCase();
+    let mapped = "ignore";
+    for (const [field, kws] of patterns) {
+      if (!used.has(field) && kws.some((k) => lc.includes(k))) { mapped = field; used.add(field); break; }
+    }
+    result[h] = mapped;
+  }
+  if (!used.has("name")) { const first = headers.find((h) => result[h] === "ignore"); if (first) result[first] = "name"; }
+  return result;
+}
+
 function BulkSoldModal({ onClose, onAdd }: {
   onClose: () => void;
   onAdd: (records: SaleRecord[]) => void;
 }) {
+  const [tab, setTab]               = useState<"paste" | "csv">("csv");
   const [pasteText, setPasteText]   = useState("");
+  const [csvText, setCsvText]       = useState("");
+  const [csvHeaders, setCsvHeaders] = useState<string[]>([]);
+  const [csvRows, setCsvRows]       = useState<string[][]>([]);
+  const [colMap, setColMap]         = useState<Record<string, string>>({});
   const [platform, setPlatform]     = useState("");
   const [month, setMonth]           = useState(CURRENT_MONTH);
   const [error, setError]           = useState("");
   const pasteRef                    = useRef<HTMLTextAreaElement>(null);
   useEscClose(onClose);
 
-  useEffect(() => { pasteRef.current?.focus(); }, []);
+  useEffect(() => { if (tab === "paste") pasteRef.current?.focus(); }, [tab]);
 
-  const parsed      = parseSoldList(pasteText);
+  useEffect(() => {
+    if (!csvText.trim()) { setCsvHeaders([]); setCsvRows([]); setColMap({}); return; }
+    const { headers, rows } = parseCsvTsv(csvText);
+    setCsvHeaders(headers);
+    setCsvRows(rows);
+    setColMap(autoMapSoldCols(headers));
+  }, [csvText]);
+
   const recentMonths = getRecentMonths(24);
+
+  // Paste-mode parsed items
+  const parsed       = parseSoldList(pasteText);
   const totalProfit  = parsed.reduce((s, p) => s + (p.soldFor - p.paid), 0);
 
-  function submit() {
-    if (parsed.length === 0) { setError("No items found. Use the format: Item name - £paid - £soldFor"); return; }
+  // CSV-mode parsed items
+  type SoldRow = { name: string; paid: number; soldFor: number; platform?: string };
+  const csvItems: SoldRow[] = csvHeaders.length > 0 ? csvRows.map((row): SoldRow | null => {
+    const get = (f: string) => { const idx = csvHeaders.findIndex((h) => colMap[h] === f); return idx >= 0 ? (row[idx] ?? "").trim() : ""; };
+    const name = get("name"); if (!name) return null;
+    const paid = parseFloat(get("paid").replace(/[£$€,\s]/g, "")); if (isNaN(paid) || paid < 0) return null;
+    const soldFor = parseFloat(get("soldFor").replace(/[£$€,\s]/g, "")); if (isNaN(soldFor) || soldFor < 0) return null;
+    const plat = get("platform") || undefined;
+    return { name, paid, soldFor, platform: plat };
+  }).filter((x): x is SoldRow => x !== null) : [];
+  const csvPreview    = csvItems.slice(0, 6);
+  const csvTotal      = csvItems.reduce((s, p) => s + (p.soldFor - p.paid), 0);
+
+  function submitPaste() {
+    if (parsed.length === 0) { setError("No items found. Use: Item name - £paid - £soldFor"); return; }
     const now = Date.now();
-    const records: SaleRecord[] = parsed.map((p, i) => ({
-      id: now + i,
-      itemName: p.name,
-      paid: p.paid,
-      soldFor: p.soldFor,
-      profit: p.soldFor - p.paid,
-      month,
-      platform: platform || undefined,
-    }));
-    onAdd(records);
+    onAdd(parsed.map((p, i) => ({ id: now + i, itemName: p.name, paid: p.paid, soldFor: p.soldFor, profit: p.soldFor - p.paid, month, platform: platform || undefined })));
+    onClose();
+  }
+
+  function submitCsv() {
+    if (!csvHeaders.some((h) => colMap[h] === "name"))    { setError("Map a column to 'Item name' first."); return; }
+    if (!csvHeaders.some((h) => colMap[h] === "paid"))    { setError("Map a column to 'Price paid' first."); return; }
+    if (!csvHeaders.some((h) => colMap[h] === "soldFor")) { setError("Map a column to 'Sold price' first."); return; }
+    if (csvItems.length === 0) { setError("No valid rows found — check Name, Price paid, and Sold price columns have data."); return; }
+    const now = Date.now();
+    onAdd(csvItems.map((p, i) => ({ id: now + i, itemName: p.name, paid: p.paid, soldFor: p.soldFor, profit: p.soldFor - p.paid, month, platform: p.platform ?? platform ?? undefined })));
     onClose();
   }
 
@@ -1115,24 +1232,128 @@ function BulkSoldModal({ onClose, onAdd }: {
       <div className="flex items-center justify-between px-6 py-5 border-b border-line">
         <div>
           <h2 className="font-display font-medium text-lg">Import sold list</h2>
-          <p className="text-paper-faint text-xs mt-0.5">Paste an existing batch of sales in one go</p>
+          <p className="text-paper-faint text-xs mt-0.5">Log a batch of sales in one go</p>
         </div>
         <button onClick={onClose} className="grid place-items-center w-8 h-8 rounded-lg text-paper-faint hover:text-paper hover:bg-ink-soft transition-colors"><IconClose /></button>
       </div>
 
+      {/* tab toggle */}
+      <div className="flex gap-1 px-6 pt-4">
+        {(["csv", "paste"] as const).map((t) => (
+          <button key={t} type="button" onClick={() => { setTab(t); setError(""); }}
+            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${tab === t ? "bg-amber/15 text-amber border border-amber/30" : "text-paper-faint hover:text-paper"}`}>
+            {t === "csv" ? "Spreadsheet" : "Paste a list"}
+          </button>
+        ))}
+      </div>
+
       <div className="px-6 py-5 space-y-4">
-        <div>
-          <label className="block text-sm text-paper-dim mb-1.5">Paste your sold list</label>
-          <p className="text-xs text-paper-faint mb-2">One item per line: <span className="font-mono text-amber">Item name - £paid - £soldFor</span></p>
-          <textarea
-            ref={pasteRef}
-            className={`${field} resize-none font-mono text-xs leading-relaxed`}
-            rows={8}
-            placeholder={"Carhartt beanie - £2 - £18\nNike Air Force 1 - £12 - £45.99\nLevi jeans - £5 - £28"}
-            value={pasteText}
-            onChange={(e) => { setPasteText(e.target.value); setError(""); }}
-          />
-        </div>
+
+        {tab === "csv" ? (<>
+          <div>
+            <label className="block text-sm text-paper-dim mb-1">Paste from spreadsheet</label>
+            <p className="text-xs text-paper-faint mb-2">Copy cells from Excel or Google Sheets — first row must be column headers</p>
+            <textarea
+              className={`${field} resize-none font-mono text-xs leading-relaxed`}
+              rows={5}
+              placeholder={"Item\tPrice Paid\tSold For\tPlatform\nCarhartt Beanie\t2\t18\tVinted\nNike Air Max 90\t45\t89\teBay"}
+              value={csvText}
+              onChange={(e) => { setCsvText(e.target.value); setError(""); }}
+            />
+          </div>
+
+          {csvHeaders.length > 0 && (
+            <div>
+              <p className="text-xs font-mono uppercase tracking-wider text-paper-faint mb-2">Map columns</p>
+              <div className="rounded-xl border border-line overflow-hidden divide-y divide-line">
+                {csvHeaders.map((h) => (
+                  <div key={h} className="flex items-center justify-between px-3.5 py-2 gap-3">
+                    <span className="text-sm text-paper font-mono truncate shrink-0 max-w-[45%]">{h || "(blank)"}</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 text-paper-faint shrink-0"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    <select
+                      className="ml-auto bg-ink border border-line rounded-lg px-2.5 py-1.5 text-xs text-paper outline-none focus:border-amber/60 transition-colors"
+                      value={colMap[h] ?? "ignore"}
+                      onChange={(e) => setColMap((m) => ({ ...m, [h]: e.target.value }))}
+                    >
+                      {SOLD_CSV_FIELDS.map((f) => <option key={f.key} value={f.key}>{f.label}</option>)}
+                    </select>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {csvPreview.length > 0 && (
+            <div className="rounded-xl border border-line bg-ink-soft overflow-hidden">
+              <div className="px-3.5 py-2 border-b border-line flex items-center justify-between">
+                <span className="text-xs font-mono uppercase tracking-wider text-paper-faint">Preview</span>
+                <span className="text-xs font-medium" style={{ color: csvTotal >= 0 ? "var(--color-moss)" : "var(--color-rust)" }}>
+                  {csvItems.length} sale{csvItems.length !== 1 ? "s" : ""} · {csvTotal >= 0 ? "+" : ""}{gbp(csvTotal)} profit
+                </span>
+              </div>
+              <div className="grid grid-cols-[1fr_auto_auto_auto] gap-x-4 px-3.5 py-1.5 text-[10px] font-mono uppercase tracking-wider text-paper-faint border-b border-line">
+                <span>Item</span><span>Paid</span><span>Sold</span><span>Profit</span>
+              </div>
+              <ul className="divide-y divide-line max-h-52 overflow-y-auto">
+                {csvPreview.map((p, i) => {
+                  const profit = p.soldFor - p.paid;
+                  return (
+                    <li key={i} className="grid grid-cols-[1fr_auto_auto_auto] gap-x-4 px-3.5 py-2 items-center">
+                      <span className="text-paper text-sm truncate">{p.name}</span>
+                      <span className="text-paper-faint font-mono text-xs">{gbp(p.paid)}</span>
+                      <span className="text-amber font-mono text-xs">{gbp(p.soldFor)}</span>
+                      <span className="font-mono text-xs font-medium" style={{ color: profit >= 0 ? "var(--color-moss)" : "var(--color-rust)" }}>
+                        {profit >= 0 ? "+" : ""}{gbp(profit)}
+                      </span>
+                    </li>
+                  );
+                })}
+                {csvItems.length > 6 && <li className="px-3.5 py-2 text-xs text-paper-faint">+{csvItems.length - 6} more rows</li>}
+              </ul>
+            </div>
+          )}
+        </>) : (<>
+          <div>
+            <label className="block text-sm text-paper-dim mb-1.5">Paste your sold list</label>
+            <p className="text-xs text-paper-faint mb-2">One item per line: <span className="font-mono text-amber">Item name - £paid - £soldFor</span></p>
+            <textarea
+              ref={pasteRef}
+              className={`${field} resize-none font-mono text-xs leading-relaxed`}
+              rows={8}
+              placeholder={"Carhartt beanie - £2 - £18\nNike Air Force 1 - £12 - £45.99\nLevi jeans - £5 - £28"}
+              value={pasteText}
+              onChange={(e) => { setPasteText(e.target.value); setError(""); }}
+            />
+          </div>
+          {parsed.length > 0 && (
+            <div className="rounded-xl border border-line bg-ink-soft overflow-hidden">
+              <div className="px-3.5 py-2 border-b border-line flex items-center justify-between">
+                <span className="text-xs font-mono uppercase tracking-wider text-paper-faint">Preview</span>
+                <span className="text-xs font-medium" style={{ color: totalProfit >= 0 ? "var(--color-moss)" : "var(--color-rust)" }}>
+                  {parsed.length} sale{parsed.length === 1 ? "" : "s"} · {totalProfit >= 0 ? "+" : ""}{gbp(totalProfit)} profit
+                </span>
+              </div>
+              <div className="grid grid-cols-[1fr_auto_auto_auto] gap-x-4 px-3.5 py-1.5 text-[10px] font-mono uppercase tracking-wider text-paper-faint border-b border-line">
+                <span>Item</span><span>Paid</span><span>Sold</span><span>Profit</span>
+              </div>
+              <ul className="divide-y divide-line max-h-48 overflow-y-auto">
+                {parsed.map((p, i) => {
+                  const profit = p.soldFor - p.paid;
+                  return (
+                    <li key={i} className="grid grid-cols-[1fr_auto_auto_auto] gap-x-4 px-3.5 py-2 text-sm items-center">
+                      <span className="text-paper truncate pr-2">{p.name}</span>
+                      <span className="text-paper-faint font-mono text-xs">{gbp(p.paid)}</span>
+                      <span className="text-amber font-mono text-xs">{gbp(p.soldFor)}</span>
+                      <span className="font-mono text-xs font-medium" style={{ color: profit >= 0 ? "var(--color-moss)" : "var(--color-rust)" }}>
+                        {profit >= 0 ? "+" : ""}{gbp(profit)}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
+        </>)}
 
         <div className="grid grid-cols-2 gap-3">
           <div>
@@ -1142,7 +1363,7 @@ function BulkSoldModal({ onClose, onAdd }: {
             </select>
           </div>
           <div>
-            <label className="block text-sm text-paper-dim mb-1.5">Platform <span className="text-paper-faint">(optional)</span></label>
+            <label className="block text-sm text-paper-dim mb-1.5">Platform <span className="text-paper-faint">(optional default)</span></label>
             <select className={field} value={platform} onChange={(e) => setPlatform(e.target.value)}>
               <option value="">Not specified</option>
               {SALE_PLATFORMS.map((p) => <option key={p} value={p}>{p}</option>)}
@@ -1150,47 +1371,19 @@ function BulkSoldModal({ onClose, onAdd }: {
           </div>
         </div>
 
-        {/* live preview */}
-        {parsed.length > 0 && (
-          <div className="rounded-xl border border-line bg-ink-soft overflow-hidden">
-            <div className="px-3.5 py-2 border-b border-line flex items-center justify-between">
-              <span className="text-xs font-mono uppercase tracking-wider text-paper-faint">Preview</span>
-              <span className="text-xs font-medium" style={{ color: totalProfit >= 0 ? "var(--color-moss)" : "var(--color-rust)" }}>
-                {parsed.length} sale{parsed.length === 1 ? "" : "s"} · {totalProfit >= 0 ? "+" : ""}{gbp(totalProfit)} profit
-              </span>
-            </div>
-            <div className="grid grid-cols-[1fr_auto_auto_auto] gap-x-4 px-3.5 py-1.5 text-[10px] font-mono uppercase tracking-wider text-paper-faint border-b border-line">
-              <span>Item</span><span>Paid</span><span>Sold</span><span>Profit</span>
-            </div>
-            <ul className="divide-y divide-line max-h-48 overflow-y-auto">
-              {parsed.map((p, i) => {
-                const profit = p.soldFor - p.paid;
-                return (
-                  <li key={i} className="grid grid-cols-[1fr_auto_auto_auto] gap-x-4 px-3.5 py-2 text-sm items-center">
-                    <span className="text-paper truncate pr-2">{p.name}</span>
-                    <span className="text-paper-faint font-mono text-xs">{gbp(p.paid)}</span>
-                    <span className="text-amber font-mono text-xs">{gbp(p.soldFor)}</span>
-                    <span className="font-mono text-xs font-medium" style={{ color: profit >= 0 ? "var(--color-moss)" : "var(--color-rust)" }}>
-                      {profit >= 0 ? "+" : ""}{gbp(profit)}
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        )}
-
         {error && <p className="text-sm text-rust">{error}</p>}
 
         <div className="flex gap-3 pt-1">
           <button type="button" onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-line text-sm text-paper-dim hover:text-paper hover:border-paper-faint transition-colors">Cancel</button>
           <button
             type="button"
-            onClick={submit}
-            disabled={parsed.length === 0}
+            onClick={tab === "csv" ? submitCsv : submitPaste}
+            disabled={tab === "csv" ? csvItems.length === 0 : parsed.length === 0}
             className="flex-1 py-2.5 rounded-xl bg-moss text-ink text-sm font-medium hover:brightness-110 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            {parsed.length > 0 ? `Add ${parsed.length} sale${parsed.length === 1 ? "" : "s"}` : "Add sales"}
+            {tab === "csv"
+              ? (csvItems.length > 0 ? `Import ${csvItems.length} sale${csvItems.length !== 1 ? "s" : ""}` : "Import sales")
+              : (parsed.length > 0 ? `Add ${parsed.length} sale${parsed.length === 1 ? "" : "s"}` : "Add sales")}
           </button>
         </div>
       </div>
@@ -2788,7 +2981,7 @@ function SettingsSection({ userName, userEmail, onNameChange }: { userName: stri
 
 /* ---------- upgrade modal ---------- */
 
-function UpgradeModal({ onClose }: { onClose: () => void }) {
+function UpgradeModal({ onClose, onUpgrade }: { onClose: () => void; onUpgrade: () => void }) {
   useEscClose(onClose);
   return (
     <ModalShell onClose={onClose}>
@@ -2814,12 +3007,12 @@ function UpgradeModal({ onClose }: { onClose: () => void }) {
           ))}
         </div>
         <div className="pt-1 space-y-2">
-          <a
-            href="/pricing"
+          <button
+            onClick={onUpgrade}
             className="block text-center w-full py-3 rounded-xl bg-amber text-ink text-sm font-medium hover:bg-paper transition-colors"
           >
             Upgrade to Pro — £19.99/mo
-          </a>
+          </button>
           <button onClick={onClose} className="w-full py-2 text-xs text-paper-faint hover:text-paper transition-colors">
             Maybe later
           </button>
@@ -2942,7 +3135,7 @@ function OnboardingGuide({ onAddStock, userName }: { onAddStock: () => void; use
 /* ---------- page ---------- */
 
 export default function DashboardPage() {
-  const currentTier: TierKey = "starter"; // swap for real auth tier when Supabase is wired up
+  const [currentTier, setCurrentTier] = useState<TierKey>("starter");
 
   const [navKey, setNavKey]       = useState<NavKey>("overview");
   const [stage, setStage]         = useState<Stage>("unlisted");
@@ -3013,11 +3206,22 @@ export default function DashboardPage() {
       db.from("items").select("*").eq("user_id", userId).order("created_at", { ascending: false }),
       db.from("sale_records").select("*").eq("user_id", userId).order("created_at", { ascending: false }),
       db.from("storage_locations").select("name").eq("user_id", userId).order("name"),
-    ]).then(([itemsRes, salesRes, locsRes]) => {
+      db.from("profiles").select("tier").eq("id", userId).single(),
+    ]).then(([itemsRes, salesRes, locsRes, profileRes]) => {
       if (itemsRes.data) setItems((itemsRes.data as DbItemRow[]).map(rowToItem));
       if (salesRes.data) setSaleRecords((salesRes.data as DbSaleRow[]).map(rowToSale));
       if (locsRes.data) setStorageLocations((locsRes.data as { name: string }[]).map((r) => r.name));
+      const tier = (profileRes.data as { tier?: string } | null)?.tier;
+      if (tier === "pro") setCurrentTier("pro");
       setHydrated(true);
+      // Show success toast if redirected back from Stripe checkout
+      if (typeof window !== "undefined") {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("upgraded") === "1") {
+          addToast("You're now on Pro — enjoy unlimited stock!", "success");
+          window.history.replaceState({}, "", "/dashboard");
+        }
+      }
     });
   }, [userId]);
 
@@ -3041,6 +3245,20 @@ export default function DashboardPage() {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }
 
+  async function handleUpgrade() {
+    const res = await fetch("/api/stripe/checkout", { method: "POST" });
+    const { url, error } = await res.json();
+    if (error) { addToast(error, "warning"); return; }
+    if (url) window.location.href = url;
+  }
+
+  async function handleManageSubscription() {
+    const res = await fetch("/api/stripe/portal", { method: "POST" });
+    const { url, error } = await res.json();
+    if (error) { addToast(error, "warning"); return; }
+    if (url) window.location.href = url;
+  }
+
   async function addItem(item: Item) {
     if (!canAddItem(currentTier, items.length)) { setUpgradeOpen(true); return; }
     setItems((prev) => [item, ...prev]);
@@ -3054,6 +3272,34 @@ export default function DashboardPage() {
     }).select("id").single();
     if (error) { addToast("Failed to save item", "warning"); return; }
     if (data) setItems((prev) => prev.map((i) => i.id === item.id ? { ...i, id: (data as { id: number }).id } : i));
+  }
+
+  async function addItemAndSale(item: Item, sale: SaleRecord) {
+    if (!canAddItem(currentTier, items.length)) { setUpgradeOpen(true); return; }
+    setItems((prev) => [item, ...prev]);
+    setSaleRecords((prev) => [sale, ...prev]);
+    addToast(`${item.name} added and recorded as sold`, "success");
+    if (!userId) return;
+    const { data: itemData, error: itemError } = await createClient().from("items").insert({
+      user_id: userId, code: item.code, name: item.name, cond: item.cond,
+      paid: item.paid, stage: item.stage, bin: item.bin ?? null,
+      notes: item.notes ?? null, size: item.size ?? null, platform: item.platform ?? null,
+      created_at: item.createdAt ? new Date(item.createdAt).toISOString() : new Date().toISOString(),
+    }).select("id").single();
+    if (itemError) { addToast("Failed to save item", "warning"); return; }
+    const realItemId = itemData ? (itemData as { id: number }).id : undefined;
+    if (realItemId) setItems((prev) => prev.map((i) => i.id === item.id ? { ...i, id: realItemId } : i));
+    const { data: saleData, error: saleError } = await createClient().from("sale_records").insert({
+      user_id: userId, item_id: realItemId ?? null, item_name: sale.itemName,
+      paid: sale.paid, sold_for: sale.soldFor, profit: sale.profit, month: sale.month,
+      platform: sale.platform ?? null, ad_cost: null, packaging_cost: null,
+      equipment_cost: null, other_cost: null,
+    }).select("id").single();
+    if (saleError) { addToast("Failed to save sale record", "warning"); return; }
+    if (saleData) {
+      const realSaleId = (saleData as { id: number }).id;
+      setSaleRecords((prev) => prev.map((r) => r.id === sale.id ? { ...r, id: realSaleId } : r));
+    }
   }
 
   async function addManyItems(newItems: Item[]) {
@@ -3355,8 +3601,8 @@ export default function DashboardPage() {
           </button>
         </div>
       )}
-      {addModalOpen && <AddStockModal onClose={() => setAddModalOpen(false)} onAdd={addItem} onAddMany={addManyItems} storageLocations={storageLocations} />}
-      {upgradeOpen && <UpgradeModal onClose={() => setUpgradeOpen(false)} />}
+      {addModalOpen && <AddStockModal onClose={() => setAddModalOpen(false)} onAdd={addItem} onAddMany={addManyItems} onAddAndSold={addItemAndSale} storageLocations={storageLocations} />}
+      {upgradeOpen && <UpgradeModal onClose={() => setUpgradeOpen(false)} onUpgrade={() => { setUpgradeOpen(false); handleUpgrade(); }} />}
       {storageModalOpen && <AddStorageModal onClose={() => setStorageModalOpen(false)} onAdd={addStorageLocation} />}
       {editTarget && (
         <EditStockModal
@@ -3433,12 +3679,19 @@ export default function DashboardPage() {
                 style={{ width: TIERS[currentTier].itemCap === Infinity ? "0%" : `${Math.min(items.length / TIERS[currentTier].itemCap * 100, 100)}%` }}
               />
             </div>
-            {currentTier === "starter" && (
+            {currentTier === "starter" ? (
               <button
-                onClick={() => setUpgradeOpen(true)}
+                onClick={handleUpgrade}
                 className="mt-3 w-full text-center text-xs py-1.5 rounded-md border border-amber/30 text-amber hover:bg-amber/10 transition-colors"
               >
                 Upgrade to Pro
+              </button>
+            ) : (
+              <button
+                onClick={handleManageSubscription}
+                className="mt-3 w-full text-center text-xs py-1.5 rounded-md border border-line text-paper-faint hover:text-paper hover:border-paper-faint transition-colors"
+              >
+                Manage subscription
               </button>
             )}
           </div>
@@ -3529,6 +3782,15 @@ export default function DashboardPage() {
                   <p className="text-xs text-paper-faint mt-0.5">{userEmail}</p>
                 </div>
                 <div className="py-1">
+                  {currentTier === "pro" && (
+                    <button
+                      onClick={() => { setUserMenuOpen(false); handleManageSubscription(); }}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-paper-dim hover:text-paper hover:bg-ink-soft transition-colors"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 shrink-0"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                      Manage subscription
+                    </button>
+                  )}
                   <button
                     onClick={async () => { const sb = createClient(); await sb.auth.signOut(); window.location.href = "/"; }}
                     className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-rust hover:bg-rust/10 transition-colors"
