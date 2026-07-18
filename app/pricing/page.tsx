@@ -143,7 +143,6 @@ export default function PricingPage() {
           {[
             { q: "Can I cancel anytime?", a: "Yes. Cancel from your account settings with one click. Your subscription ends at the close of your current billing period and you will not be charged again. You keep full access until that date. No partial refunds are issued for unused time." },
             { q: "What happens when I hit 50 items on the free plan?", a: "You won't be able to add more items until you upgrade. Your existing data stays safe and nothing is deleted." },
-            { q: "Is my data safe?", a: "Yes. All data is stored securely in Supabase with row-level security. Only you can access your inventory. We never sell your data." },
             { q: "How do I get started?", a: "Sign up and you get 50 items free. You only need payment details when upgrading to Pro." },
             { q: "What is the Analytics Chrome extension?", a: "A browser extension that overlays live resale price estimates directly on Vinted listings so you can spot bargains instantly." },
           ].map(({ q, a }) => (
