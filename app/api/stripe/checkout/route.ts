@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { createClient } from "@/lib/supabase/server";
+import { createClient as createAdmin } from "@supabase/supabase-js";
 import { getStripePriceId } from "@/lib/tiers.server";
+
+const admin = createAdmin(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
 export async function POST(_req: NextRequest) {
   const supabase = await createClient();
@@ -10,7 +16,7 @@ export async function POST(_req: NextRequest) {
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://sellganise.com";
 
-  const { data: profile } = await supabase
+  const { data: profile } = await admin
     .from("profiles")
     .select("stripe_customer_id, tier")
     .eq("id", user.id)
@@ -28,7 +34,7 @@ export async function POST(_req: NextRequest) {
       metadata: { supabase_user_id: user.id },
     });
     customerId = customer.id;
-    await supabase.from("profiles").upsert({
+    await admin.from("profiles").upsert({
       id: user.id,
       stripe_customer_id: customerId,
       updated_at: new Date().toISOString(),
