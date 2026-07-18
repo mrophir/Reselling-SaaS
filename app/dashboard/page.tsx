@@ -2830,7 +2830,7 @@ function AnalyticsExtension() {
 
 /* ---------- settings ---------- */
 
-function SettingsSection({ userName, userEmail, onNameChange }: { userName: string; userEmail: string; onNameChange: (name: string) => void }) {
+function SettingsSection({ userName, userEmail, onNameChange, currentTier, onUpgrade, onManageSubscription }: { userName: string; userEmail: string; onNameChange: (name: string) => void; currentTier: TierKey; onUpgrade: () => void; onManageSubscription: () => void }) {
   const [nameVal, setNameVal]       = useState(userName);
   const [emailVal, setEmailVal]     = useState(userEmail);
   const [currentPw, setCurrentPw]   = useState("");
@@ -2948,16 +2948,29 @@ function SettingsSection({ userName, userEmail, onNameChange }: { userName: stri
         <h2 className="text-sm font-semibold text-paper-dim uppercase tracking-wider">Subscription</h2>
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium">Starter plan</p>
-            <p className="text-xs text-paper-faint mt-0.5">Up to 500 items · Free</p>
+            <p className="text-sm font-medium">{currentTier === "pro" ? "Sellganise Pro" : "Free plan"}</p>
+            <p className="text-xs text-paper-faint mt-0.5">
+              {currentTier === "pro" ? "Unlimited stock · £19.99/mo" : "Up to 50 items · Free"}
+            </p>
           </div>
           <span className="text-xs px-2.5 py-1 rounded-full bg-amber/10 text-amber font-medium">Active</span>
         </div>
         <div className="pt-2 border-t border-line">
-          <p className="text-xs text-paper-faint mb-3">Upgrade to Operator for unlimited items, bulk tools, and priority support.</p>
-          <button className="px-4 py-2 rounded-lg border border-amber text-amber text-sm font-medium hover:bg-amber/10 transition-colors">
-            Upgrade to Operator
-          </button>
+          {currentTier === "pro" ? (
+            <>
+              <p className="text-xs text-paper-faint mb-3">You're on Pro — unlimited stock, bulk actions, monthly archives, and CSV export. Manage or cancel your subscription below.</p>
+              <button onClick={onManageSubscription} className="px-4 py-2 rounded-lg border border-line text-paper-dim text-sm font-medium hover:text-paper hover:border-paper-faint transition-colors">
+                Manage subscription
+              </button>
+            </>
+          ) : (
+            <>
+              <p className="text-xs text-paper-faint mb-3">Upgrade to Pro for unlimited stock, bulk actions, monthly profit archives, CSV export, and multi-platform tracking — £19.99/mo, cancel anytime.</p>
+              <button onClick={onUpgrade} className="px-4 py-2 rounded-lg bg-amber text-ink text-sm font-medium hover:bg-paper transition-colors">
+                Upgrade to Pro
+              </button>
+            </>
+          )}
         </div>
       </section>
 
@@ -3818,7 +3831,7 @@ export default function DashboardPage() {
           {navKey === "calculator" && <ProfitCalculator />}
           {navKey === "archives"   && <Archives saleRecords={saleRecords} onDeleteSale={deleteSale} onEditSale={editSale} onBulkSold={() => setBulkSoldOpen(true)} />}
           {navKey === "analytics"  && <AnalyticsExtension />}
-          {navKey === "settings"   && <SettingsSection userName={userName} userEmail={userEmail} onNameChange={(n) => { setUserName(n); const initials = n.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2) || n[0]?.toUpperCase() || "?"; setUserInitials(initials); }} />}
+          {navKey === "settings"   && <SettingsSection userName={userName} userEmail={userEmail} onNameChange={(n) => { setUserName(n); const initials = n.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2) || n[0]?.toUpperCase() || "?"; setUserInitials(initials); }} currentTier={currentTier} onUpgrade={handleUpgrade} onManageSubscription={handleManageSubscription} />}
         </main>
       </div>
     </div>
