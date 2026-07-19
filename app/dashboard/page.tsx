@@ -3781,18 +3781,20 @@ export default function DashboardPage() {
           <a href="/" className="md:hidden flex items-center gap-2 shrink-0">
             <span className="font-display text-[15px] font-medium tracking-tight">Sellganise</span>
           </a>
-          <div className="flex items-center gap-2.5 flex-1 min-w-0 max-w-[420px]">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] text-paper-faint shrink-0"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input
-              placeholder="Search…"
-              className="bg-transparent border-none outline-none text-sm text-paper placeholder:text-paper-faint w-full"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
-            {query && (
-              <button onClick={() => setQuery("")} className="text-paper-faint hover:text-paper transition-colors shrink-0"><IconClose /></button>
-            )}
-          </div>
+          {(navKey === "overview" || navKey === "stock") && (
+            <div className="flex items-center gap-2.5 flex-1 min-w-0 max-w-[420px]">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] text-paper-faint shrink-0"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input
+                placeholder="Search…"
+                className="bg-transparent border-none outline-none text-sm text-paper placeholder:text-paper-faint w-full"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+              {query && (
+                <button onClick={() => setQuery("")} className="text-paper-faint hover:text-paper transition-colors shrink-0"><IconClose /></button>
+              )}
+            </div>
+          )}
           <div className="ml-auto flex items-center gap-2 shrink-0">
           <button onClick={() => { if (!canAddItem(currentTier, items.length)) { setUpgradeOpen(true); return; } setAddModalOpen(true); }} className="flex items-center gap-2 text-sm font-medium px-3.5 py-2 rounded-lg bg-amber text-ink hover:bg-paper transition-colors shrink-0">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
