@@ -36,6 +36,9 @@ export default function SignUpPage() {
           <p className="text-paper-dim text-sm leading-relaxed">
             We sent a confirmation link to your inbox. Click it to activate your account and get started.
           </p>
+          <p className="text-paper-faint text-xs mt-2">
+            Can&apos;t see it? Check your spam or junk folder.
+          </p>
           <Link href="/login" className="mt-8 block text-sm text-amber hover:text-paper transition-colors">
             Back to sign in →
           </Link>

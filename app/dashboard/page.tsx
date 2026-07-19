@@ -2958,14 +2958,14 @@ function SettingsSection({ userName, userEmail, onNameChange, currentTier, onUpg
         <div className="pt-2 border-t border-line">
           {currentTier === "pro" ? (
             <>
-              <p className="text-xs text-paper-faint mb-3">You're on Pro — unlimited stock, bulk actions, monthly archives, and CSV export. Manage or cancel your subscription below.</p>
+              <p className="text-xs text-paper-faint mb-3">You're on Pro — unlimited stock and bulk actions. Manage or cancel your subscription below.</p>
               <button onClick={onManageSubscription} className="px-4 py-2 rounded-lg border border-line text-paper-dim text-sm font-medium hover:text-paper hover:border-paper-faint transition-colors">
                 Manage subscription
               </button>
             </>
           ) : (
             <>
-              <p className="text-xs text-paper-faint mb-3">Upgrade to Pro for unlimited stock, bulk actions, monthly profit archives, CSV export, and multi-platform tracking — £19.99/mo, cancel anytime.</p>
+              <p className="text-xs text-paper-faint mb-3">Upgrade to Pro for unlimited stock and bulk actions — £19.99/mo, cancel anytime.</p>
               <button onClick={onUpgrade} className="px-4 py-2 rounded-lg bg-amber text-ink text-sm font-medium hover:bg-paper transition-colors">
                 Upgrade to Pro
               </button>
@@ -3009,11 +3009,11 @@ function UpgradeModal({ onClose, onUpgrade }: { onClose: () => void; onUpgrade: 
       <div className="px-6 py-6 space-y-5">
         <div className="rounded-xl border border-amber/25 bg-amber/[0.06] p-4">
           <p className="text-sm text-paper-dim leading-relaxed">
-            You have <span className="text-paper font-medium">50 items</span> in your inventory — the maximum on the free plan. Upgrade to Pro to add unlimited stock and unlock advanced features.
+            You have <span className="text-paper font-medium">50 items</span> in your inventory — the maximum on the free plan. Upgrade to Pro for unlimited stock.
           </p>
         </div>
         <div className="space-y-2">
-          {["Unlimited stock items", "Monthly profit archives", "CSV export", "Advanced analytics", "Multi-platform tracking"].map((f) => (
+          {["Unlimited stock items", "Bulk actions (list, unlist, remove in one go)", "Priority support"].map((f) => (
             <div key={f} className="flex items-center gap-2.5 text-sm text-paper-dim">
               <span className="w-4 h-4 rounded-full bg-moss/20 text-moss text-[10px] grid place-items-center shrink-0 font-bold">✓</span>
               {f}
@@ -3239,6 +3239,8 @@ export default function DashboardPage() {
           window.history.replaceState({}, "", "/dashboard");
         }
       }
+    }).catch(() => {
+      setHydrated(true);
     });
   }, [userId]);
 

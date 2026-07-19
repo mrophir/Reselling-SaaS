@@ -742,11 +742,11 @@ function DashboardMockup() {
                     ))}
                     <div style={{ flex: 1 }} />
                     <div style={{ margin: "0 8px", padding: "10px 12px", borderRadius: 8, border: "1px solid #2a2722", background: "#161410" }}>
-                      <div style={{ fontSize: 10, color: "#6f6a5e", fontFamily: "monospace", marginBottom: 4 }}>RESELLER PLAN</div>
+                      <div style={{ fontSize: 10, color: "#6f6a5e", fontFamily: "monospace", marginBottom: 4 }}>PRO PLAN</div>
                       <div style={{ height: 4, borderRadius: 2, background: "#2a2722", overflow: "hidden" }}>
-                        <div style={{ width: "38%", height: "100%", background: "#f0a020", borderRadius: 2 }} />
+                        <div style={{ width: "0%", height: "100%", background: "#f0a020", borderRadius: 2 }} />
                       </div>
-                      <div style={{ fontSize: 10, color: "#b8b1a3", marginTop: 4 }}>190 / 500 items</div>
+                      <div style={{ fontSize: 10, color: "#b8b1a3", marginTop: 4 }}>∞ unlimited items</div>
                     </div>
                   </div>
 

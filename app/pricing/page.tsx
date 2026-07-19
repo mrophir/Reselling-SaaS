@@ -1,35 +1,31 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getTier, formatItemCap, type FeatureFlag } from "../../lib/tiers";
+import { getTier, formatItemCap } from "../../lib/tiers";
 
 export const metadata: Metadata = {
   title: "Pricing",
-  description: "Start free with 50 items. Upgrade to Pro for £19.99/mo — unlimited stock, monthly archives, CSV export, and advanced analytics. No hidden fees, cancel anytime.",
+  description: "Start free with 50 items and all features. Upgrade to Pro for £19.99/mo — unlimited stock and bulk actions. No hidden fees, cancel anytime.",
   alternates: { canonical: "https://sellganise.com/pricing" },
   openGraph: {
     title: "Sellganise Pricing — Free plan + Pro at £19.99/mo",
-    description: "Start free with 50 items. Upgrade to Pro for unlimited stock, monthly archives, CSV export and advanced analytics.",
+    description: "Start free with 50 items and all features. Upgrade to Pro for unlimited stock and bulk actions.",
     url: "https://sellganise.com/pricing",
   },
 };
 
-const FEATURE_LABELS: Record<FeatureFlag, string> = {
-  pipeline: "3-stage pipeline (Unlisted / Listed / Sold)",
-  leak_alert: "Not listed yet leak alert",
-  bin_lookup: "Storage map & instant retrieval",
-  basic_profit: "Profit calculator (2026 UK fees: Vinted, eBay, Depop, Facebook)",
-  monthly_archives: "Monthly archives",
-  aging_flags: "Aging flags on dead stock",
-  tax_export: "Tax-ready CSV export",
-  multi_platform: "Multi-platform tracking",
-  bulk_actions: "Bulk actions",
-  advanced_reporting: "Advanced reporting",
-  csv_import: "CSV import",
-  analytics_extension: "Sellganise Analytics Chrome extension: live market price data on every Vinted listing",
-};
-
-const FREE_FEATURES: FeatureFlag[] = ["pipeline", "leak_alert", "bin_lookup", "basic_profit"];
-const PRO_EXTRA_FEATURES: FeatureFlag[] = ["monthly_archives", "aging_flags", "tax_export", "multi_platform", "bulk_actions", "advanced_reporting", "csv_import", "analytics_extension"];
+const ALL_FEATURES: { label: string; desc?: string }[] = [
+  { label: "3-stage pipeline (Unlisted / Listed / Sold)" },
+  { label: "Profit calculator", desc: "2026 UK fees: Vinted, eBay, Depop, Facebook" },
+  { label: "Storage map & instant bin retrieval" },
+  { label: "Not listed yet leak alert" },
+  { label: "Monthly profit archives" },
+  { label: "Aging flags on dead stock" },
+  { label: "Tax-ready CSV export" },
+  { label: "CSV import from spreadsheet" },
+  { label: "Multi-platform tracking" },
+  { label: "Advanced reporting" },
+  { label: "Sellganise Analytics Chrome extension", desc: "Live market price data on every Vinted listing" },
+];
 
 export default function PricingPage() {
   const free = getTier("starter");
@@ -81,10 +77,10 @@ export default function PricingPage() {
               {formatItemCap("starter")} items included
             </div>
             <ul className="space-y-3.5 flex-1 mb-10">
-              {FREE_FEATURES.map((f) => (
-                <li key={f} className="flex items-start gap-3 text-[14px] text-paper-dim">
+              {ALL_FEATURES.map((f) => (
+                <li key={f.label} className="flex items-start gap-3 text-[14px] text-paper-dim">
                   <span className="mt-0.5 grid place-items-center w-4 h-4 rounded-full bg-moss/20 text-moss text-[10px] shrink-0 font-bold">✓</span>
-                  {FEATURE_LABELS[f]}
+                  <span>{f.label}{f.desc && <span className="block text-xs text-paper-faint mt-0.5">{f.desc}</span>}</span>
                 </li>
               ))}
             </ul>
@@ -97,7 +93,7 @@ export default function PricingPage() {
           <div className="relative flex flex-col rounded-2xl border border-amber/50 bg-gradient-to-b from-amber/[0.07] to-transparent p-9 h-full">
             <div className="absolute -top-3.5 left-8">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber text-ink text-xs font-semibold">
-                → Popular
+                → Most popular
               </span>
             </div>
             <div className="mb-6">
@@ -114,12 +110,16 @@ export default function PricingPage() {
             <div className="flex-1 mb-10">
               <p className="text-xs text-paper-faint font-mono mb-4 uppercase tracking-wider">Everything in Free, plus:</p>
               <ul className="space-y-3.5">
-                {PRO_EXTRA_FEATURES.map((f) => (
-                  <li key={f} className="flex items-start gap-3 text-[14px] text-paper-dim">
+                {ALL_FEATURES.map((f) => (
+                  <li key={f.label} className="flex items-start gap-3 text-[14px] text-paper-dim">
                     <span className="mt-0.5 grid place-items-center w-4 h-4 rounded-full bg-amber/20 text-amber text-[10px] shrink-0 font-bold">✓</span>
-                    {FEATURE_LABELS[f]}
+                    <span>{f.label}{f.desc && <span className="block text-xs text-paper-faint/70 mt-0.5">{f.desc}</span>}</span>
                   </li>
                 ))}
+                <li className="flex items-start gap-3 text-[14px] text-paper-dim">
+                  <span className="mt-0.5 grid place-items-center w-4 h-4 rounded-full bg-amber/20 text-amber text-[10px] shrink-0 font-bold">✓</span>
+                  Bulk actions (list, unlist, remove at scale)
+                </li>
               </ul>
             </div>
             <Link href="/signup" className="block text-center px-5 py-3.5 rounded-xl bg-amber text-ink font-medium text-sm hover:bg-paper transition-colors">

@@ -110,7 +110,7 @@ function LoginForm() {
           className="btn-shine mt-1 w-full rounded-xl bg-amber py-3 text-sm font-medium text-ink hover:bg-paper transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isPending
-            ? mode === "signin" ? "Signing in…" : mode === "signup" ? "Creating account…" : "Sending…"
+            ? mode === "signin" ? "Logging in…" : mode === "signup" ? "Creating account…" : "Sending…"
             : mode === "signin" ? "Log in" : mode === "signup" ? "Create account" : "Send reset link"}
         </button>
       </form>
