@@ -2487,6 +2487,46 @@ function Archives({ saleRecords, onDeleteSale, onEditSale, onBulkSold }: {
           <p className="text-sm text-paper-faint">Mark an item as sold and it will appear here with full P&amp;L.</p>
         </div>
       ) : (
+        <>
+        {/* profit trend chart */}
+        {months.length > 1 && (
+          <div className="rounded-2xl border border-line bg-ink-card p-5 mb-4">
+            <p className="text-[10px] font-mono uppercase tracking-[0.15em] text-paper-faint mb-4">Profit trend</p>
+            <div className="flex items-end gap-2 h-16">
+              {(() => {
+                const maxProfit = Math.max(...months.map((m) => Math.max(m.profit, 0)), 1);
+                return months.map((mo) => {
+                  const isActive = openMonth === mo.m;
+                  const pct = Math.max(mo.profit / maxProfit, 0);
+                  const minH = 4;
+                  const barH = Math.max(pct * 52, minH);
+                  return (
+                    <button
+                      key={mo.m}
+                      onClick={() => setOpenMonth(isActive ? null : mo.m)}
+                      className="flex-1 flex flex-col items-center gap-1.5 group"
+                      title={`${mo.m} — ${gbp(mo.profit)}`}
+                    >
+                      <span className="text-[9px] font-mono text-paper-faint opacity-0 group-hover:opacity-100 transition-opacity">{gbp(mo.profit)}</span>
+                      <div className="w-full flex items-end justify-center">
+                        <div
+                          className="w-full rounded-t-sm transition-all duration-200"
+                          style={{
+                            height: barH,
+                            background: isActive ? "var(--color-moss)" : mo.profit < 0 ? "var(--color-rust)" : "#2a2722",
+                          }}
+                        />
+                      </div>
+                      <span className="text-[9px] font-mono" style={{ color: isActive ? "var(--color-moss)" : "#4a4640" }}>
+                        {mo.m.split(" ")[0].slice(0, 3)}
+                      </span>
+                    </button>
+                  );
+                });
+              })()}
+            </div>
+          </div>
+        )}
         <div className="space-y-3">
           {months.map((mo) => {
             const isOpen = openMonth === mo.m;
@@ -2615,6 +2655,7 @@ function Archives({ saleRecords, onDeleteSale, onEditSale, onBulkSold }: {
             );
           })}
         </div>
+        </>
       )}
     </div>
   );
