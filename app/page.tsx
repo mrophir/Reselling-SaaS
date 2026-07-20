@@ -227,7 +227,6 @@ function Hero() {
     "Stock Management Just Got Easier",
     "Making Resellers More Profitable",
     "Manage Your Stock, Make More Profit",
-    "The Reseller Software Built for the UK",
   ];
 
   const { displayed: t2 } = useCyclingTypewriter(
