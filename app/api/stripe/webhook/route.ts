@@ -10,18 +10,18 @@ const admin = createClient(
 );
 
 async function updateProfileByCustomer(customerId: string, updates: Record<string, unknown>) {
-  const { error, count } = await admin
+  const { data: updated, error } = await admin
     .from("profiles")
     .update(updates)
     .eq("stripe_customer_id", customerId)
-    .select("id", { count: "exact", head: true });
+    .select("id");
 
   if (error) {
     console.error("[webhook] Profile update error:", error.message);
     return false;
   }
 
-  if (!count || count === 0) {
+  if (!updated || updated.length === 0) {
     // stripe_customer_id not on the profile — look up via Stripe customer metadata
     const customer = await stripe.customers.retrieve(customerId) as { deleted?: boolean; metadata?: { supabase_user_id?: string } };
     if (customer.deleted || !customer.metadata?.supabase_user_id) {
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
       if (session.mode !== "subscription") break;
       const customerId = session.customer;
       const subscriptionId = session.subscription;
-      const sub = await stripe.subscriptions.retrieve(subscriptionId) as { status: string; current_period_end: number };
+      const sub = await stripe.subscriptions.retrieve(subscriptionId) as unknown as { status: string; current_period_end: number };
       await updateProfileByCustomer(customerId, {
         stripe_subscription_id: subscriptionId,
         tier: "pro",
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
     }
 
     case "customer.subscription.updated": {
-      const sub = event.data.object as { id: string; status: string; current_period_end: number; customer: string };
+      const sub = event.data.object as unknown as { id: string; status: string; current_period_end: number; customer: string };
       const isActive = sub.status === "active" || sub.status === "trialing";
       await updateProfileByCustomer(sub.customer, {
         tier: isActive ? "pro" : "starter",
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
     }
 
     case "customer.subscription.deleted": {
-      const sub = event.data.object as { id: string; customer: string };
+      const sub = event.data.object as unknown as { id: string; customer: string };
       await updateProfileByCustomer(sub.customer, {
         tier: "starter",
         subscription_status: "canceled",
@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
     }
 
     case "invoice.payment_failed": {
-      const invoice = event.data.object as { subscription: string | null; customer: string };
+      const invoice = event.data.object as unknown as { subscription: string | null; customer: string };
       if (invoice.customer) {
         await updateProfileByCustomer(invoice.customer, {
           subscription_status: "past_due",
