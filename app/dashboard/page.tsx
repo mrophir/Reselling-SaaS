@@ -99,7 +99,10 @@ function rowToSale(r: DbSaleRow): SaleRecord {
   };
 }
 
-const CURRENT_MONTH = new Date().toLocaleString("en-GB", { month: "long", year: "numeric" });
+function getCurrentMonth() {
+  return new Date().toLocaleString("en-GB", { month: "long", year: "numeric" });
+}
+const CURRENT_MONTH = getCurrentMonth();
 const SALE_PLATFORMS = ["Vinted", "eBay", "Depop", "Facebook Marketplace", "Other"] as const;
 const LISTING_PLATFORMS = ["Vinted", "eBay", "Depop", "Facebook", "Other"] as const;
 
@@ -1655,12 +1658,12 @@ function ItemRow({ item, onSell, onToggleListed, onEdit, onRemove, onUnsell, sto
 /* ---------- sections ---------- */
 
 function Overview({
-  items, stage, setStage, onSell, onToggleListed, onUnsell, onEdit, liveProfit, liveSold, query, storageLocations, onAssignBin,
+  items, stage, setStage, onSell, onToggleListed, onUnsell, onEdit, liveProfit, liveSold, currentMonth, query, storageLocations, onAssignBin,
 }: {
   items: Item[]; stage: Stage; setStage: (s: Stage) => void;
   onSell: (item: Item) => void; onToggleListed: (item: Item, platforms?: string[]) => void; onUnsell: (id: number) => void;
   onEdit: (item: Item) => void;
-  liveProfit: number; liveSold: number; query: string;
+  liveProfit: number; liveSold: number; currentMonth: string; query: string;
   storageLocations: string[]; onAssignBin: (id: number, bin: string) => void;
 }) {
   const q = query.toLowerCase().trim();
@@ -1702,7 +1705,7 @@ function Overview({
         {([
           { label: "Unlisted", value: counts.unlisted, cls: "text-amber", stageKey: "unlisted" as Stage },
           { label: "Listed",   value: counts.listed,   cls: "",           stageKey: "listed"   as Stage },
-          { label: "Sold · Jul", value: counts.sold,   cls: "",           stageKey: "sold"     as Stage },
+          { label: `Sold · ${currentMonth}`, value: counts.sold,   cls: "",           stageKey: "sold"     as Stage },
         ] as const).map((s) => {
           const active = stage === s.stageKey;
           return (
@@ -1718,7 +1721,7 @@ function Overview({
           );
         })}
         <div className="rounded-xl border border-line bg-ink-card px-4 py-3.5">
-          <p className="text-[13px] text-paper-faint">Profit · Jul</p>
+          <p className="text-[13px] text-paper-faint">Profit · {currentMonth}</p>
           <p className="font-mono text-2xl mt-1 text-moss">{gbp(totalProfit)}</p>
         </div>
       </div>
@@ -2918,7 +2921,16 @@ function SettingsSection({ userName, userEmail, onNameChange, currentTier, onUpg
   async function handleDelete() {
     if (deleteConfirm !== "DELETE") return;
     setDeleting(true);
-    await deleteAccount();
+    try {
+      const result = await deleteAccount();
+      if (result?.error) {
+        addToast(`Failed to delete account: ${result.error}`, "warning");
+        setDeleting(false);
+      }
+    } catch {
+      addToast("Failed to delete account — please try again", "warning");
+      setDeleting(false);
+    }
   }
 
   function Feedback({ k }: { k: string }) {
@@ -3323,15 +3335,24 @@ export default function DashboardPage() {
     if (!canAddItem(currentTier, items.length)) { setUpgradeOpen(true); return; }
     setItems((prev) => [item, ...prev]);
     addToast(`${item.name} added to stock`);
-    if (!userId) return;
-    const { data, error } = await createClient().from("items").insert({
-      user_id: userId, code: item.code, name: item.name, cond: item.cond,
-      paid: item.paid, stage: item.stage, bin: item.bin ?? null,
-      notes: item.notes ?? null, size: item.size ?? null, platform: item.platform ?? null,
-      created_at: item.createdAt ? new Date(item.createdAt).toISOString() : new Date().toISOString(),
-    }).select("id").single();
-    if (error) { addToast("Failed to save item", "warning"); return; }
-    if (data) setItems((prev) => prev.map((i) => i.id === item.id ? { ...i, id: (data as { id: number }).id } : i));
+    if (!userId) { console.error("[addItem] No userId — skipping save"); return; }
+    try {
+      const { data, error } = await createClient().from("items").insert({
+        user_id: userId, code: item.code, name: item.name, cond: item.cond,
+        paid: item.paid, stage: item.stage, bin: item.bin ?? null,
+        notes: item.notes ?? null, size: item.size ?? null, platform: item.platform ?? null,
+        created_at: item.createdAt ? new Date(item.createdAt).toISOString() : new Date().toISOString(),
+      }).select("id").single();
+      if (error) {
+        console.error("[addItem] Supabase error:", error.code, error.message, error.details);
+        addToast(`Save failed: ${error.message}`, "warning");
+        return;
+      }
+      if (data) setItems((prev) => prev.map((i) => i.id === item.id ? { ...i, id: (data as { id: number }).id } : i));
+    } catch (err) {
+      console.error("[addItem] Unexpected error:", err);
+      addToast("Save failed — check browser console", "warning");
+    }
   }
 
   async function addItemAndSale(item: Item, sale: SaleRecord) {
@@ -3339,14 +3360,18 @@ export default function DashboardPage() {
     setItems((prev) => [item, ...prev]);
     setSaleRecords((prev) => [sale, ...prev]);
     addToast(`${item.name} added and recorded as sold`, "success");
-    if (!userId) return;
+    if (!userId) { console.error("[addItemAndSale] No userId — skipping save"); return; }
     const { data: itemData, error: itemError } = await createClient().from("items").insert({
       user_id: userId, code: item.code, name: item.name, cond: item.cond,
       paid: item.paid, stage: item.stage, bin: item.bin ?? null,
       notes: item.notes ?? null, size: item.size ?? null, platform: item.platform ?? null,
       created_at: item.createdAt ? new Date(item.createdAt).toISOString() : new Date().toISOString(),
     }).select("id").single();
-    if (itemError) { addToast("Failed to save item", "warning"); return; }
+    if (itemError) {
+      console.error("[addItemAndSale] Supabase error:", itemError.code, itemError.message, itemError.details);
+      addToast(`Save failed: ${itemError.message}`, "warning");
+      return;
+    }
     const realItemId = itemData ? (itemData as { id: number }).id : undefined;
     if (realItemId) setItems((prev) => prev.map((i) => i.id === item.id ? { ...i, id: realItemId } : i));
     const { data: saleData, error: saleError } = await createClient().from("sale_records").insert({
@@ -3370,7 +3395,7 @@ export default function DashboardPage() {
     if (toAdd.length < newItems.length) addToast(`Free plan limit: ${toAdd.length} of ${newItems.length} items added. Upgrade for unlimited.`, "warning");
     setItems((prev) => [...toAdd, ...prev]);
     addToast(`${toAdd.length} item${toAdd.length === 1 ? "" : "s"} added to stock`, "info");
-    if (!userId) return;
+    if (!userId) { console.error("[addManyItems] No userId — skipping save"); return; }
     const { data, error } = await createClient().from("items").insert(
       toAdd.map((item) => ({
         user_id: userId!, code: item.code, name: item.name, cond: item.cond,
@@ -3379,7 +3404,11 @@ export default function DashboardPage() {
         created_at: item.createdAt ? new Date(item.createdAt).toISOString() : new Date().toISOString(),
       }))
     ).select("id");
-    if (error) { addToast("Failed to save items", "warning"); return; }
+    if (error) {
+      console.error("[addManyItems] Supabase error:", error.code, error.message, error.details);
+      addToast(`Save failed: ${error.message}`, "warning");
+      return;
+    }
     if (data) {
       const dbIds = data as { id: number }[];
       setItems((prev) => {
@@ -3585,8 +3614,10 @@ export default function DashboardPage() {
     }
   }
 
-  const liveProfit = saleRecords.reduce((s, r) => s + r.profit, 0);
-  const liveSold   = saleRecords.length;
+  const currentMonth = getCurrentMonth();
+  const thisMonthSales = saleRecords.filter((r) => r.month === currentMonth);
+  const liveProfit = thisMonthSales.reduce((s, r) => s + r.profit, 0);
+  const liveSold   = thisMonthSales.length;
 
   const [migrating, setMigrating] = useState(false);
   const hasLocalData = hydrated && items.length === 0 && typeof window !== "undefined" && !!localStorage.getItem("sellganise-items") && JSON.parse(localStorage.getItem("sellganise-items") || "[]").length > 0;
@@ -3873,7 +3904,7 @@ export default function DashboardPage() {
           {navKey === "overview" && (
             hydrated && items.length === 0
               ? <OnboardingGuide onAddStock={() => setAddModalOpen(true)} userName={userName} />
-              : <Overview items={items} stage={stage} setStage={setStage} onSell={setSellTarget} onToggleListed={toggleListed} onEdit={setEditTarget} onUnsell={unsellItem} liveProfit={liveProfit} liveSold={liveSold} query={query} storageLocations={storageLocations} onAssignBin={assignBin} />
+              : <Overview items={items} stage={stage} setStage={setStage} onSell={setSellTarget} onToggleListed={toggleListed} onEdit={setEditTarget} onUnsell={unsellItem} liveProfit={liveProfit} liveSold={liveSold} currentMonth={currentMonth} query={query} storageLocations={storageLocations} onAssignBin={assignBin} />
           )}
           {navKey === "stock"      && <Stock items={items} onSell={setSellTarget} onToggleListed={toggleListed} onEdit={setEditTarget} onRemove={removeItem} onUnsell={unsellItem} query={query} storageLocations={storageLocations} onAssignBin={assignBin} currentTier={currentTier} onBulkList={bulkList} onBulkUnlist={bulkUnlist} onBulkRemove={bulkRemove} onBulkAssignBin={bulkAssignBin} />}
           {navKey === "storage"    && <StorageMap items={items} storageLocations={storageLocations} onAddStorage={() => setStorageModalOpen(true)} onRemoveItem={unassignFromStorage} />}
