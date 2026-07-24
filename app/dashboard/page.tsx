@@ -3231,6 +3231,7 @@ export default function DashboardPage() {
   const [userName, setUserName]           = useState("");
   const [userId, setUserId]               = useState<string | null>(null);
   const [upgradeOpen, setUpgradeOpen]     = useState(false);
+  const [issueBannerDismissed, setIssueBannerDismissed] = useState(false);
 
   function clearNotifications(alertIds: number[]) {
     setDismissedAlertIds((prev) => [...new Set([...prev, ...alertIds])]);
@@ -3745,6 +3746,11 @@ export default function DashboardPage() {
               icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] shrink-0"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="12" y1="8" x2="12" y2="11"/><line x1="12" y1="14" x2="12.01" y2="14"/></svg>,
             },
             {
+              label: "Issues, contact us",
+              href: "mailto:jacktozer11@gmail.com?subject=Sellganise%20Issue",
+              icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] shrink-0"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>,
+            },
+            {
               label: "Help Center",
               href: "/help",
               icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] shrink-0"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>,
@@ -3899,6 +3905,19 @@ export default function DashboardPage() {
           </div>
           </div>
         </header>
+
+        {!issueBannerDismissed && (
+          <div className="bg-amber/10 border-b border-amber/25 px-6 py-3 flex items-start gap-3">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] text-amber shrink-0 mt-0.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <p className="text-sm text-amber flex-1">
+              <span className="font-medium">Technical issues have been discovered —</span>{" "}you will need to re-add your items into the database.{" "}
+              <a href="mailto:jacktozer11@gmail.com?subject=Sellganise%20Issue" className="underline underline-offset-2 hover:text-amber/80 transition-colors">Contact us</a> if you need help.
+            </p>
+            <button onClick={() => setIssueBannerDismissed(true)} className="text-amber/60 hover:text-amber transition-colors shrink-0" aria-label="Dismiss">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+        )}
 
         <main className="flex-1 p-6 pb-24 md:pb-6 max-w-[1152px] w-full mx-auto">
           {navKey === "overview" && (
