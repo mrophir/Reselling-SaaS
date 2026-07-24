@@ -2924,11 +2924,11 @@ function SettingsSection({ userName, userEmail, onNameChange, currentTier, onUpg
     try {
       const result = await deleteAccount();
       if (result?.error) {
-        addToast(`Failed to delete account: ${result.error}`, "warning");
+        flash("delete", `Failed to delete account: ${result.error}`, false);
         setDeleting(false);
       }
     } catch {
-      addToast("Failed to delete account — please try again", "warning");
+      flash("delete", "Failed to delete account — please try again", false);
       setDeleting(false);
     }
   }
