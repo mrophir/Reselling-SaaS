@@ -36,7 +36,7 @@ export const POSTS: BlogPost[] = [
     slug: "how-to-start-reselling-on-vinted",
     title: "How to Start Reselling on Vinted: The Complete Guide (2026)",
     description: "A complete guide to Vinted reselling in the UK — from sourcing your first items and writing listings that rank, to tracking profit and scaling with the right reselling software.",
-    date: "29 July 2026",
+    date: "28 July 2026",
     readTime: "9 min read",
     tags: ["Vinted", "Reselling", "Reselling software", "Beginners guide"],
   },

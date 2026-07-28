@@ -5,11 +5,13 @@ import { POSTS, getPost } from "../../../lib/blog";
 import { HowToOrganiseVintedStock } from "./posts/how-to-organise-vinted-stock";
 import { HowToTrackProfitDepop } from "./posts/how-to-track-profit-depop";
 import { HowToStartResellingOnVinted } from "./posts/how-to-start-reselling-on-vinted";
+import { BestAppsForResellersUK } from "./posts/best-apps-for-resellers-uk";
 
 const CONTENT: Record<string, React.ComponentType> = {
   "how-to-organise-vinted-stock": HowToOrganiseVintedStock,
   "how-to-track-profit-depop": HowToTrackProfitDepop,
   "how-to-start-reselling-on-vinted": HowToStartResellingOnVinted,
+  "best-apps-for-resellers-uk": BestAppsForResellersUK,
 };
 
 export function generateStaticParams() {
