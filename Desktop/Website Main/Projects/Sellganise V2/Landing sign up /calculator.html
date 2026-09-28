@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Selling Fee Calculator – Sellganise</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+
+    <style>
+        :root {
+            --accent: #00b7f5;
+            --accent-dark: #0099d6;
+            --text: #0d1117;
+            --muted: #6b7280;
+            --soft: #9ca3af;
+            --border: #e5e7eb;
+            --bg: #ffffff;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+        html, body { margin: 0; }
+
+        body {
+            background: var(--bg) url('./bg.avif') center top / cover no-repeat fixed;
+            color: var(--text);
+            font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── TOP BAR ── */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+            padding: 0 40px;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .topbar__logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 18px;
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        .topbar__logo-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .topbar__back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--muted);
+            text-decoration: none;
+            transition: color .15s;
+        }
+
+        .topbar__back:hover { color: var(--text); }
+
+        /* ── MAIN ── */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 64px 24px 80px;
+            gap: 40px;
+        }
+
+        .page-header {
+            text-align: center;
+        }
+
+        .page-label {
+            display: inline-block;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 14px;
+        }
+
+        .page-title {
+            margin: 0 0 12px;
+            font-weight: 800;
+            font-size: clamp(30px, 5vw, 48px);
+            letter-spacing: -0.03em;
+            color: var(--text);
+        }
+
+        .page-sub {
+            margin: 0;
+            font-size: 17px;
+            color: var(--muted);
+        }
+
+        /* ── CARD ── */
+        .calc__card {
+            width: 100%;
+            max-width: 680px;
+            background: rgba(255,255,255,0.93);
+            border: 1.5px solid var(--border);
+            border-radius: 20px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.08);
+            backdrop-filter: blur(12px);
+            overflow: hidden;
+        }
+
+        .calc__platforms {
+            display: flex;
+            border-bottom: 1.5px solid var(--border);
+        }
+
+        .calc__tab {
+            flex: 1;
+            padding: 14px 8px;
+            border: 0;
+            background: transparent;
+            font: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--muted);
+            cursor: pointer;
+            transition: background .15s, color .15s;
+            border-right: 1px solid var(--border);
+        }
+
+        .calc__tab:last-child { border-right: 0; }
+        .calc__tab:hover { background: #f9fafb; color: var(--text); }
+        .calc__tab.active { background: #f0f9ff; color: var(--accent); }
+
+        .calc__body {
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .calc__row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .calc__group {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .calc__group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .calc__input-wrap { position: relative; }
+
+        .calc__input-wrap span {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--muted);
+            pointer-events: none;
+        }
+
+        .calc__input {
+            width: 100%;
+            height: 48px;
+            padding: 0 16px 0 30px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            background: #fff;
+            color: var(--text);
+            font: inherit;
+            font-size: 17px;
+            font-weight: 600;
+            transition: border-color .15s;
+        }
+
+        .calc__input:focus { outline: none; border-color: var(--accent); }
+
+        .calc__divider { height: 1px; background: var(--border); margin: 4px 0; }
+
+        .calc__results {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+        }
+
+        .calc__result {
+            background: #f9fafb;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .calc__result-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--soft);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 6px;
+        }
+
+        .calc__result-value {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text);
+            letter-spacing: -0.02em;
+        }
+
+        .calc__result-value.positive { color: #16a34a; }
+        .calc__result-value.negative { color: #dc2626; }
+        .calc__result-value.neutral  { color: var(--accent); }
+
+        .calc__fee-note {
+            font-size: 12px;
+            color: var(--soft);
+            text-align: center;
+            margin: 0;
+        }
+
+        /* ── WAITLIST CTA ── */
+        .cta-strip {
+            width: 100%;
+            max-width: 680px;
+            background: rgba(255,255,255,0.93);
+            border: 1.5px solid var(--border);
+            border-radius: 16px;
+            padding: 24px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        }
+
+        .cta-strip__text strong {
+            display: block;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 3px;
+        }
+
+        .cta-strip__text span {
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .cta-strip__btn {
+            flex-shrink: 0;
+            height: 44px;
+            padding: 0 24px;
+            border: 0;
+            border-radius: 10px;
+            background: var(--accent);
+            color: #fff;
+            font: inherit;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            transition: background .15s;
+        }
+
+        .cta-strip__btn:hover { background: var(--accent-dark); }
+
+        /* ── FOOTER ── */
+        footer {
+            padding: 24px;
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.3);
+        }
+
+        footer p {
+            margin: 0;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        footer a {
+            color: var(--muted);
+            text-decoration: underline;
+        }
+
+        footer a:hover { color: var(--text); }
+
+        @media (max-width: 640px) {
+            .topbar { padding: 0 20px; }
+            main { padding: 40px 16px 60px; }
+            .calc__row { grid-template-columns: 1fr; }
+            .calc__results { grid-template-columns: 1fr 1fr; }
+            .cta-strip { flex-direction: column; text-align: center; }
+            .cta-strip__btn { width: 100%; justify-content: center; }
+        }
+
+        @media (max-width: 400px) {
+            .calc__results { grid-template-columns: 1fr; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * { transition: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <a href="index (20).html" class="topbar__logo">
+        <div class="topbar__logo-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="5" width="18" height="14" rx="2.5"/>
+                <path d="M3.5 6.5l8.5 6.5 8.5-6.5"/>
+            </svg>
+        </div>
+        Sellganise
+    </a>
+    <a href="index (20).html" class="topbar__back">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M5 12l7-7M5 12l7 7"/>
+        </svg>
+        Back to waitlist
+    </a>
+</div>
+
+<main>
+    <div class="page-header">
+        <div class="page-label">Free tool</div>
+        <h1 class="page-title">Selling fee calculator</h1>
+        <p class="page-sub">See exactly what you'll make after platform fees.</p>
+    </div>
+
+    <div class="calc__card">
+        <div class="calc__platforms" role="tablist" aria-label="Platform">
+            <button class="calc__tab active" role="tab" aria-selected="true"  data-platform="vinted">Vinted</button>
+            <button class="calc__tab"        role="tab" aria-selected="false" data-platform="ebay">eBay</button>
+            <button class="calc__tab"        role="tab" aria-selected="false" data-platform="depop">Depop</button>
+            <button class="calc__tab"        role="tab" aria-selected="false" data-platform="facebook">Facebook</button>
+        </div>
+
+        <div class="calc__body">
+            <div class="calc__row">
+                <div class="calc__group">
+                    <label for="calc-cost">Cost price</label>
+                    <div class="calc__input-wrap">
+                        <span>£</span>
+                        <input id="calc-cost" class="calc__input" type="number" min="0" step="0.01" placeholder="0.00">
+                    </div>
+                </div>
+                <div class="calc__group">
+                    <label for="calc-sale">Sale price</label>
+                    <div class="calc__input-wrap">
+                        <span>£</span>
+                        <input id="calc-sale" class="calc__input" type="number" min="0" step="0.01" placeholder="0.00">
+                    </div>
+                </div>
+            </div>
+
+            <div class="calc__divider"></div>
+
+            <div class="calc__results">
+                <div class="calc__result">
+                    <div class="calc__result-label">Platform fee</div>
+                    <div class="calc__result-value neutral" id="res-fee">—</div>
+                </div>
+                <div class="calc__result">
+                    <div class="calc__result-label">Profit</div>
+                    <div class="calc__result-value" id="res-profit">—</div>
+                </div>
+                <div class="calc__result">
+                    <div class="calc__result-label">Margin</div>
+                    <div class="calc__result-value" id="res-margin">—</div>
+                </div>
+            </div>
+
+            <p class="calc__fee-note" id="calc-fee-note">Enter a sale price to see your numbers.</p>
+        </div>
+    </div>
+
+    <div class="cta-strip">
+        <div class="cta-strip__text">
+            <strong>Want this built into your workflow?</strong>
+            <span>Sellganise tracks your stock, fees, and profit automatically.</span>
+        </div>
+        <a href="index (20).html" class="cta-strip__btn">Join the waitlist</a>
+    </div>
+</main>
+
+<footer>
+    <p>&copy; 2026 Sellganise. All rights reserved.</p>
+</footer>
+
+<script>
+    const PLATFORM_FEES = {
+        vinted:   { pct: 0,     fixed: 0,    label: 'No seller fee on Vinted (buyers pay protection fee)' },
+        ebay:     { pct: 12.8,  fixed: 0.30, label: '12.8% + £0.30 eBay final value fee' },
+        depop:    { pct: 2.9,   fixed: 0.30, label: '2.9% + £0.30 payment processing (Depop)' },
+        facebook: { pct: 5,     fixed: 0,    label: '5% selling fee (Facebook shipped)' },
+    };
+
+    let activePlatform = 'vinted';
+
+    document.querySelectorAll('.calc__tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.calc__tab').forEach(t => {
+                t.classList.remove('active');
+                t.setAttribute('aria-selected', 'false');
+            });
+            tab.classList.add('active');
+            tab.setAttribute('aria-selected', 'true');
+            activePlatform = tab.dataset.platform;
+            recalc();
+        });
+    });
+
+    const costInput = document.getElementById('calc-cost');
+    const saleInput = document.getElementById('calc-sale');
+    const resFee    = document.getElementById('res-fee');
+    const resProfit = document.getElementById('res-profit');
+    const resMargin = document.getElementById('res-margin');
+    const feeNote   = document.getElementById('calc-fee-note');
+
+    function fmt(n) { return '£' + Math.abs(n).toFixed(2); }
+
+    function recalc() {
+        const cost = parseFloat(costInput.value) || 0;
+        const sale = parseFloat(saleInput.value) || 0;
+        const { pct, fixed, label } = PLATFORM_FEES[activePlatform];
+
+        if (!sale) {
+            resFee.textContent = resProfit.textContent = resMargin.textContent = '—';
+            resFee.className = resProfit.className = resMargin.className = 'calc__result-value';
+            feeNote.textContent = 'Enter a sale price to see your numbers.';
+            return;
+        }
+
+        const fee    = (sale * pct / 100) + fixed;
+        const profit = sale - fee - cost;
+        const margin = sale > 0 ? (profit / sale) * 100 : 0;
+
+        resFee.textContent    = fmt(fee);
+        resProfit.textContent = (profit >= 0 ? '+' : '-') + fmt(profit);
+        resMargin.textContent = margin.toFixed(1) + '%';
+
+        resFee.className    = 'calc__result-value neutral';
+        resProfit.className = 'calc__result-value ' + (profit >= 0 ? 'positive' : 'negative');
+        resMargin.className = 'calc__result-value ' + (margin >= 0 ? 'positive' : 'negative');
+
+        feeNote.textContent = label;
+    }
+
+    costInput.addEventListener('input', recalc);
+    saleInput.addEventListener('input', recalc);
+</script>
+
+</body>
+</html>
